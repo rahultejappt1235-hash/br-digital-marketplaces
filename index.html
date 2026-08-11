@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BR Digital Marketplace</title>
+<meta name="description" content="BR Digital Marketplace - Bihar ka online marketplace">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="logo">BR</span><span>BR Digital Marketplace</span></div>
+  <button class="cart-btn" onclick="openCart()">🛒 Cart <b id="cartCount">0</b></button>
+</header>
+
+<section class="hero">
+  <div>
+    <p class="tag">Bihar ka Digital Marketplace</p>
+    <h1>Local Sellers se<br><span>Online Shopping</span></h1>
+    <p>Products dekhiye, cart mein add kijiye aur Cash on Delivery se order kijiye.</p>
+    <a href="#products" class="primary">Products Dekhein</a>
+  </div>
+</section>
+
+<section class="search-area">
+  <input id="search" oninput="renderProducts()" placeholder="🔎 Product search karein...">
+  <select id="category" onchange="renderProducts()">
+    <option value="all">Sabhi Categories</option>
+    <option value="fashion">Fashion</option>
+    <option value="electronics">Electronics</option>
+    <option value="home">Home</option>
+    <option value="grocery">Grocery</option>
+  </select>
+</section>
+
+<main id="products" class="container">
+  <h2>Popular Products</h2>
+  <div id="productGrid" class="grid"></div>
+</main>
+
+<section class="steps">
+  <h2>Kaise Order Karein?</h2>
+  <div class="step-grid">
+    <div><b>1</b><h3>Product Chunein</h3><p>Apni pasand ka product select karein.</p></div>
+    <div><b>2</b><h3>Cart Mein Add</h3><p>Product cart mein add karein.</p></div>
+    <div><b>3</b><h3>Order Karein</h3><p>Address dein aur COD se order karein.</p></div>
+  </div>
+</section>
+
+<footer>
+  <strong>BR Digital Marketplace</strong>
+  <p>Made for local businesses & customers in Bihar.</p>
+  <p>© 2026 BR Digital Marketplace</p>
+</footer>
+
+<div id="cartModal" class="modal hidden">
+  <div class="modal-card">
+    <button class="close" onclick="closeCart()">×</button>
+    <h2>Your Cart</h2>
+    <div id="cartItems"></div>
+    <div class="total">Total: ₹<span id="cartTotal">0</span></div>
+    <button class="primary full" onclick="checkout()">Place COD Order</button>
+  </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
