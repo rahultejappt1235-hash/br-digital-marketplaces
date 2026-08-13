@@ -105,6 +105,47 @@
       text-decoration: none;
       font-weight: bold;
     }
+    .scan-box {
+  margin: 20px 0;
+  padding: 15px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 12px;
+}
+
+.scan-box h3 {
+  margin-top: 0;
+}
+
+.scan-box button {
+  background: #ff7a00;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#scannerBox {
+  margin-top: 15px;
+}
+
+#scannerVideo {
+  width: 100%;
+  max-height: 300px;
+  border-radius: 12px;
+  background: #000;
+}
+
+#scanStatus {
+  font-weight: bold;
+}
+
+#barcodeResult {
+  color: green;
+  font-weight: bold;
+}
   </style>
 </head>
 
@@ -133,6 +174,24 @@
         placeholder="Jaise: Stylish T-Shirt"
         required
       >
+      <div class="scan-box">
+  <h3>📷 Scan Product Barcode</h3>
+
+  <button type="button" onclick="startScanner()">
+    📷 Barcode Scan Karein
+  </button>
+
+  <div id="scannerBox" style="display:none;">
+    <video id="scannerVideo" autoplay playsinline></video>
+    <p id="scanStatus">Barcode scan ho raha hai...</p>
+
+    <button type="button" onclick="stopScanner()">
+      ❌ Scanner Band Karein
+    </button>
+  </div>
+
+  <p id="barcodeResult"></p>
+      </div>
 
       <label>Product Description</label>
       <textarea
@@ -222,8 +281,149 @@
       alert("Error: " + error.message);
 
     }
+// ===============================
+// BARCODE / QR SCANNER
+// ===============================
 
-  });
+let scannerStream = null;
+let scannerRunning = false;
+
+async function startScanner() {
+  const scannerBox = document.getElementById("scannerBox");
+  const video = document.getElementById("scannerVideo");
+  const status = document.getElementById("scanStatus");
+
+  if (!("BarcodeDetector" in window)) {
+    alert("Aapke browser mein Barcode Scanner support nahi hai. Chrome ka latest version use karein.");
+    return;
+  }
+
+  try {
+    scannerBox.style.display = "block";
+
+    scannerStream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: { ideal: "environment" }
+      },
+      audio: false
+    });
+
+    video.srcObject = scannerStream;
+    scannerRunning = true;
+
+    const detector = new BarcodeDetector({
+      formats: [
+        "qr_code",
+        "ean_13",
+        "ean_8",
+        "code_128",
+        "code_39",
+        "upc_a",
+        "upc_e"
+      ]
+    });
+
+    status.innerText = "📷 Barcode/QR scan ho raha hai...";
+
+    scanLoop(detector, video, status);
+
+  } catch (error) {
+    alert("Camera permission allow karein.");
+    console.log(error);
+  }
+}
+
+
+async function scanLoop(detector, video, status) {
+
+  if (!scannerRunning) return;
+
+  try {
+
+    const barcodes = await detector.detect(video);
+
+    if (barcodes.length > 0) {
+
+      const code = barcodes[0].rawValue;
+
+      document.getElementById("barcodeResult").innerText =
+        "✅ Code: " + code;
+
+      // QR Code ke andar JSON product data ho to
+      try {
+
+        const productData = JSON.parse(code);
+
+        if (productData.name) {
+          document.getElementById("name").value =
+            productData.name;
+        }
+
+        if (productData.description) {
+          document.getElementById("description").value =
+            productData.description;
+        }
+
+        if (productData.price) {
+          document.getElementById("price").value =
+            productData.price;
+        }
+
+        if (productData.image_url) {
+          document.getElementById("image_url").value =
+            productData.image_url;
+        }
+
+        if (productData.category) {
+          document.getElementById("category").value =
+            productData.category;
+        }
+
+        status.innerText =
+          "✅ Product details automatically fill ho gayi!";
+
+      } catch (e) {
+
+        // Agar normal barcode number hai
+        status.innerText =
+          "✅ Barcode scan ho gaya: " + code;
+
+      }
+
+      stopScanner();
+      return;
+    }
+
+  } catch (error) {
+    console.log(error);
+  }
+
+  requestAnimationFrame(() =>
+    scanLoop(detector, video, status)
+  );
+}
+
+
+function stopScanner() {
+
+  scannerRunning = false;
+
+  const video = document.getElementById("scannerVideo");
+
+  if (scannerStream) {
+
+    scannerStream.getTracks().forEach(track => {
+      track.stop();
+    });
+
+    scannerStream = null;
+  }
+
+  video.srcObject = null;
+
+  document.getElementById("scannerBox").style.display =
+    "none";
+}
 </script>
 
 </body>
