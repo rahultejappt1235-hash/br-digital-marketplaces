@@ -70,6 +70,9 @@ async function initDb() {
     );
   `);
 }
+initDb().catch(error => {
+  console.error("Database initialization error:", error);
+});
 
 module.exports = {
   pool,
