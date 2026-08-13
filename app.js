@@ -7,7 +7,30 @@ const products=[
 {id:6,name:"Smart Watch",price:1299,cat:"electronics",img:"https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=700&q=80",seller:"Tech Seller"}
 ];
 let cart=JSON.parse(localStorage.getItem("brCart")||"[]");
-function renderProducts(){
+function renderProducts() {
+  const q = document.getElementById("search").value.toLowerCase();
+  const c = document.getElementById("category").value;
+
+  const list = products.filter(p =>
+    (c === "all" || p.cat === c) &&
+    p.name.toLowerCase().includes(q)
+  );
+
+  document.getElementById("productGrid").innerHTML = list.map(p => `
+    <div class="product-card">
+      <div class="product-image">
+        <div class="product-placeholder">🛍️</div>
+      </div>
+
+      <h3>${p.name}</h3>
+      <p class="price">₹${p.price}</p>
+
+      <button class="primary" onclick="addToCart(${p.id})">
+        🛒 Add to Cart
+      </button>
+    </div>
+  `).join("");
+}
  const q=document.getElementById("search").value.toLowerCase(), c=document.getElementById("category").value;
  const list=products.filter(p=>(c==="all"||p.cat===c)&&p.name.toLowerCase().includes(q));
  document.getElementById("productGrid").innerHTML=list.map(p=>`<article class="card"><img src="${p.img}" alt="${p.name}"><div class="card-body"><span class="muted">${p.seller}</span><h3>${p.name}</h3><div class="price">₹${p.price}</div><button class="primary" onclick="addToCart(${p.id})">Add to Cart</button></div></article>`).join("")||"<p>Product nahi mila.</p>";
