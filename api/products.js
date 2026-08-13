@@ -4,7 +4,7 @@ module.exports = async function handler(req, res) {
   try {
     // GET: सभी products
     if (req.method === "GET") {
-      const result = await db.query(`
+      const result = await db.pool.query(`
         SELECT *
         FROM products
         ORDER BY created_at DESC
@@ -33,7 +33,7 @@ module.exports = async function handler(req, res) {
         });
       }
 
-      const result = await db.query(
+      const result = await db.pool.query(
         `
         INSERT INTO products
         (name, description, price, image_url, category)
