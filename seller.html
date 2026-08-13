@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seller Panel - BR Digital Marketplace</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      color: #18202a;
+    }
+
+    header {
+      background: #ffffff;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px #ddd;
+    }
+
+    .brand {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .logo {
+      background: #ff7900;
+      color: white;
+      padding: 10px;
+      border-radius: 10px;
+      margin-right: 8px;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 25px auto;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 3px 15px #ddd;
+    }
+
+    h1 {
+      margin-top: 0;
+      color: #ff7900;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 13px;
+      margin-top: 7px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    textarea {
+      min-height: 100px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 20px;
+      border: 0;
+      border-radius: 8px;
+      background: #ff7900;
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .success {
+      display: none;
+      margin-top: 15px;
+      padding: 12px;
+      background: #d9f7df;
+      color: #176b2c;
+      border-radius: 8px;
+    }
+
+    .back {
+      display: inline-block;
+      margin-top: 18px;
+      color: #ff7900;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand">
+    <span class="logo">BR</span>
+    Digital Marketplace
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="card">
+
+    <h1>Seller Panel 👨‍💼</h1>
+    <p>Apna product BR Digital Marketplace par add karein.</p>
+
+    <form id="productForm">
+
+      <label>Product Name</label>
+      <input
+        type="text"
+        id="name"
+        placeholder="Jaise: Stylish T-Shirt"
+        required
+      >
+
+      <label>Product Description</label>
+      <textarea
+        id="description"
+        placeholder="Product ke baare mein likhein"
+        required
+      ></textarea>
+
+      <label>Price ₹</label>
+      <input
+        type="number"
+        id="price"
+        placeholder="499"
+        min="1"
+        required
+      >
+
+      <label>Product Image URL</label>
+      <input
+        type="url"
+        id="image_url"
+        placeholder="https://example.com/product.jpg"
+        required
+      >
+
+      <label>Category</label>
+      <select id="category" required>
+        <option value="">Category select karein</option>
+        <option value="fashion">Fashion</option>
+        <option value="electronics">Electronics</option>
+        <option value="home">Home</option>
+        <option value="grocery">Grocery</option>
+      </select>
+
+      <button type="submit">
+        ➕ Product Add Karein
+      </button>
+
+    </form>
+
+    <div class="success" id="success">
+      ✅ Product add request successfully bhej di gayi!
+    </div>
+
+    <a class="back" href="index.html">
+      ← Marketplace par wapas
+    </a>
+
+  </div>
+
+</div>
+
+<script>
+  document.getElementById("productForm").addEventListener("submit", async function(e) {
+
+    e.preventDefault();
+
+    const product = {
+      name: document.getElementById("name").value,
+      description: document.getElementById("description").value,
+      price: Number(document.getElementById("price").value),
+      image_url: document.getElementById("image_url").value,
+      category: document.getElementById("category").value
+    };
+
+    try {
+
+      const response = await fetch("/api/products", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(product)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Product add nahi hua");
+      }
+
+      document.getElementById("success").style.display = "block";
+      document.getElementById("productForm").reset();
+
+    } catch (error) {
+
+      alert("Error: " + error.message);
+
+    }
+
+  });
+</script>
+
+</body>
+  </html>
