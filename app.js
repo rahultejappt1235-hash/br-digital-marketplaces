@@ -22,15 +22,65 @@ function renderCart(){
  document.getElementById("cartTotal").textContent=total;
 }
 function removeCart(i){cart.splice(i,1);saveCart();renderCart()}
-function checkout(){
- if(!cart.length){alert("Cart khali hai.");return}
- const name=prompt("Customer ka naam:");
- if(!name)return;
- const phone=prompt("Mobile number:");
- if(!phone)return;
- const address=prompt("Delivery address:");
- if(!address)return;
- alert("COD order request ready hai! Order status: Pending. Real database/order backend next phase mein connect kiya ja sakta hai.");
- cart=[];saveCart();closeCart();
+functasync function checkout() {
+  if (!cart.length) {
+    alert("Cart khali hai.");
+    return;
+  }
+
+  const name = prompt("Customer ka naam:");
+  if (!name) return;
+
+  const phone = prompt("Mobile number:");
+  if (!phone) return;
+
+  const address = prompt("Delivery address:");
+  if (!address) return;
+
+  try {
+    // Cart ke har product ka COD order create hoga
+    const orders = [];
+
+    for (const item of cart) {
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          product_id: item.id,
+          quantity: item.quantity || 1,
+          customer_name: name,
+          customer_phone: phone,
+          delivery_address: address
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Order place nahi hua.");
+      }
+
+      orders.push(data.order);
+    }
+
+    alert(
+      "✅ COD Order successfully place ho gaya!\n\n" +
+      "Customer: " + name + "\n" +
+      "Mobile: " + phone + "\n" +
+      "Address: " + address + "\n\n" +
+      "Order ID: " +
+      orders.map(o => o.order_id || o.id).join(", ")
+    );
+
+    cart = [];
+    saveCart();
+    closeCart();
+    renderProducts();
+
+  } catch (error) {
+    alert("❌ Order Error: " + error.message);
+  }
 }
 renderProducts();saveCart();
