@@ -345,6 +345,13 @@ async function scanLoop(detector, video, status) {
     if (barcodes.length > 0) {
 
       const code = barcodes[0].rawValue;
+      const format = barcodes[0].format;
+
+if (format !== "qr_code") {
+    getProductByBarcode(code);
+    stopScanner();
+    return;
+}
 
       document.getElementById("barcodeResult").innerText =
         "✅ Code: " + code;
@@ -423,7 +430,51 @@ function stopScanner() {
 
   document.getElementById("scannerBox").style.display =
     "none";
-}
+  async function getProductByBarcode(barcode) {
+    const status = document.getElementById("scanStatus");
+
+    status.textContent = "🔎 Product details खोज रहे हैं...";
+
+    try {
+        const response = await fetch(
+            "https://world.openfoodfacts.org/api/v2/product/" + barcode + ".json"
+        );
+
+        const data = await response.json();
+
+        if (!data.product) {
+            status.textContent =
+                "❌ Product नहीं मिला। Details manually भरें।";
+            return;
+        }
+
+        const product = data.product;
+
+        document.getElementById("name").value =
+            product.product_name ||
+            product.product_name_en ||
+            "";
+
+        document.getElementById("description").value =
+            product.generic_name ||
+            product.ingredients_text ||
+            "Product description उपलब्ध नहीं है।";
+
+        if (product.image_front_url) {
+            document.getElementById("image_url").value =
+                product.image_front_url;
+        }
+
+        status.textContent =
+            "✅ Product details automatically भर दिए गए हैं।";
+
+    } catch (error) {
+        console.error(error);
+
+        status.textContent =
+            "⚠️ Product details नहीं मिल सके।";
+    }
+  }
 </script>
 
 </body>
