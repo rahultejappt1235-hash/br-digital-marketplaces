@@ -293,11 +293,6 @@ async function startScanner() {
   const video = document.getElementById("scannerVideo");
   const status = document.getElementById("scanStatus");
 
-  if (!("BarcodeDetector" in window)) {
-    alert("Aapke browser mein Barcode Scanner support nahi hai. Chrome ka latest version use karein.");
-    return;
-  }
-
   try {
     scannerBox.style.display = "block";
 
