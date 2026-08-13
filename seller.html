@@ -289,50 +289,67 @@ let scannerStream = null;
 let scannerRunning = false;
 
 async function startScanner() {
-  const scannerBox = document.getElementById("scannerBox");
-  const video = document.getElementById("scannerVideo");
-  const status = document.getElementById("scanStatus");
+    const scannerBox = document.getElementById("scannerBox");
+    const video = document.getElementById("scannerVideo");
+    const status = document.getElementById("scanStatus");
 
-  try {
-    scannerBox.style.display = "block";
+    try {
+        scannerBox.style.display = "block";
+        status.textContent = "📷 Camera permission maang raha hai...";
 
-    scannerStream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: { ideal: "environment" }
-      },
-      audio: false
-    });
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            alert("❌ Is browser mein camera support nahi hai.");
+            return;
+        }
 
-    video.srcObject = scannerStream;
-    scannerRunning = true;
+        scannerStream = await navigator.mediaDevices.getUserMedia({
+            video: {
+                facingMode: "environment"
+            },
+            audio: false
+        });
 
-    const detector = new BarcodeDetector({
-      formats: [
-        "qr_code",
-        "ean_13",
-        "ean_8",
-        "code_128",
-        "code_39",
-        "upc_a",
-        "upc_e"
-      ]
-    });
+        video.srcObject = scannerStream;
+        video.setAttribute("playsinline", "");
+        video.setAttribute("autoplay", "");
 
-    status.innerText = "📷 Barcode/QR scan ho raha hai...";
+        await video.play();
 
-    scanLoop(detector, video, status);
+        scannerRunning = true;
 
-  } catch (error) {
-    console.error("Camera Error:", error);
+        status.textContent =
+            "📷 Camera ON hai — Barcode camera ke saamne rakhein.";
 
-    alert(
-        "Camera open nahi ho raha.\n\n" +
-        "Error: " + error.name + "\n" +
-        error.message
-    );
-  }
-  }
+        if (!("BarcodeDetector" in window)) {
+            status.textContent =
+                "⚠️ Camera ON hai, lekin barcode scanner browser mein supported nahi hai.";
+            return;
+        }
 
+        const detector = new BarcodeDetector({
+            formats: [
+                "qr_code",
+                "ean_13",
+                "ean_8",
+                "code_128",
+                "code_39",
+                "upc_a",
+                "upc_e"
+            ]
+        });
+
+        scanLoop(detector, video, status);
+
+    } catch (error) {
+        console.error("Camera Error:", error);
+
+        alert(
+            "❌ Camera open nahi hua.\n\n" +
+            "Error: " + error.name + "\n" +
+            error.message
+        );
+    }
+}
 
 
 async function scanLoop(detector, video, status) {
