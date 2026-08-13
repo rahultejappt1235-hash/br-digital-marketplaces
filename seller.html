@@ -323,10 +323,16 @@ async function startScanner() {
     scanLoop(detector, video, status);
 
   } catch (error) {
-    alert("Camera permission allow karein.");
-    console.log(error);
+    console.error("Camera Error:", error);
+
+    alert(
+        "Camera open nahi ho raha.\n\n" +
+        "Error: " + error.name + "\n" +
+        error.message
+    );
   }
-}
+  }
+
 
 
 async function scanLoop(detector, video, status) {
