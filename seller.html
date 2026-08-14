@@ -282,162 +282,94 @@
 
     }
 // ===============================
-// BARCODE / QR SCANNER - ZXING
-// ===============================
+<!-- BARCODE SCANNER -->
+<script src="https://unpkg.com/@zxing/browser@0.1.5/umd/index.min.js"></script>
 
-let scannerStream = null;
-let scannerRunning = false;
+<script>
 let codeReader = null;
-let currentControls = null;
+let scannerControls = null;
 
 async function startScanner() {
-  const scannerBox = document.getElementById("scannerBox");
-  const video = document.getElementById("scannerVideo");
-  const status = document.getElementById("scanStatus");
-  const result = document.getElementById("barcodeResult");
+    const scannerBox = document.getElementById("scannerBox");
+    const video = document.getElementById("scannerVideo");
+    const status = document.getElementById("scanStatus");
 
-  scannerBox.style.display = "block";
-  result.textContent = "";
-  status.textContent = "📷 Camera permission maang raha hai...";
+    scannerBox.style.display = "block";
+    status.textContent = "📷 Camera permission maang raha hai...";
 
-  try {
-    if (!navigator.mediaDevices ||
-        !navigator.mediaDevices.getUserMedia) {
-      status.textContent =
-        "❌ Is browser mein camera support nahi hai.";
-      return;
+    try {
+        codeReader = new ZXingBrowser.BrowserMultiFormatReader();
+
+        status.textContent = "📷 Camera ON ho raha hai...";
+
+        scannerControls = await codeReader.decodeFromConstraints(
+            {
+                video: {
+                    facingMode: { ideal: "environment" }
+                }
+            },
+            video,
+            (result, error) => {
+
+                if (result) {
+                    const barcode = result.getText();
+
+                    status.textContent =
+                        "✅ Barcode mil gaya: " + barcode;
+
+                    document.getElementById("barcodeResult").textContent =
+                        "Barcode: " + barcode;
+
+                    stopScanner();
+
+                    getProductByBarcode(barcode);
+                }
+            }
+        );
+
+        status.textContent =
+            "📷 Barcode ko camera ke saamne rakhein...";
+
+    } catch (error) {
+
+        console.error(error);
+
+        status.textContent =
+            "❌ Camera open nahi hua.";
+
+        alert(
+            "❌ Camera open nahi hua.\n\n" +
+            "Browser ko Camera permission Allow karein.\n\n" +
+            error.message
+        );
     }
-
-    scannerStream =
-      await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: { ideal: "environment" }
-        },
-        audio: false
-      });
-
-    video.srcObject = scannerStream;
-    video.setAttribute("playsinline", "");
-    video.setAttribute("autoplay", "");
-    video.muted = true;
-
-    await video.play();
-
-    scannerRunning = true;
-
-    status.textContent =
-      "✅ Camera ON hai — Barcode camera ke saamne rakhein.";
-
-    if (!window.ZXingBrowser) {
-      status.textContent =
-        "❌ Scanner library load nahi hui.";
-      stopScanner();
-      return;
-    }
-
-    codeReader =
-      new ZXingBrowser.BrowserMultiFormatReader();
-
-    const devices =
-      await ZXingBrowser.BrowserCodeReader
-        .listVideoInputDevices();
-
-    const rear = devices.find(d =>
-      /back|rear|environment/i.test(d.label)
-    );
-
-    const deviceId =
-      (rear || devices[0])?.deviceId;
-
-    if (!deviceId) {
-      status.textContent =
-        "❌ Camera device nahi mila.";
-      stopScanner();
-      return;
-    }
-
-    currentControls =
-      await codeReader.decodeFromVideoDevice(
-        deviceId,
-        video,
-        async (scanResult, error, controls) => {
-
-          if (!scannerRunning) return;
-
-          currentControls = controls;
-
-          if (scanResult) {
-
-            const code = scanResult.getText();
-
-            document.getElementById(
-              "barcodeResult"
-            ).innerText =
-              "✅ Barcode: " + code;
-
-            await getProductByBarcode(code);
-
-            stopScanner();
-          }
-        }
-      );
-
-  } catch (error) {
-
-    console.error("Camera Error:", error);
-
-    status.textContent =
-      "❌ Camera open nahi hua: " +
-      (error.message || error.name);
-
-    alert(
-      "❌ Camera open nahi hua.\n\n" +
-      "Error: " +
-      (error.name || "Unknown") +
-      "\n" +
-      (error.message || "")
-    );
-  }
 }
 
 function stopScanner() {
 
-  scannerRunning = false;
-
-  try {
-    if (
-      currentControls &&
-      typeof currentControls.stop === "function"
-    ) {
-      currentControls.stop();
+    if (scannerControls) {
+        scannerControls.stop();
+        scannerControls = null;
     }
-  } catch (e) {}
 
-  currentControls = null;
+    if (codeReader) {
+        codeReader.reset();
+    }
 
-  if (scannerStream) {
+    const video = document.getElementById("scannerVideo");
 
-    scannerStream
-      .getTracks()
-      .forEach(track => track.stop());
+    if (video && video.srcObject) {
+        video.srcObject.getTracks().forEach(track => track.stop());
+        video.srcObject = null;
+    }
 
-    scannerStream = null;
-  }
+    const box = document.getElementById("scannerBox");
 
-  const video =
-    document.getElementById("scannerVideo");
-
-  if (video) {
-    video.srcObject = null;
-  }
-
-  const box =
-    document.getElementById("scannerBox");
-
-  if (box) {
-    box.style.display = "none";
-  }
+    if (box) {
+        box.style.display = "none";
+    }
 }
+
 
 async function getProductByBarcode(barcode) {
 
@@ -494,8 +426,10 @@ async function getProductByBarcode(barcode) {
       "⚠️ Product details नहीं मिल सके.";
   }
 }
-    <script src="https://unpkg.com/@zxing/browser@0.1.5/umd/index.min.js"></script>
-</script>
+    </script>
+
+</body>
+</html>
 
 </body>
   </html>
