@@ -1,75 +1,80 @@
-const products = [
-  {
-    id: 1,
-    name: "Stylish T-Shirt",
-    price: 499,
-    cat: "fashion",
-    image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab"
-  },
-  {
-    id: 2,
-    name: "Wireless Earbuds",
-    price: 899,
-    cat: "electronics",
-    image: "https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1"
-  },
-  {
-    id: 3,
-    name: "Kitchen Storage Set",
-    price: 699,
-    cat: "home",
-    image: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f"
-  },
-  {
-    id: 4,
-    name: "Premium Grocery Pack",
-    price: 599,
-    cat: "grocery",
-    image: "https://images.unsplash.com/photo-1542838132-92c53300491e"
-  },
-  {
-    id: 5,
-    name: "Casual Shoes",
-    price: 999,
-    cat: "fashion",
-    image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff"
-  },
-  {
-    id: 6,
-    name: "Smart Watch",
-    price: 1299,
-    cat: "electronics",
-    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30"
-  }
-];
+const SUPABASE_URL =
+  "https://uryjmibcdfjfxolrijgt.supabase.co";
 
+const SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_uYb...";
+
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
+
+let products = [];
 let cart = JSON.parse(localStorage.getItem("brCart") || "[]");
 
+async function loadProducts() {
+  const { data, error } = await supabaseClient
+    .from("Products")
+    .select(
+      "id, barcode, product_name, description, image_url, category, price, stock"
+    )
+    .order("id", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    document.getElementById("productGrid").innerHTML =
+      "<p>Products load nahi ho paye.</p>";
+    return;
+  }
+
+  products = data || [];
+  renderProducts();
+}
+
 function renderProducts() {
-  const search = document.getElementById("search");
-  const category = document.getElementById("category");
+  const search =
+    document.getElementById("search").value.toLowerCase();
+
+  const category =
+    document.getElementById("category").value;
+
   const grid = document.getElementById("productGrid");
 
-  if (!search || !category || !grid) return;
+  const filtered = products.filter((p) => {
+    const matchSearch =
+      (p.product_name || "").toLowerCase().includes(search);
 
-  const q = search.value.toLowerCase().trim();
-  const c = category.value;
+    const matchCategory =
+      category === "all" ||
+      (p.category || "").toLowerCase() === category;
 
-  const list = products.filter(p =>
-    (c === "all" || p.cat === c) &&
-    p.name.toLowerCase().includes(q)
-  );
+    return matchSearch && matchCategory;
+  });
 
-  grid.innerHTML = list.map(p => `
+  grid.innerHTML = filtered.map((p) => `
     <div class="product-card">
       <div class="product-image">
-        <img src="${p.image}" alt="${p.name}">
+        <img
+          src="${p.image_url || ""}"
+          alt="${p.product_name || "Product"}"
+        >
       </div>
 
-      <h3>${p.name}</h3>
-      <p class="price">₹${p.price}</p>
+      <h3>${p.product_name || "Product"}</h3>
 
-      <button class="primary" onclick="addToCart(${p.id})">
+      <p class="price">
+        ₹${p.price || 0}
+      </p>
+
+      <p class="muted">
+        Stock: ${p.stock || 0}
+      </p>
+
+      <button
+        class="primary"
+        onclick="addToCart(${p.id})"
+        ${p.stock <= 0 ? "disabled" : ""}
+      >
         🛒 Add to Cart
       </button>
     </div>
@@ -77,141 +82,81 @@ function renderProducts() {
 }
 
 function addToCart(id) {
-  const product = products.find(p => p.id === id);
+  const product = products.find((p) => p.id === id);
+
   if (!product) return;
 
-  const existing = cart.find(p => p.id === id);
+  const existing = cart.find((p) => p.id === id);
 
   if (existing) {
-    existing.quantity = (existing.quantity || 1) + 1;
+    existing.quantity++;
   } else {
     cart.push({
-      ...product,
+      id: product.id,
+      name: product.product_name,
+      price: Number(product.price || 0),
+      image: product.image_url,
       quantity: 1
     });
   }
 
-  saveCart();
-  renderCart();
-}
-
-function saveCart() {
   localStorage.setItem("brCart", JSON.stringify(cart));
 
-  const cartBtn = document.querySelector(".cart-btn");
+  updateCartCount();
 
-  if (cartBtn) {
-    cartBtn.innerHTML = `🛒 Cart ${cart.length}`;
-  }
+  alert("✅ Product Cart में Add हो गया!");
+}
+
+function updateCartCount() {
+  const count = cart.reduce(
+    (total, item) => total + item.quantity,
+    0
+  );
+
+  document.getElementById("cartCount").textContent = count;
 }
 
 function openCart() {
-  document.getElementById("cartModal").classList.remove("hidden");
-  renderCart();
-}
+  document
+    .getElementById("cartModal")
+    .classList.remove("hidden");
 
-function closeCart() {
-  document.getElementById("cartModal").classList.add("hidden");
-}
-
-function renderCart() {
   const box = document.getElementById("cartItems");
-  const totalBox = document.getElementById("cartTotal");
 
-  if (!box || !totalBox) return;
-
-  if (!cart.length) {
+  if (cart.length === 0) {
     box.innerHTML = "<p>Cart khali hai.</p>";
-    totalBox.textContent = "0";
+    document.getElementById("cartTotal").textContent = "0";
     return;
   }
 
-  box.innerHTML = cart.map((p, i) => `
-    <div class="cart-item">
-      <strong>${p.name}</strong>
-      <span>₹${p.price} × ${p.quantity || 1}</span>
-      <button onclick="removeCart(${i})">×</button>
+  box.innerHTML = cart.map((item) => `
+    <div class="cart-row">
+      <span>
+        ${item.name} × ${item.quantity}
+      </span>
+
+      <strong>
+        ₹${item.price * item.quantity}
+      </strong>
     </div>
   `).join("");
 
   const total = cart.reduce(
-    (sum, p) => sum + p.price * (p.quantity || 1),
+    (sum, item) =>
+      sum + item.price * item.quantity,
     0
   );
 
-  totalBox.textContent = total;
+  document.getElementById("cartTotal").textContent = total;
 }
 
-function removeCart(index) {
-  cart.splice(index, 1);
-  saveCart();
-  renderCart();
-}
-
-async function checkout() {
-  if (!cart.length) {
-    alert("Cart khali hai.");
-    return;
-  }
-
-  const name = prompt("Customer ka naam:");
-  if (!name) return;
-
-  const phone = prompt("Mobile number:");
-  if (!phone) return;
-
-  const address = prompt("Delivery address:");
-  if (!address) return;
-
-  try {
-    const orders = [];
-
-    for (const item of cart) {
-      const response = await fetch("/api/orders", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          product_id: item.id,
-          quantity: item.quantity || 1,
-          customer_name: name,
-          customer_phone: phone,
-          delivery_address: address
-        })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(
-          data.error || "Order place nahi hua."
-        );
-      }
-
-      orders.push(data.order);
-    }
-
-    alert(
-      "✅ COD Order successfully place ho gaya!\n\n" +
-      "Customer: " + name + "\n" +
-      "Mobile: " + phone + "\n" +
-      "Address: " + address + "\n\n" +
-      "Order ID: " +
-      orders.map(o => o.order_id || o.id).join(", ")
-    );
-
-    cart = [];
-    saveCart();
-    closeCart();
-    renderProducts();
-
-  } catch (error) {
-    alert("❌ Order Error: " + error.message);
-  }
+function closeCart() {
+  document
+    .getElementById("cartModal")
+    .classList.add("hidden");
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  renderProducts();
-  saveCart();
+  updateCartCount();
+  loadProducts();
 });
