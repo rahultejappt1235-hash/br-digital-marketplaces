@@ -289,74 +289,70 @@ let scannerStream = null;
 let scannerRunning = false;
 
 async function startScanner() {
-    const scannerBox = document.getElementById("scannerBox");
-    const video = document.getElementById("scannerVideo");
-    const status = document.getElementById("scanStatus");
+  const scannerBox = document.getElementById("scannerBox");
+  const video = document.getElementById("scannerVideo");
+  const status = document.getElementById("scanStatus");
 
-    try {
-        scannerBox.style.display = "block";
-        status.textContent = "📷 Camera permission maang raha hai...";
+  scannerBox.style.display = "block";
+  status.textContent = "📷 Camera permission maang raha hai...";
 
-        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            alert("❌ Is browser mein camera support nahi hai.");
-            return;
-        }
-
-        scannerStream = await navigator.mediaDevices.getUserMedia({
-            video: {
-                facingMode: "environment"
-            },
-            audio: false
-        });
-
-        video.srcObject = scannerStream;
-      video.style.display = "block";
-video.style.width = "100%";
-video.style.height = "300px";
-video.style.background = "#000";
-video.style.objectFit = "cover";
-video.setAttribute("playsinline", "");
-video.setAttribute("autoplay", "");
-video.muted = true;
-        video.setAttribute("playsinline", "");
-        video.setAttribute("autoplay", "");
-
-        await video.play();
-
-        scannerRunning = true;
-
-        status.textContent =
-            "📷 Camera ON hai — Barcode camera ke saamne rakhein.";
-
-        if (!("BarcodeDetector" in window)) {
-            status.textContent =
-                "⚠️ Camera ON hai, lekin barcode scanner browser mein supported nahi hai.";
-            return;
-        }
-
-        const detector = new BarcodeDetector({
-            formats: [
-                "qr_code",
-                "ean_13",
-                "ean_8",
-                "code_128",
-                "code_39",
-                "upc_a",
-                "upc_e"
-            ]
-        });
-
-        scanLoop(detector, video, status);
-
-    } catch (error) {
-        console.error("Camera Error:", error);
-
-        alert(
-            "❌ Camera open nahi hua.\n\n" +
-            "Error: " + error.name + "\n" +
-            error.message
-        );
+  try {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      status.textContent = "❌ Is browser mein camera support nahi hai.";
+      return;
     }
+
+    scannerStream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: { ideal: "environment" }
+      },
+      audio: false
+    });
+
+    video.srcObject = scannerStream;
+    video.setAttribute("playsinline", "");
+    video.setAttribute("autoplay", "");
+    video.muted = true;
+
+    await video.play();
+
+    scannerRunning = true;
+
+    status.textContent =
+      "✅ Camera ON hai — Barcode camera ke saamne rakhein.";
+
+    if (!("BarcodeDetector" in window)) {
+      status.textContent =
+        "⚠️ Camera ON hai, lekin is browser mein Barcode Scanner support nahi hai.";
+      return;
+    }
+
+    const detector = new BarcodeDetector({
+      formats: [
+        "qr_code",
+        "ean_13",
+        "ean_8",
+        "code_128",
+        "code_39",
+        "upc_a",
+        "upc_e"
+      ]
+    });
+
+    scanLoop(detector, video, status);
+
+  } catch (error) {
+    console.error("Camera Error:", error);
+
+    status.textContent =
+      "❌ Camera open nahi hua: " + error.message;
+
+    alert(
+      "❌ Camera open nahi hua.\n\n" +
+      "Error: " + error.name + "\n" +
+      error.message
+    );
+  }
 }
 
 
