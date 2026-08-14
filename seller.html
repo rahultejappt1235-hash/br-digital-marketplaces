@@ -374,8 +374,7 @@ function stopScanner() {
 
 async function getProductByBarcode(barcode) {
 
-  const status =
-    document.getElementById("scanStatus");
+  const status = document.getElementById("scanStatus");
 
   status.textContent =
     "🔎 Product details खोज रहे हैं...";
@@ -388,45 +387,109 @@ async function getProductByBarcode(barcode) {
       ".json"
     );
 
+    if (!response.ok) {
+      throw new Error("Product database से response नहीं मिला");
+    }
+
     const data = await response.json();
 
     if (!data.product) {
 
       status.textContent =
-        "❌ Product नहीं मिला। Details manually भरें.";
+        "❌ Product नहीं मिला। Details manually भरें।";
+
+      document.getElementById("barcodeResult").innerText =
+        "Barcode: " + barcode;
 
       return;
     }
 
     const product = data.product;
 
+    // Product Name automatically
     document.getElementById("name").value =
       product.product_name ||
       product.product_name_en ||
       "";
 
+    // Description automatically
     document.getElementById("description").value =
       product.generic_name ||
       product.ingredients_text ||
+      product.categories ||
       "Product description उपलब्ध नहीं है।";
 
+    // Product Image automatically
     if (product.image_front_url) {
 
       document.getElementById("image_url").value =
         product.image_front_url;
+
     }
 
+    // Category automatically
+    const categoryText =
+      (
+        product.categories ||
+        product.categories_tags ||
+        ""
+      ).toString().toLowerCase();
+
+    const category =
+      document.getElementById("category");
+
+    if (category) {
+
+      if (
+        categoryText.includes("food") ||
+        categoryText.includes("grocery")
+      ) {
+
+        category.value = "grocery";
+
+      } else if (
+        categoryText.includes("home")
+      ) {
+
+        category.value = "home";
+
+      } else if (
+        categoryText.includes("electronic")
+      ) {
+
+        category.value = "electronics";
+
+      } else if (
+        categoryText.includes("fashion") ||
+        categoryText.includes("clothing")
+      ) {
+
+        category.value = "fashion";
+
+      }
+
+    }
+
+    // Barcode show करें
+    document.getElementById("barcodeResult").innerText =
+      "✅ Barcode: " + barcode;
+
     status.textContent =
-      "✅ Product details automatically भर दिए गए हैं.";
+      "✅ Product details automatically भर दी गईं।";
 
   } catch (error) {
 
     console.error(error);
 
     status.textContent =
-      "⚠️ Product details नहीं मिल सके.";
+      "⚠️ Product details नहीं मिल सकीं।";
+
+    document.getElementById("barcodeResult").innerText =
+      "Barcode: " + barcode;
+
   }
-}
+
+        }
     </script>
 
 </body>
