@@ -310,6 +310,14 @@ async function startScanner() {
         });
 
         video.srcObject = scannerStream;
+      video.style.display = "block";
+video.style.width = "100%";
+video.style.height = "300px";
+video.style.background = "#000";
+video.style.objectFit = "cover";
+video.setAttribute("playsinline", "");
+video.setAttribute("autoplay", "");
+video.muted = true;
         video.setAttribute("playsinline", "");
         video.setAttribute("autoplay", "");
 
