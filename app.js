@@ -34,10 +34,36 @@ cart = cart.map(item => ({
 
 
 async function loadProducts() {
+  console.log("Loading products...");
+
   const { data, error } = await supabaseClient
     .from("Products")
-    .select("*")
-    .order("id", { ascending: false });
+    .select("*");
+
+  console.log("SUPABASE DATA:", data);
+  console.log("SUPABASE ERROR:", error);
+
+  if (error) {
+    document.getElementById("productGrid").innerHTML =
+      `<p style="color:red;">
+        Products load nahi ho paye.<br>
+        Error: ${error.message || "Unknown error"}
+      </p>`;
+    return;
+  }
+
+  products = data || [];
+
+  products = products.map(p => ({
+    ...p,
+    image_url: p.image_url || "",
+    category: p.category || "",
+    price: Number(p.price) || 0,
+    stock: Number(p.stock) || 0
+  }));
+
+  renderProducts();
+}
 
   if (error) {
   console.error("SUPABASE PRODUCT ERROR:", error);
@@ -54,10 +80,10 @@ async function loadProducts() {
 
   products = (data || []).map(p => ({
   ...p,
-  image_url: p.Image_url,
-  category: p.Category,
-  price: Number(p.Price) || 0,
-  stock: Number(p.Stock) || 0
+  image_url: p.image_url || "",
+  category: p.category || "",
+  price: Number(p.price) || 0,
+  stock: Number(p.stock) || 0
 }));
   renderProducts();
 }
