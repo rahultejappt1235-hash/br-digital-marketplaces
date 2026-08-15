@@ -2,7 +2,7 @@ const SUPABASE_URL =
   "https://uryjmibcdfjfxolrijgt.supabase.co";
 
 const SUPABASE_PUBLISHABLE_KEY =
-  "sb_publishable_uYbJw0ARCCkCpQ9QB6FxaQ_JrIxtOOp";
+  "sb_publishable_uYbJw0ARCckCpQ9QB6FxaQ_JrIxtOOp";
 
 const supabaseClient = supabase.createClient(
   SUPABASE_URL,
@@ -11,7 +11,29 @@ const supabaseClient = supabase.createClient(
 
 let products = [];
 let cart = [];
+async function testSupabase() {
+  try {
+    const response = await fetch(
+      `${SUPABASE_URL}/rest/v1/Products?select=*`,
+      {
+        headers: {
+          apikey: SUPABASE_PUBLISHABLE_KEY,
+          Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`
+        }
+      }
+    );
 
+    const text = await response.text();
+
+    console.log("SUPABASE STATUS:", response.status);
+    console.log("SUPABASE RESPONSE:", text);
+
+  } catch (error) {
+    console.error("SUPABASE FETCH TEST ERROR:", error);
+  }
+}
+
+testSupabase();
 try {
   cart = JSON.parse(localStorage.getItem("brCart") || "[]");
 } catch (e) {
