@@ -45,15 +45,18 @@ function renderProducts() {
   const grid = document.getElementById("productGrid");
 
   const filtered = products.filter((p) => {
-    const matchSearch =
-      (p.product_name || "").toLowerCase().includes(search);
+  const name = String(p.product_name || "").toLowerCase();
 
-    const matchCategory =
-      category === "all" ||
-      (p.category || "").toLowerCase() === category;
+  const matchSearch = name.includes(search);
 
-    return matchSearch && matchCategory;
-  });
+  const productCategory = String(p.category || "").toLowerCase();
+
+  const matchCategory =
+    category === "all" ||
+    productCategory === category;
+
+  return matchSearch && matchCategory;
+});
 
   grid.innerHTML = filtered.map((p) => `
     <div class="product-card">
