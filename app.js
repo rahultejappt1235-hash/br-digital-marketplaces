@@ -40,10 +40,16 @@ async function loadProducts() {
     .order("id", { ascending: false });
 
   if (error) {
-    console.error(error);
-    document.getElementById("productGrid").innerHTML =
-      "<p>Products load nahi ho paye.</p>";
-    return;
+  console.error("SUPABASE PRODUCT ERROR:", error);
+
+  document.getElementById("productGrid").innerHTML = `
+    <p style="color:red;">
+      Products load nahi ho paye.<br>
+      Error: ${error.message || "Unknown error"}
+    </p>
+  `;
+
+  return;
   }
 
   products = (data || []).map(p => ({
