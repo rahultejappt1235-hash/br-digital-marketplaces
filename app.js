@@ -25,7 +25,13 @@ async function loadProducts() {
     return;
   }
 
-  products = data || [];
+  products = (data || []).map(p => ({
+  ...p,
+  image_url: p.image_url ?? p.Image_url,
+  category: p.category ?? p.Category,
+  price: p.price ?? p.Price,
+  stock: p.stock ?? p.Stock
+}));
   renderProducts();
 }
 
