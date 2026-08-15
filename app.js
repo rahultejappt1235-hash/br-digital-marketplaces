@@ -10,7 +10,28 @@ const supabaseClient = supabase.createClient(
 );
 
 let products = [];
-let cart = JSON.parse(localStorage.getItem("brCart") || "[]");
+let cart = [];
+
+try {
+  cart = JSON.parse(localStorage.getItem("brCart") || "[]");
+} catch (e) {
+  cart = [];
+  localStorage.removeItem("brCart");
+}
+
+if (!Array.isArray(cart)) {
+  cart = [];
+}
+
+cart = cart.map(item => ({
+  ...item,
+  quantity: Number(item.quantity) || 1,
+  price: Number(item.price) || 0
+}));
+
+
+
+
 
 async function loadProducts() {
   const { data, error } = await supabaseClient
