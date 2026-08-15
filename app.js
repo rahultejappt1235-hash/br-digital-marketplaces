@@ -15,9 +15,7 @@ let cart = JSON.parse(localStorage.getItem("brCart") || "[]");
 async function loadProducts() {
   const { data, error } = await supabaseClient
     .from("Products")
-    .select(
-  "id, barcode, product_name, description, image_url:Image_url, category:Category, price:Price, stock:Stock"
-)
+    .select("*")
     .order("id", { ascending: false });
 
   if (error) {
