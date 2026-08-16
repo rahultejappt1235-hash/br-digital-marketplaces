@@ -58,12 +58,13 @@ async function loadProducts() {
   document.getElementById("productGrid").innerHTML = `
     <p style="color:red;">
       Products load nahi ho paye.<br><br>
-      Error: ${error.message}<br>
-      Name: ${error.name || "Unknown"}<br>
-      Details: ${error.details || "N/A"}
+      Error: ${error.message || "Unknown"}<br>
+      Code: ${error.code || "N/A"}<br>
+      Details: ${error.details || "N/A"}<br>
+      Hint: ${error.hint || "N/A"}
     </p>
   `;
-}
+  }
 
   
 
