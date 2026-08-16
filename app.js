@@ -11,35 +11,6 @@ const supabaseClient = supabase.createClient(
 
 let products = [];
 let cart = [];
-async function testSupabase() {
-  try {
-    const response = await fetch(
-      `${SUPABASE_URL}/rest/v1/Products?select=*`,
-      {
-        headers: {
-          apikey: SUPABASE_PUBLISHABLE_KEY,
-          Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`
-        }
-      }
-    );
-
-    const text = await response.text();
-
-    console.log("SUPABASE STATUS:", response.status);
-    console.log("SUPABASE RESPONSE:", text);
-
-  } catch (error) {
-    console.error("SUPABASE FETCH TEST ERROR:", error);
-  }
-}
-
-testSupabase();
-try {
-  cart = JSON.parse(localStorage.getItem("brCart") || "[]");
-} catch (e) {
-  cart = [];
-  localStorage.removeItem("brCart");
-}
 
 if (!Array.isArray(cart)) {
   cart = [];
@@ -61,8 +32,7 @@ async function loadProducts() {
       {
         method: "GET",
         headers: {
-          apikey: SUPABASE_PUBLISHABLE_KEY,
-          Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`
+          apikey: SUPABASE_PUBLISHABLE_KEY
         }
       }
     );
@@ -78,12 +48,11 @@ async function loadProducts() {
 
     products = (data || []).map(p => ({
       ...p,
-
       image_url: p.image_url ?? p.Image_url ?? "",
       category: p.category ?? p.Category ?? "",
       price: Number(p.price ?? p.Price) || 0,
       stock: Number(p.stock ?? p.Stock) || 0,
-      product_name: p.product_name ?? p.Product_name ?? ""
+      product_name: p.product_name ?? p.Product_name ?? "Product"
     }));
 
     console.log("FINAL PRODUCTS:", products);
