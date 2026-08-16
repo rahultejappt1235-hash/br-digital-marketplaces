@@ -52,46 +52,56 @@ cart = cart.map(item => ({
 }));
 
 
-
-
-
 async function loadProducts() {
   console.log("Loading products...");
 
-  const { data, error } = await supabaseClient
-    .from("Products")
-    .select("*");
+  try {
+    const response = await fetch(
+      `${SUPABASE_URL}/rest/v1/Products?select=*`,
+      {
+        method: "GET",
+        headers: {
+          apikey: SUPABASE_PUBLISHABLE_KEY,
+          Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`
+        }
+      }
+    );
 
-  console.log("SUPABASE DATA:", data);
-  console.log("SUPABASE ERROR:", error);
+    const data = await response.json();
 
-  if (error) {
+    console.log("SUPABASE STATUS:", response.status);
+    console.log("SUPABASE DATA:", data);
+
+    if (!response.ok) {
+      throw new Error(data.message || data.error || "Supabase request failed");
+    }
+
+    products = (data || []).map(p => ({
+      ...p,
+
+      image_url: p.image_url ?? p.Image_url ?? "",
+      category: p.category ?? p.Category ?? "",
+      price: Number(p.price ?? p.Price) || 0,
+      stock: Number(p.stock ?? p.Stock) || 0,
+      product_name: p.product_name ?? p.Product_name ?? ""
+    }));
+
+    console.log("FINAL PRODUCTS:", products);
+
+    renderProducts();
+
+  } catch (error) {
+    console.error("SUPABASE ERROR:", error);
+
     document.getElementById("productGrid").innerHTML = `
       <p style="color:red;">
         Products load nahi ho paye.<br>
-        Error: ${error.message || "Unknown error"}
+        Error: ${error.message}
       </p>
     `;
-    return;
   }
-
-  products = (data || []).map(p => ({
-    ...p,
-
-    // Support both Supabase column naming styles
-    image_url: p.image_url || p.Image_url || "",
-    category: p.category || p.Category || "",
-    price: Number(p.price ?? p.Price) || 0,
-    stock: Number(p.stock ?? p.Stock) || 0,
-
-    // Product name
-    product_name: p.product_name || p.Product_name || ""
-  }));
-
-  console.log("FINAL PRODUCTS:", products);
-
-  renderProducts();
 }
+
 
   
 
