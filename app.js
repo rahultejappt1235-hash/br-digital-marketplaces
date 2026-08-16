@@ -27,23 +27,15 @@ async function loadProducts() {
   console.log("Loading products...");
 
   try {
-    const response = await fetch(
-      `${SUPABASE_URL}/rest/v1/Products?select=*`,
-      {
-        method: "GET",
-        headers: {
-          apikey: SUPABASE_PUBLISHABLE_KEY
-        }
-      }
-    );
+    const { data, error } = await supabaseClient
+      .from("Products")
+      .select("*");
 
-    const data = await response.json();
-
-    console.log("SUPABASE STATUS:", response.status);
     console.log("SUPABASE DATA:", data);
+    console.log("SUPABASE ERROR:", error);
 
-    if (!response.ok) {
-      throw new Error(data.message || data.error || "Supabase request failed");
+    if (error) {
+      throw error;
     }
 
     products = (data || []).map(p => ({
@@ -52,25 +44,26 @@ async function loadProducts() {
       category: p.category ?? p.Category ?? "",
       price: Number(p.price ?? p.Price) || 0,
       stock: Number(p.stock ?? p.Stock) || 0,
-      product_name: p.product_name ?? p.Product_name ?? "Product"
+      product_name: p.product_name ?? p.Product_name ?? ""
     }));
 
     console.log("FINAL PRODUCTS:", products);
 
     renderProducts();
 
-  } catch (error) {
-    console.error("SUPABASE ERROR:", error);
+  
+} catch (error) {
+  console.error("SUPABASE ERROR:", error);
 
-    document.getElementById("productGrid").innerHTML = `
-      <p style="color:red;">
-        Products load nahi ho paye.<br>
-        Error: ${error.message}
-      </p>
-    `;
-  }
+  document.getElementById("productGrid").innerHTML = `
+    <p style="color:red;">
+      Products load nahi ho paye.<br><br>
+      Error: ${error.message}<br>
+      Name: ${error.name || "Unknown"}<br>
+      Details: ${error.details || "N/A"}
+    </p>
+  `;
 }
-
 
   
 
