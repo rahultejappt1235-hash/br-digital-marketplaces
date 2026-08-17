@@ -73,27 +73,57 @@ async function loadProducts() {
   
 
 function renderProducts() {
-  const search =
-    document.getElementById("search").value.toLowerCase();
+  const search = String(
+    document.getElementById("search").value || ""
+  ).toLowerCase().trim();
 
-  const category =
-    document.getElementById("category").value;
+  const category = String(
+    document.getElementById("category").value || "all"
+  ).toLowerCase().trim();
 
   const grid = document.getElementById("productGrid");
 
   const filtered = products.filter((p) => {
-  const name = String(p.product_name || "").toLowerCase();
+    const name = String(p.product_name || "").toLowerCase();
 
-  const matchSearch = name.includes(search);
+    const productCategory = String(
+      p.category || ""
+    ).toLowerCase().trim();
 
-  const productCategory = String(p.category || "").toLowerCase();
+    const matchSearch = name.includes(search);
 
-  const matchCategory =
-    category === "all" ||
-    productCategory === category;
+    const matchCategory =
+      category === "all" ||
+      productCategory === category;
 
-  return matchSearch && matchCategory;
-});
+    return matchSearch && matchCategory;
+  });
+
+  grid.innerHTML = filtered.map((p) => `
+    <div class="product-card">
+      <div class="product-image">
+        <img
+          src="${p.image_url || "https://via.placeholder.com/300x250?text=Product"}"
+          alt="${p.product_name || "Product"}"
+        >
+      </div>
+
+      <h3>${p.product_name || "Product"}</h3>
+
+      <p class="price">₹${p.price || 0}</p>
+
+      <p class="muted">Stock: ${p.stock || 0}</p>
+
+      <button
+        class="primary"
+        onclick="addToCart(${p.id})"
+        ${p.stock <= 0 ? "disabled" : ""}
+      >
+        🛒 Add to Cart
+      </button>
+    </div>
+  `).join("");
+}
 
   grid.innerHTML = filtered.map((p) => `
     <div class="product-card">
