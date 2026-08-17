@@ -2,7 +2,7 @@ const SUPABASE_URL =
   "https://uryjmibcdfjfxolrijgt.supabase.co";
 
 const SUPABASE_PUBLISHABLE_KEY =
-  "sb_publishable_uYbJw0ARCckCpQ9QB6FxaQ_JrIxtOOp";
+  "sb_publishable_uYbJw0ARCCkCpQ9QB6FxaQ_JrIxtOOp";
 
 const supabaseClient = supabase.createClient(
   SUPABASE_URL,
@@ -27,16 +27,25 @@ async function loadProducts() {
   console.log("Loading products...");
 
   try {
-    const { data, error } = await supabaseClient
-      .from("Products")
-      .select("*");
+    const response = await fetch(
+      `${SUPABASE_URL}/rest/v1/Products?select=*`,
+      {
+        method: "GET",
+        headers: {
+          apikey: SUPABASE_PUBLISHABLE_KEY,
+          Accept: "application/json"
+        }
+      }
+    );
 
-    console.log("SUPABASE DATA:", data);
-    console.log("SUPABASE ERROR:", error);
-
-    if (error) {
-      throw error;
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Supabase ${response.status}: ${errorText}`);
     }
+
+    const data = await response.json();
+
+    console.log("PRODUCT DATA:", data);
 
     products = (data || []).map(p => ({
       ...p,
@@ -51,20 +60,17 @@ async function loadProducts() {
 
     renderProducts();
 
-  
-} catch (error) {
-  console.error("SUPABASE ERROR:", error);
+  } catch (error) {
+    console.error("SUPABASE ERROR:", error);
 
-  document.getElementById("productGrid").innerHTML = `
-    <p style="color:red;">
-      Products load nahi ho paye.<br><br>
-      Error: ${error.message || "Unknown"}<br>
-      Code: ${error.code || "N/A"}<br>
-      Details: ${error.details || "N/A"}<br>
-      Hint: ${error.hint || "N/A"}
-    </p>
-  `;
+    document.getElementById("productGrid").innerHTML = `
+      <p style="color:red;">
+        Products load nahi ho paye.<br><br>
+        Error: ${error.message}
+      </p>
+    `;
   }
+}
 
   
 
