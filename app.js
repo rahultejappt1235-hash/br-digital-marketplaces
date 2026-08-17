@@ -99,8 +99,9 @@ function renderProducts() {
     const matchSearch = name.includes(search);
 
     const matchCategory =
-      category === "all" ||
-      productCategory === category;
+  category === "all" ||
+  category === "" ||
+  productCategory === category;
 
     return matchSearch && matchCategory;
   });
