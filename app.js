@@ -99,7 +99,7 @@ function renderProducts() {
     <div class="product-card">
       <div class="product-image">
         <img
-          src="${p.image_url || ""}"
+          src="${p.image_url || "https://via.placeholder.com/300x250?text=Product"}"
           alt="${p.product_name || "Product"}"
         >
       </div>
