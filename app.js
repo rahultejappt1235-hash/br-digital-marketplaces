@@ -669,11 +669,44 @@ ${address}
   });
 
 
-  message += `
-💰 *Total: ₹${total}*
+  // ===============================
+// WHATSAPP ORDER
+// ===============================
 
-💳 Payment: Cash on Delivery
+const whatsappNumber = "917050207479";
+
+let message = `BR DIGITAL MARKETPLACE - NEW ORDER
+
+Customer: ${customerName}
+Mobile: ${mobile}
+Address: ${address}
+Pincode: ${pincode}
+
+Products:
 `;
+
+cart.forEach(item => {
+  message += `- ${item.product_name} | Rs.${item.price} | Qty: ${item.quantity || 1}\n`;
+});
+
+message += `
+Total: Rs.${total}
+
+Payment: Cash on Delivery`;
+
+const whatsappURL =
+  `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+
+alert("Order details ready hain. WhatsApp par order bheja ja raha hai.");
+
+window.location.href = whatsappURL;
+
+cart = [];
+saveCart();
+updateCartButton();
+
+const modal = document.getElementById("cartModal");
+if (modal) modal.remove();
 
 
   // ========================================
@@ -683,26 +716,11 @@ ${address}
   // Example: 919876543210
   // ========================================
 
-  const whatsappNumber = "919229864665";
+  
 
-const whatsappURL =
-  `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
 
-alert(
-  "✅ Order details ready hain. WhatsApp par order bheja ja raha hai."
-);
 
-window.location.href = whatsappURL;
 
-cart = [];
-
-saveCart();
-updateCartButton();
-
-const modal =
-  document.getElementById("cartModal");
-
-if (modal) modal.remove();
 }
 
 // ==========================================
