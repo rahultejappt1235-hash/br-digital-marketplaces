@@ -27,23 +27,15 @@ async function loadProducts() {
   console.log("Loading products...");
 
   try {
-    const response = await fetch(
-      `${SUPABASE_URL}/rest/v1/Products?select=*`,
-      {
-  method: "GET",
-  headers: {
-    "apikey": SUPABASE_PUBLISHABLE_KEY,
-    "Authorization": `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
-    "Accept": "application/json"
-  }
+    const { data, error } = await supabaseClient
+  .from("Products")
+  .select("*");
+
+if (error) {
+  throw error;
 }
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Supabase ${response.status}: ${errorText}`);
-    }
-
-    const data = await response.json();
+  
 
     console.log("PRODUCT DATA:", data);
 
