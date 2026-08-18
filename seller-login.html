@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Seller Login - BR Digital Marketplace</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      color: #18202a;
+    }
+
+    .header {
+      background: white;
+      padding: 18px;
+      text-align: center;
+      box-shadow: 0 2px 10px #ddd;
+    }
+
+    .logo {
+      display: inline-block;
+      background: #ff7900;
+      color: white;
+      padding: 10px 13px;
+      border-radius: 10px;
+      font-weight: bold;
+      margin-right: 8px;
+    }
+
+    .container {
+      max-width: 450px;
+      margin: 35px auto;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 16px;
+      box-shadow: 0 3px 15px #ddd;
+    }
+
+    h1 {
+      margin-top: 0;
+      text-align: center;
+      color: #ff7900;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px;
+      margin-top: 7px;
+      border: 1px solid #ddd;
+      border-radius: 9px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 20px;
+      border: 0;
+      border-radius: 9px;
+      background: #ff7900;
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .secondary {
+      background: #18202a;
+    }
+
+    .message {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 8px;
+      display: none;
+      text-align: center;
+    }
+
+    .back {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      color: #ff7900;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <span class="logo">BR</span>
+    <strong>BR Digital Marketplace</strong>
+  </div>
+
+  <div class="container">
+
+    <div class="card">
+
+      <h1>Seller Account 👨‍💼</h1>
+
+      <p class="subtitle">
+        Seller login ya naya account banayein
+      </p>
+
+      <label>Email</label>
+      <input
+        type="email"
+        id="email"
+        placeholder="seller@example.com"
+        required
+      >
+
+      <label>Password</label>
+      <input
+        type="password"
+        id="password"
+        placeholder="Password"
+        required
+      >
+
+      <button onclick="sellerLogin()">
+        🔐 Seller Login
+      </button>
+
+      <button class="secondary" onclick="sellerSignup()">
+        ➕ Create Seller Account
+      </button>
+
+      <div id="message" class="message"></div>
+
+      <a href="index.html" class="back">
+        ← Marketplace par wapas
+      </a>
+
+    </div>
+
+  </div>
+
+<script>
+
+  // ================================
+  // SUPABASE CONFIG
+  // ================================
+
+  const SUPABASE_URL =
+    "https://urymibcdfjfxolrijgt.supabase.co";
+
+  const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_uYbJw0ARCCkCpQ9QB6Fxaq_JrI";
+
+  const supabaseClient =
+    supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+
+  // ================================
+  // MESSAGE
+  // ================================
+
+  function showMessage(text,
