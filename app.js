@@ -685,31 +685,24 @@ ${address}
 
   const whatsappNumber = "919229864665";
 
+const whatsappURL =
+  `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
 
-  const whatsappURL =
-    `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+alert(
+  "✅ Order details ready hain. WhatsApp par order bheja ja raha hai."
+);
 
+window.location.href = whatsappURL;
 
-  alert(
-    "✅ Order details ready hain. WhatsApp par order bheja ja raha hai."
-  );
+cart = [];
 
+saveCart();
+updateCartButton();
 
-  window.open(whatsappURL, "_blank");
+const modal =
+  document.getElementById("cartModal");
 
-
-  cart = [];
-
-  saveCart();
-
-  updateCartButton();
-
-  const modal =
-    document.getElementById("cartModal");
-
-  if (modal) modal.remove();
-
-}
+if (modal) modal.remove();
 
 
 // ==========================================
