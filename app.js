@@ -30,13 +30,13 @@ async function loadProducts() {
     const response = await fetch(
       `${SUPABASE_URL}/rest/v1/Products?select=*`,
       {
-        method: "GET",
-        headers: {
-          apikey: SUPABASE_PUBLISHABLE_KEY,
-          Accept: "application/json"
-        }
-      }
-    );
+  method: "GET",
+  headers: {
+    "apikey": SUPABASE_PUBLISHABLE_KEY,
+    "Authorization": `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
+    "Accept": "application/json"
+  }
+}
 
     if (!response.ok) {
       const errorText = await response.text();
