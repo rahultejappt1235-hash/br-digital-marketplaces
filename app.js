@@ -703,7 +703,7 @@ const modal =
   document.getElementById("cartModal");
 
 if (modal) modal.remove();
-
+}
 
 // ==========================================
 // SEARCH
