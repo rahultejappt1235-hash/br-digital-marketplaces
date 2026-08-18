@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seller Dashboard - BR Digital Marketplace</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      color: #17202a;
+    }
+
+    header {
+      background: white;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 10px rgba(0,0,0,.08);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 21px;
+      font-weight: bold;
+    }
+
+    .logo-box {
+      background: #ff7a00;
+      color: white;
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 650px;
+      margin: 30px auto;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 18px;
+      box-shadow: 0 5px 20px rgba(0,0,0,.08);
+    }
+
+    h1 {
+      margin-top: 0;
+    }
+
+    label {
+      display: block;
+      margin-top: 18px;
+      margin-bottom: 7px;
+      font-weight: bold;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 25px;
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      background: #ff7a00;
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: .6;
+    }
+
+    #message {
+      margin-top: 18px;
+      padding: 12px;
+      border-radius: 10px;
+      display: none;
+    }
+
+    .preview {
+      margin-top: 15px;
+      text-align: center;
+    }
+
+    .preview img {
+      max-width: 220px;
+      max-height: 220px;
+      border-radius: 12px;
+      display: none;
+      margin: auto;
+    }
+
+    .back {
+      display: block;
+      margin-top: 20px;
+      text-align: center;
+      color: #ff7a00;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-box">BR</div>
+    BR Digital Marketplace
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="card">
+
+    <h1>🛍️ Seller Dashboard</h1>
+    <p>Apna product marketplace par add karein.</p>
+
+    <label>Product Name</label>
+    <input
+      type="text"
+      id="productName"
+      placeholder="Example: Men's Premium T-Shirt"
+    >
+
+    <label>Price (₹)</label>
+    <input
+      type="number"
+      id="price"
+      placeholder="Example: 499"
+    >
+
+    <label>Stock</label>
+    <input
+      type="number"
+      id="stock"
+      placeholder="Example: 20"
+    >
+
+    <label>Category</label>
+    <select id="category">
+      <option value="fashion">Fashion</option>
+      <option value="electronics">Electronics</option>
+      <option value="accessories">Accessories</option>
+      <option value="beauty">Beauty</option>
+      <option value="home">Home</option>
+      <option value="sports">Sports</option>
+      <option value="other">Other</option>
+    </select>
+
+    <label>Product Image</label>
+    <input
+      type="file"
+      id="productImage"
+      accept="image/*"
+    >
+
+    <div class="preview">
+      <img id="previewImage" alt="Product Preview">
+    </div>
+
+    <button id="addProductBtn" onclick="addProduct()">
+      ➕ Add Product
+    </button>
+
+    <div id="message"></div>
+
+    <a href="index.html" class="back">
+      ← Marketplace par wapas
+    </a>
+
+  </div>
+
+</div>
+
+<script>
+
+const SUPABASE_URL =
+  "https://urymibcdfjfxolrijgt.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_uYbJw0ARCCkCpQ9QB6FxaQ_JrI";
+
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
+
+
+// IMAGE PREVIEW
+document
+  .getElementById("productImage")
+  .addEventListener("change", function(e) {
+
+    const file = e.target.files[0];
+
+    if (!file) return;
+
+    const preview =
+      document.getElementById("previewImage");
+
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = "block";
+  });
+
+
+// MESSAGE
+function showMessage(text, success = true) {
+
+  const message =
+    document.getElementById("message");
+
+  message.innerText = text;
+  message.style.display = "block";
+
+  message.style.background =
+    success ? "#d4edda" : "#f8d7da";
+
+  message.style.color =
+    success ? "#155724" : "#721c24";
+}
+
+
+// ADD PRODUCT
+async function addProduct() {
+
+  const productName =
+    document.getElementById("productName").value.trim();
+
+  const price =
+    Number(document.getElementById("price").value);
+
+  const stock =
+    Number(document.getElementById("stock").value);
+
+  const category =
+    document.getElementById("category").value;
+
+  const imageFile =
+    document.getElementById("productImage").files[0];
+
+  const button =
+    document.getElementById("addProductBtn");
+
+
+  if (!productName) {
+    showMessage("❌ Product name डालें", false);
+    return;
+  }
+
+  if (!price || price <= 0) {
+    showMessage("❌ सही price डालें", false);
+    return;
+  }
+
+  if (stock < 0) {
+    showMessage("❌ सही stock डालें", false);
+    return;
+  }
+
+  if (!imageFile) {
+    showMessage("❌ Product image चुनें", false);
+    return;
+  }
+
+
+  button.disabled = true;
+  button.innerText = "⏳ Product add ho raha hai...";
+
+
+  try {
+
+    // FILE NAME
+    const fileName =
+      Date.now() + "-" +
+      imageFile.name.replace(/\s+/g, "-");
+
+
+    // IMAGE UPLOAD
+    const { error: uploadError } =
+      await supabaseClient
+        .storage
+        .from("product-images")
+        .upload(fileName, imageFile);
+
+
+    if (uploadError) {
+      throw uploadError;
+    }
+
+
+    // IMAGE URL
+    const { data: imageData } =
+      supabaseClient
+        .storage
+        .from("product-images")
+        .getPublicUrl(fileName);
+
+
+    const imageUrl =
+      imageData.publicUrl;
+
+
+    // SAVE PRODUCT
+    const { error: productError } =
+      await supabaseClient
+        .from("products")
+        .insert([{
+          product_name: productName,
+          price: price,
+          stock: stock,
+          category: category,
+          image_url: imageUrl
+        }]);
+
+
+    if (productError) {
+      throw productError;
+    }
+
+
+    showMessage(
+      "✅ Product successfully add ho gaya!"
+    );
+
+
+    // CLEAR FORM
+    document.getElementById("productName").value = "";
+    document.getElementById("price").value = "";
+    document.getElementById("stock").value = "";
+    document.getElementById("productImage").value = "";
+
+    document.getElementById("previewImage").style.display =
+      "none";
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      "❌ Product add nahi hua: " +
+      error.message,
+      false
+    );
+
+  }
+
+
+  button.disabled = false;
+  button.innerText = "➕ Add Product";
+}
+
+</script>
+
+</body>
+</html>
