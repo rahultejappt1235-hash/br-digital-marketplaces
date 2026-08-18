@@ -669,81 +669,29 @@ ${address}
   });
 
 
-  // ===============================
-// WHATSAPP ORDER
-// ===============================
+   message += `
+💰 Total: ₹${total}
 
-const whatsappNumber = "917050207479";
-
-let message = `BR DIGITAL MARKETPLACE - NEW ORDER
-
-Customer: ${customerName}
-Mobile: ${mobile}
-Address: ${address}
-Pincode: ${pincode}
-
-Products:
+💳 Payment: Cash on Delivery
 `;
 
-cart.forEach(item => {
-  message += `- ${item.product_name} | Rs.${item.price} | Qty: ${item.quantity || 1}\n`;
-});
+  const whatsappNumber = "917050207479";
 
-message += `
-Total: Rs.${total}
+  const whatsappURL =
+    `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
 
-Payment: Cash on Delivery`;
+  alert("✅ Order details ready hain. WhatsApp par order bheja ja raha hai.");
 
-const whatsappURL =
-  `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+  window.location.href = whatsappURL;
 
-alert("Order details ready hain. WhatsApp par order bheja ja raha hai.");
+  cart = [];
+  saveCart();
+  updateCartButton();
 
-window.location.href = whatsappURL;
+  const modal = document.getElementById("cartModal");
 
-cart = [];
-saveCart();
-updateCartButton();
-
-const modal = document.getElementById("cartModal");
-if (modal) modal.remove();
-
-
-  // ========================================
-  // IMPORTANT:
-  // YAHAN APNA WHATSAPP NUMBER DAALEIN
-  // Country code ke saath, + nahi
-  // Example: 919876543210
-  // ========================================
-
-  
-
-
-
-
-}
-
-// ==========================================
-// SEARCH
-// ==========================================
-
-const searchInput =
-  document.getElementById("search");
-
-if (searchInput) {
-
-  searchInput.addEventListener(
-    "input",
-    renderProducts
-  );
-
-}
-
-
-// ==========================================
-// CATEGORY
-// ==========================================
-
+  if (modal) modal.remove();
+} 
 const categoryInput =
   document.getElementById("category");
 
