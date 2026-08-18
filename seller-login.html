@@ -187,4 +187,141 @@
   // MESSAGE
   // ================================
 
-  function showMessage(text,
+  function showMessage(text, success = false) {
+
+  const box = document.getElementById("message");
+
+  box.innerText = text;
+  box.style.display = "block";
+
+  if (success) {
+    box.style.background = "#d9f7df";
+    box.style.color = "#176b2c";
+  } else {
+    box.style.background = "#ffe1e1";
+    box.style.color = "#a00000";
+  }
+}
+
+
+// ================================
+// SELLER SIGNUP
+// ================================
+
+async function sellerSignup() {
+
+  const email =
+    document.getElementById("email").value.trim();
+
+  const password =
+    document.getElementById("password").value;
+
+
+  if (!email || !password) {
+    showMessage(
+      "Email aur password dono bharna zaroori hai."
+    );
+    return;
+  }
+
+
+  if (password.length < 6) {
+    showMessage(
+      "Password kam se kam 6 characters ka hona chahiye."
+    );
+    return;
+  }
+
+
+  try {
+
+    const { data, error } =
+      await supabaseClient.auth.signUp({
+        email: email,
+        password: password
+      });
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    showMessage(
+      "✅ Seller account create ho gaya. Email verify karein.",
+      true
+    );
+
+  } catch (error) {
+
+    showMessage(
+      "❌ Signup Error: " + error.message
+    );
+
+  }
+}
+
+
+// ================================
+// SELLER LOGIN
+// ================================
+
+async function sellerLogin() {
+
+  const email =
+    document.getElementById("email").value.trim();
+
+  const password =
+    document.getElementById("password").value;
+
+
+  if (!email || !password) {
+    showMessage(
+      "Email aur password dono bharna zaroori hai."
+    );
+    return;
+  }
+
+
+  try {
+
+    const { data, error } =
+      await supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: password
+      });
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    showMessage(
+      "✅ Login successful! Dashboard khul raha hai...",
+      true
+    );
+
+
+    setTimeout(function() {
+
+      window.location.href =
+        "seller-dashboard.html";
+
+    }, 1000);
+
+
+  } catch (error) {
+
+    showMessage(
+      "❌ Login Error: " + error.message
+    );
+
+  }
+
+}
+
+</script>
+
+</body>
+</html>
