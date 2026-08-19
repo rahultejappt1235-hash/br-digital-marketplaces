@@ -13,6 +13,11 @@ export default async function handler(req, res) {
         error: "Product name required"
       });
     }
+    if (!process.env.OPENAI_API_KEY) {
+  return res.status(500).json({
+    error: "OPENAI_API_KEY Vercel server में उपलब्ध नहीं है।"
+  });
+    }
 
     const prompt = `
 Create a professional e-commerce product image for:
