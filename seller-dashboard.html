@@ -181,7 +181,13 @@
       id="productImage"
       accept="image/*"
     >
-
+<button
+  type="button"
+  id="aiImageBtn"
+  onclick="generateAIImage()"
+>
+  🤖 AI से Product Image बनाएं
+</button>
     <div class="preview">
       <img id="previewImage" alt="Product Preview">
     </div>
@@ -229,7 +235,112 @@ document
     preview.src = URL.createObjectURL(file);
     preview.style.display = "block";
   });
+// AI PRODUCT IMAGE
+async function generateAIImage() {
 
+  const productName =
+    document.getElementById("productName").value.trim();
+
+  if (!productName) {
+    showMessage("❌ पहले Product Name डालें", false);
+    return;
+  }
+
+  const button =
+    document.getElementById("aiImageBtn");
+
+  button.disabled = true;
+  button.innerText = "🤖 AI Image बना रहा है...";
+
+  try {
+
+    const response = await fetch(
+      "/api/generate-image",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          productName: productName
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.error || "AI image generate नहीं हुई"
+      );
+    }
+
+    const byteCharacters = atob(data.image);
+    const byteNumbers =
+      new Array(byteCharacters.length);
+
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] =
+        byteCharacters.charCodeAt(i);
+    }
+
+    const byteArray =
+      new Uint8Array(byteNumbers);
+
+    const blob =
+      new Blob([byteArray], {
+        type: "image/png"
+      });
+
+    const file =
+      new File(
+        [blob],
+        "ai-product-image.png",
+        {
+          type: "image/png"
+        }
+      );
+
+    const dataTransfer =
+      new DataTransfer();
+
+    dataTransfer.items.add(file);
+
+    document.getElementById(
+      "productImage"
+    ).files = dataTransfer.files;
+
+    const preview =
+      document.getElementById(
+        "previewImage"
+      );
+
+    preview.src =
+      URL.createObjectURL(blob);
+
+    preview.style.display = "block";
+
+    showMessage(
+      "✅ AI Product Image ready hai!"
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      "❌ AI image नहीं बनी: " +
+      error.message,
+      false
+    );
+
+  } finally {
+
+    button.disabled = false;
+    button.innerText =
+      "🤖 AI से Product Image बनाएं";
+  }
+}
 
 // MESSAGE
 function showMessage(text, success = true) {
