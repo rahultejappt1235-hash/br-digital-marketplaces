@@ -1,495 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Seller Dashboard - BR Digital Marketplace</title>
-
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f5f7fa;
-      color: #17202a;
-    }
-
-    header {
-      background: white;
-      padding: 18px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 2px 10px rgba(0,0,0,.08);
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 21px;
-      font-weight: bold;
-    }
-
-    .logo-box {
-      background: #ff7a00;
-      color: white;
-      width: 48px;
-      height: 48px;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .container {
-      max-width: 650px;
-      margin: 30px auto;
-      padding: 20px;
-    }
-
-    .card {
-      background: white;
-      padding: 25px;
-      border-radius: 18px;
-      box-shadow: 0 5px 20px rgba(0,0,0,.08);
-    }
-
-    h1 {
-      margin-top: 0;
-    }
-
-    label {
-      display: block;
-      margin-top: 18px;
-      margin-bottom: 7px;
-      font-weight: bold;
-    }
-
-    input,
-    select {
-      width: 100%;
-      padding: 14px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      font-size: 16px;
-    }
-
-    button {
-      width: 100%;
-      margin-top: 25px;
-      padding: 15px;
-      border: none;
-      border-radius: 10px;
-      background: #ff7a00;
-      color: white;
-      font-size: 17px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    button:disabled {
-      opacity: .6;
-    }
-
-    #message {
-      margin-top: 18px;
-      padding: 12px;
-      border-radius: 10px;
-      display: none;
-    }
-
-    .preview {
-      margin-top: 15px;
-      text-align: center;
-    }
-
-    .preview img {
-      max-width: 220px;
-      max-height: 220px;
-      border-radius: 12px;
-      display: none;
-      margin: auto;
-    }
-
-    .back {
-      display: block;
-      margin-top: 20px;
-      text-align: center;
-      color: #ff7a00;
-      text-decoration: none;
-      font-weight: bold;
-    }
-  </style>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head>
-
-<body>
-
-<header>
-  <div class="logo">
-    <div class="logo-box">BR</div>
-    BR Digital Marketplace
-  </div>
-</header>
-
-<div class="container">
-
-  <div class="card">
-
-    <h1>🛍️ Seller Dashboard</h1>
-    <p>Apna product marketplace par add karein.</p>
-
-    <label>Product Name</label>
-    <input
-      type="text"
-      id="productName"
-      placeholder="Example: Men's Premium T-Shirt"
-    >
-
-    <label>Price (₹)</label>
-    <input
-      type="number"
-      id="price"
-      placeholder="Example: 499"
-    >
-
-    <label>Stock</label>
-    <input
-      type="number"
-      id="stock"
-      placeholder="Example: 20"
-    >
-
-    <label>Category</label>
-    <select id="category">
-      <option value="fashion">Fashion</option>
-      <option value="electronics">Electronics</option>
-      <option value="accessories">Accessories</option>
-      <option value="beauty">Beauty</option>
-      <option value="home">Home</option>
-      <option value="sports">Sports</option>
-      <option value="other">Other</option>
-    </select>
-
-    <label>Product Image</label>
-    <input
-      type="file"
-      id="productImage"
-      accept="image/*"
-    >
-<button
-  type="button"
-  id="aiImageBtn"
-  onclick="generateAIImage()"
->
-  🤖 AI से Product Image बनाएं
-</button>
-    <div class="preview">
-      <img id="previewImage" alt="Product Preview">
-    </div>
-
-    <button id="addProductBtn" onclick="addProduct()">
-      ➕ Add Product
-    </button>
-
-    <div id="message"></div>
-
-    <a href="index.html" class="back">
-      ← Marketplace par wapas
-    </a>
-
-  </div>
-
-</div>
-
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Admin Dashboard - BR Digital Marketplace</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f5f7fa;color:#17202a}.top{background:#fff;box-shadow:0 2px 10px #0001;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:10px;position:sticky;top:0;z-index:5}.brand{display:flex;align-items:center;gap:10px;font-weight:800}.logo{background:#ff7a00;color:#fff;border-radius:12px;padding:10px}.actions{display:flex;gap:8px}.actions button,.tab{border:0;border-radius:9px;padding:10px 13px;font-weight:700;cursor:pointer}.logout{background:#17202a;color:#fff}.main{max-width:1200px;margin:25px auto;padding:0 18px}.welcome{margin-bottom:20px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}.stat,.panel{background:#fff;border-radius:16px;box-shadow:0 3px 15px #0000000d}.stat{padding:20px}.stat b{font-size:28px}.muted{color:#667085}.tabs{display:flex;gap:8px;margin:20px 0;overflow:auto}.tab{background:#fff;border:1px solid #ddd;white-space:nowrap}.tab.active{background:#ff7a00;color:#fff;border-color:#ff7a00}.panel{padding:18px;overflow:auto}.search{width:100%;padding:12px;border:1px solid #ddd;border-radius:9px;margin-bottom:15px}.table{width:100%;border-collapse:collapse;min-width:650px}.table th,.table td{padding:11px;border-bottom:1px solid #eee;text-align:left}.thumb{width:55px;height:45px;object-fit:cover;border-radius:8px}.danger{background:#fee2e2;color:#991b1b;border:0;border-radius:7px;padding:7px 9px;font-weight:700}.small{background:#eef2ff;color:#3730a3;border:0;border-radius:7px;padding:7px 9px;font-weight:700}.notice{padding:12px;border-radius:10px;margin-bottom:15px;background:#fff7ed;border:1px solid #fed7aa}.hidden{display:none!important}@media(max-width:800px){.stats{grid-template-columns:repeat(2,1fr)}}@media(max-width:520px){.stats{grid-template-columns:1fr 1fr}.top{align-items:flex-start}.actions{flex-direction:column}.stat b{font-size:22px}}
+</style></head><body>
+<header class="top"><div class="brand"><span class="logo">BR</span><span>Admin Dashboard</span></div><div class="actions"><button onclick="location.href='index.html'">🛍️ Shop</button><button class="logout" onclick="logout()">Logout</button></div></header>
+<main class="main"><div class="welcome"><h1>👋 Main Admin</h1><p id="adminName" class="muted">Checking access...</p></div><div id="notice" class="notice hidden"></div>
+<section class="stats"><div class="stat"><div class="muted">Products</div><b id="productCount">0</b></div><div class="stat"><div class="muted">Sellers</div><b id="sellerCount">0</b></div><div class="stat"><div class="muted">Active Users</div><b id="userCount">0</b></div><div class="stat"><div class="muted">Low Stock</div><b id="lowStock">0</b></div></section>
+<div class="tabs"><button class="tab active" onclick="showTab('products',this)">📦 Products</button><button class="tab" onclick="showTab('sellers',this)">👨‍💼 Sellers</button><button class="tab" onclick="showTab('users',this)">👥 Users</button><button class="tab" onclick="showTab('info',this)">ℹ️ Orders</button></div>
+<section id="products" class="panel"><h2>Product Management</h2><input class="search" id="productSearch" oninput="renderProducts()" placeholder="🔎 Product search..."><div id="productTable"></div></section>
+<section id="sellers" class="panel hidden"><h2>Seller Management</h2><div id="sellerTable"></div></section>
+<section id="users" class="panel hidden"><h2>User Management</h2><div id="userTable"></div></section>
+<section id="info" class="panel hidden"><h2>📦 Orders</h2><p>Current marketplace code COD order details ko WhatsApp par bhejta hai; database mein orders table save nahi ho rahi. Isliye yahan fake order data nahi dikhaya gaya.</p><a href="https://wa.me/917050207479" target="_blank">📱 WhatsApp Order Number</a><hr><h3>Next step</h3><p>Agla phase: <b>orders</b> table + seller-wise orders + status (Pending → Confirmed → Shipped → Delivered → Cancelled).</p></section>
+</main>
 <script>
-
-const SUPABASE_URL =
-  "https://urymibcdfjfxolrijgt.supabase.co";
-
-const SUPABASE_PUBLISHABLE_KEY =
-  "sb_publishable_uYbJw0ARCCkCpQ9QB6FxaQ_JrI";
-
-const supabaseClient = supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY
-);
-
-
-// IMAGE PREVIEW
-document
-  .getElementById("productImage")
-  .addEventListener("change", function(e) {
-
-    const file = e.target.files[0];
-
-    if (!file) return;
-
-    const preview =
-      document.getElementById("previewImage");
-
-    preview.src = URL.createObjectURL(file);
-    preview.style.display = "block";
-  });
-// AI PRODUCT IMAGE
-async function generateAIImage() {
-
-  const productName =
-    document.getElementById("productName").value.trim();
-
-  if (!productName) {
-    showMessage("❌ पहले Product Name डालें", false);
-    return;
-  }
-
-  const button =
-    document.getElementById("aiImageBtn");
-
-  button.disabled = true;
-  button.innerText = "🤖 AI Image बना रहा है...";
-
-  try {
-
-    const response = await fetch(
-      "/api/generate-image",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          productName: productName
-        })
-      }
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(
-        data.error || "AI image generate नहीं हुई"
-      );
-    }
-
-    const byteCharacters = atob(data.image);
-    const byteNumbers =
-      new Array(byteCharacters.length);
-
-    for (let i = 0; i < byteCharacters.length; i++) {
-      byteNumbers[i] =
-        byteCharacters.charCodeAt(i);
-    }
-
-    const byteArray =
-      new Uint8Array(byteNumbers);
-
-    const blob =
-      new Blob([byteArray], {
-        type: "image/png"
-      });
-
-    const file =
-      new File(
-        [blob],
-        "ai-product-image.png",
-        {
-          type: "image/png"
-        }
-      );
-
-    const dataTransfer =
-      new DataTransfer();
-
-    dataTransfer.items.add(file);
-
-    document.getElementById(
-      "productImage"
-    ).files = dataTransfer.files;
-
-    const preview =
-      document.getElementById(
-        "previewImage"
-      );
-
-    preview.src =
-      URL.createObjectURL(blob);
-
-    preview.style.display = "block";
-
-    showMessage(
-      "✅ AI Product Image ready hai!"
-    );
-
-  } catch (error) {
-
-    console.error(error);
-
-    showMessage(
-      "❌ AI image नहीं बनी: " +
-      error.message,
-      false
-    );
-
-  } finally {
-
-    button.disabled = false;
-    button.innerText =
-      "🤖 AI से Product Image बनाएं";
-  }
+const SUPABASE_URL="https://uryjmibcdfjfxolrijgt.supabase.co";const SUPABASE_PUBLISHABLE_KEY="sb_publishable_uYbJw0ARCCkCpQ9QB6FxaQ_JrIxtOOp";const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);let products=[],profiles=[];
+function showTab(id,btn){document.querySelectorAll('.panel').forEach(x=>x.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));btn.classList.add('active')}
+function notice(t){const n=document.getElementById('notice');n.textContent=t;n.classList.remove('hidden')}
+async function guard(){const {data:{user},error}=await supabaseClient.auth.getUser();if(error||!user){location.href='admin-login.html';return null}const {data:profile,error:pe}=await supabaseClient.from('profiles').select('id,full_name,role,is_active').eq('id',user.id).maybeSingle();if(pe||!profile||profile.role!=='main_admin'||profile.is_active!==true){await supabaseClient.auth.signOut();location.href='admin-login.html';return null}document.getElementById('adminName').textContent=(profile.full_name||user.email)+' • main_admin';return user}
+async function load(){const user=await guard();if(!user)return;const [pr,pu]=await Promise.all([supabaseClient.from('products').select('*').order('id',{ascending:false}),supabaseClient.from('profiles').select('id,full_name,phone,role,is_active,created_at').order('created_at',{ascending:false})]);if(pr.error){notice('⚠️ Products load nahi hue: '+pr.error.message)}else products=pr.data||[];if(pu.error){notice('⚠️ Profiles load nahi hue. Supabase RLS policy check karein: '+pu.error.message)}else profiles=pu.data||[];updateStats();renderProducts();renderProfiles();await loadSellers()}
+function updateStats(){document.getElementById('productCount').textContent=products.length;document.getElementById('sellerCount').textContent=profiles.filter(x=>x.role==='seller').length;document.getElementById('userCount').textContent=profiles.filter(x=>x.is_active===true).length;document.getElementById('lowStock').textContent=products.filter(x=>Number(x.stock||0)<=5).length}
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function renderProducts(){const q=(document.getElementById('productSearch')?.value||'').toLowerCase();const list=products.filter(p=>String(p.product_name||'').toLowerCase().includes(q));if(!list.length){document.getElementById('productTable').innerHTML='<p class="muted">No products found.</p>';return}document.getElementById('productTable').innerHTML='<table class="table"><thead><tr><th>Image</th><th>Product</th><th>Price</th><th>Stock</th><th>Category</th><th>Action</th></tr></thead><tbody>'+list.map(p=>`<tr><td><img class="thumb" src="${esc(p.image_url)}" onerror="this.style.display='none'"></td><td>${esc(p.product_name)}</td><td>₹${Number(p.price||0)}</td><td>${Number(p.stock||0)}</td><td>${esc(p.category)}</td><td><button class="danger" onclick="deleteProduct('${esc(p.id)}')">Delete</button></td></tr>`).join('')+'</tbody></table>'}
+async function loadSellers(){
+const {data,error}=await supabaseClient.from('sellers').select('*').order('created_at',{ascending:false});
+if(error){notice('⚠️ Sellers load nahi hue: '+error.message);return}
+window.sellersData=data||[];renderSellerManagement()
 }
-
-// MESSAGE
-function showMessage(text, success = true) {
-
-  const message =
-    document.getElementById("message");
-
-  message.innerText = text;
-  message.style.display = "block";
-
-  message.style.background =
-    success ? "#d4edda" : "#f8d7da";
-
-  message.style.color =
-    success ? "#155724" : "#721c24";
+function renderSellerManagement(){
+const list=window.sellersData||[], el=document.getElementById('sellerTable');
+if(!list.length){el.innerHTML='<p class="muted">No sellers found.</p>';return}
+el.innerHTML='<input class="search" id="sellerSearch" oninput="filterSellerRows()" placeholder="🔎 Seller / business search..."><div id="sellerRows">'+sellerRows(list)+'</div>'
 }
-
-
-// ADD PRODUCT
-async function addProduct() {
-
-  const productName =
-    document.getElementById("productName").value.trim();
-
-  const price =
-    Number(document.getElementById("price").value);
-
-  const stock =
-    Number(document.getElementById("stock").value);
-
-  const category =
-    document.getElementById("category").value;
-
-  const imageFile =
-    document.getElementById("productImage").files[0];
-
-  const button =
-    document.getElementById("addProductBtn");
-
-
-  if (!productName) {
-    showMessage("❌ Product name डालें", false);
-    return;
-  }
-
-  if (!price || price <= 0) {
-    showMessage("❌ सही price डालें", false);
-    return;
-  }
-
-  if (stock < 0) {
-    showMessage("❌ सही stock डालें", false);
-    return;
-  }
-
-  if (!imageFile) {
-    showMessage("❌ Product image चुनें", false);
-    return;
-  }
-
-
-  button.disabled = true;
-  button.innerText = "⏳ Product add ho raha hai...";
-
-
-  try {
-
-    // FILE NAME
-    const fileName =
-      Date.now() + "-" +
-      imageFile.name.replace(/\s+/g, "-");
-
-
-    // IMAGE UPLOAD
-    const { error: uploadError } =
-      await supabaseClient
-        .storage
-        .from("product-images")
-        .upload(fileName, imageFile);
-
-
-    if (uploadError) {
-      throw uploadError;
-    }
-
-
-    // IMAGE URL
-    const { data: imageData } =
-      supabaseClient
-        .storage
-        .from("product-images")
-        .getPublicUrl(fileName);
-
-
-    const imageUrl =
-      imageData.publicUrl;
-
-
-    // SAVE PRODUCT
-    const { error: productError } =
-      await supabaseClient
-        .from("products")
-        .insert([{
-          product_name: productName,
-          price: price,
-          stock: stock,
-          category: category,
-          image_url: imageUrl
-        }]);
-
-
-    if (productError) {
-      throw productError;
-    }
-
-
-    showMessage(
-      "✅ Product successfully add ho gaya!"
-    );
-
-
-    // CLEAR FORM
-    document.getElementById("productName").value = "";
-    document.getElementById("price").value = "";
-    document.getElementById("stock").value = "";
-    document.getElementById("productImage").value = "";
-
-    document.getElementById("previewImage").style.display =
-      "none";
-
-
-  } catch (error) {
-
-    console.error(error);
-
-    showMessage(
-      "❌ Product add nahi hua: " +
-      error.message,
-      false
-    );
-
-  }
-
-
-  button.disabled = false;
-  button.innerText = "➕ Add Product";
+function sellerRows(list){
+return '<table class="table"><thead><tr><th>Business</th><th>Owner</th><th>Status</th><th>Active</th><th>Created</th><th>Action</th></tr></thead><tbody>'+
+list.map(x=>`<tr><td>${esc(x.business_name||'-')}</td><td>${esc(x.owner_name||'-')}</td><td>${esc(x.status||'Pending')}</td><td>${x.is_active?'🟢 Active':'🔴 Inactive'}</td><td>${x.created_at?new Date(x.created_at).toLocaleDateString('en-IN'):'-'}</td><td>${String(x.status||'').toLowerCase()!=='approved'?`<button class="small" onclick="setSellerStatus('${esc(x.id)}','approved')">✅ Approve</button>`:''} ${String(x.status||'').toLowerCase()!=='rejected'?`<button class="danger" onclick="setSellerStatus('${esc(x.id)}','rejected')">❌ Reject</button>`:''}</td></tr>`).join('')+
+'</tbody></table>'
 }
-
-</script>
-
-</body>
-</html>
+function filterSellerRows(){
+const q=(document.getElementById('sellerSearch')?.value||'').toLowerCase();
+document.getElementById('sellerRows').innerHTML=sellerRows((window.sellersData||[]).filter(x=>String(x.business_name||'').toLowerCase().includes(q)||String(x.owner_name||'').toLowerCase().includes(q)))
+}
+async function setSellerStatus(id,status){
+if(!confirm(status==='approved'?'Seller approve karein?':'Seller reject karein?'))return;
+const {error}=await supabaseClient.from('sellers').update({status}).eq('id',id);
+if(error){alert('❌ Status update failed: '+error.message);return}
+const x=(window.sellersData||[]).find(v=>String(v.id)===String(id));if(x)x.status=status;renderSellerManagement()
+}
+function renderProfiles(){document.getElementById('userTable').innerHTML=makeProfileTable(profiles,'user')}
+function makeProfileTable(list){if(!list.length)return '<p class="muted">No records found.</p>';return '<table class="table"><thead><tr><th>Name</th><th>Phone</th><th>Role</th><th>Active</th><th>Created</th></tr></thead><tbody>'+list.map(x=>`<tr><td>${esc(x.full_name||'-')}</td><td>${esc(x.phone||'-')}</td><td>${esc(x.role||'-')}</td><td>${x.is_active?'✅':'❌'}</td><td>${x.created_at?new Date(x.created_at).toLocaleDateString('en-IN'):'-'}</td></tr>`).join('')+'</tbody></table>'}
+async function deleteProduct(id){if(!confirm('Product delete karein?'))return;const {error}=await supabaseClient.from('products').delete().eq('id',id);if(error){alert('❌ Delete failed: '+error.message);return}products=products.filter(p=>String(p.id)!==String(id));updateStats();renderProducts()}
+async function logout(){await supabaseClient.auth.signOut();sessionStorage.removeItem('br_admin_ok');location.href='admin-login.html'}
+load();
+</script></body></html>
