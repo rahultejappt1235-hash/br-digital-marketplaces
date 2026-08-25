@@ -606,45 +606,63 @@ function showCODForm() {
 // PLACE COD ORDER
 // ==========================================
 
-function placeCODOrder() {
+async function placeCODOrder() {
 
-  const name =
-    document.getElementById("customerName").value.trim();
-
-  const phone =
-    document.getElementById("customerPhone").value.trim();
-
-  const address =
-    document.getElementById("customerAddress").value.trim();
-
-  const pincode =
-    document.getElementById("customerPincode").value.trim();
-
+  const name = document.getElementById("customerName").value.trim();
+  const phone = document.getElementById("customerPhone").value.trim();
+  const address = document.getElementById("customerAddress").value.trim();
+  const pincode = document.getElementById("customerPincode").value.trim();
 
   if (!name || !phone || !address || !pincode) {
-
     alert("⚠️ Please sabhi details bharein.");
-
     return;
   }
-
 
   if (phone.length < 10) {
-
     alert("⚠️ Valid mobile number enter karein.");
-
     return;
   }
 
+  if (!cart.length) {
+    alert("🛒 Cart khaali hai.");
+    return;
+  }
 
-  const total = cart.reduce(
+  const subtotal = cart.reduce(
     (sum, item) =>
       sum + Number(item.price || 0) * Number(item.quantity || 0),
     0
   );
 
+  // Save order in Supabase
+  const { data: order, error } = await supabaseClient
+    .from("orders")
+    .insert({
+      status: "pending",
+      payment_method: "cod",
+      payment_status: "pending",
+      subtotal: subtotal,
+      delivery_fee: 0,
+      discount: 0,
+      total_amount: subtotal,
+      shipping_address: address,
+      shipping_city: "",
+      shipping_state: "",
+      shipping_pincode: pincode
+    })
+    .select()
+    .single();
 
+  if (error) {
+    console.error(error);
+    alert("❌ Order save nahi hua:\n" + error.message);
+    return;
+  }
+
+  // WhatsApp message
   let message = `🛒 *BR DIGITAL MARKETPLACE - NEW ORDER*
+
+🆔 Order ID: ${order.id}
 
 👤 Customer: ${name}
 📱 Mobile: ${phone}
@@ -657,22 +675,18 @@ ${address}
 📦 Products:
 `;
 
-
   cart.forEach((item) => {
-
     message += `
 • ${item.product_name}
   Qty: ${item.quantity}
   Price: ₹${item.price}
 `;
-
   });
 
-
-   message += `
-💰 Total: ₹${total}
-
+  message += `
+💰 Total: ₹${subtotal}
 💳 Payment: Cash on Delivery
+📦 Status: Pending
 `;
 
   const whatsappNumber = "917050207479";
@@ -680,7 +694,7 @@ ${address}
   const whatsappURL =
     `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
 
-  alert("✅ Order details ready hain. WhatsApp par order bheja ja raha hai.");
+  alert("✅ Order save ho gaya!\nOrder ID: " + order.id);
 
   window.location.href = whatsappURL;
 
@@ -689,9 +703,8 @@ ${address}
   updateCartButton();
 
   const modal = document.getElementById("cartModal");
-
   if (modal) modal.remove();
-} 
+}
 const categoryInput =
   document.getElementById("category");
 
