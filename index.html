@@ -1,69 +1,18 @@
-<!DOCTYPE html>
-<html lang="hi">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BR Digital Marketplace</title>
-<meta name="description" content="BR Digital Marketplace - Bihar ka online marketplace">
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-<header class="topbar">
-  <div class="brand"><span class="logo">BR</span><span>BR Digital Marketplace</span></div>
-  <button class="cart-btn" onclick="openCart()">🛒 Cart <b id="cartCount">0</b></button>
-</header>
-
-<section class="hero">
-  <div>
-    <p class="tag">Bihar ka Digital Marketplace</p>
-    <h1>Local Sellers se<br><span>Online Shopping</span></h1>
-    <p>Products dekhiye, cart mein add kijiye aur Cash on Delivery se order kijiye.</p>
-    <a href="#products" class="primary">Products Dekhein</a>
-  </div>
-</section>
-
-<section class="search-area">
-  <input id="search" oninput="renderProducts()" placeholder="🔎 Product search karein...">
-  <select id="category" onchange="renderProducts()">
-    <option value="all">Sabhi Categories</option>
-    <option value="fashion">Fashion</option>
-    <option value="electronics">Electronics</option>
-    <option value="home">Home</option>
-    <option value="grocery">Grocery</option>
-  </select>
-</section>
-
-<main id="products" class="container">
-  <h2>Popular Products</h2>
-  <div id="productGrid" class="grid"></div>
-</main>
-
-<section class="steps">
-  <h2>Kaise Order Karein?</h2>
-  <div class="step-grid">
-    <div><b>1</b><h3>Product Chunein</h3><p>Apni pasand ka product select karein.</p></div>
-    <div><b>2</b><h3>Cart Mein Add</h3><p>Product cart mein add karein.</p></div>
-    <div><b>3</b><h3>Order Karein</h3><p>Address dein aur COD se order karein.</p></div>
-  </div>
-</section>
-
-<footer>
-  <strong>BR Digital Marketplace</strong>
-  <p>Made for local businesses & customers in Bihar.</p>
-  <p>© 2026 BR Digital Marketplace</p>
-</footer>
-
-<div id="cartModal" class="modal hidden">
-  <div class="modal-card">
-    <button class="close" onclick="closeCart()">×</button>
-    <h2>Your Cart</h2>
-    <div id="cartItems"></div>
-    <div class="total">Total: ₹<span id="cartTotal">0</span></div>
-    <button class="primary full" onclick="checkout()">Place COD Order</button>
-  </div>
-</div>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script src="app.js"></script>
-</body>
-</html>
+<!doctype html><html lang="hi"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BR Digital Marketplace</title><link rel="stylesheet" href="style.css"></head><body>
+<header class="top"><button>☰</button><div class="brand"><b>BR</b><strong>BR Digital Marketplace</strong></div><button class="cart" onclick="openCart()">🛒 Cart <span id="cartCount">0</span></button></header>
+<div class="search"><span>⌕</span><input id="search" oninput="renderProducts()" placeholder="Product search karein..."></div>
+<div class="cats"><span>📱<small>Mobiles</small></span><span>🎧<small>Electronics</small></span><span>👕<small>Fashion</small></span><span>🏠<small>Home</small></span><span>💄<small>Beauty</small></span><span>🛒<small>Grocery</small></span><span>⚽<small>Sports</small></span><span>🧸<small>Toys</small></span></div>
+<section class="hero"><div><p>Bihar ka Digital Marketplace</p><h1>Local Sellers se<br><em>Online Shopping</em></h1><span>Best quality products, best prices aur Cash on Delivery.</span><br><a href="#products">Products Dekhein →</a></div><div class="heroart">🛒🛍️</div></section>
+<div class="filter"><select id="category" onchange="renderProducts()"><option value="all">Sabhi Categories</option><option>fashion</option><option>electronics</option><option>accessories</option><option>beauty</option><option>home</option><option>sports</option><option>grocery</option></select></div>
+<div class="head"><h2>Popular Products</h2><a href="#products">View All</a></div>
+<main id="products"><div id="productGrid" class="grid"></div></main>
+<section class="deal"><div><h2>Big Savings on Top Brands</h2><b>Upto 60% Off</b><button>Shop Now</button></div><span>🛍️ 🎁</span></section>
+<div class="head"><h2>Shop by Categories</h2><a href="#products">View All</a></div>
+<div class="mini"><span>📱<small>Mobiles</small></span><span>💻<small>Electronics</small></span><span>👔<small>Fashion</small></span><span>🛋️<small>Home</small></span><span>💄<small>Beauty</small></span><span>🛒<small>Grocery</small></span></div>
+<div class="head"><h2>Why Shop With Us</h2></div><div class="benefits"><div>💵<b>Cash on Delivery</b><small>Easy & Safe</small></div><div>🛡️<b>Secure Payment</b><small>100% Safe</small></div><div>🚚<b>Fast Delivery</b><small>Quick at your door</small></div><div>🏪<b>Local Sellers</b><small>Support Local</small></div></div>
+<div class="head"><h2>Brands in Spotlight</h2><a>View All</a></div><div class="brands"><b>Samsung</b><b>boAt</b><b>realme</b><b>mi</b><b>OnePlus</b><b>vivo</b></div>
+<footer>BR Digital Marketplace<br><small>Made for local businesses & customers in Bihar.</small></footer>
+<nav><a class="active">⌂<small>Home</small></a><a href="#products">▦<small>Categories</small></a><a>▤<small>Orders</small></a><a>♙<small>Account</small></a><button onclick="openCart()">🛒<small>Cart <span id="bottomCartCount">0</span></small></button></nav>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="app.js"></script></body></html>
