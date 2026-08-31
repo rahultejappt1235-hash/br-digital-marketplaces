@@ -11,26 +11,6 @@ const supabaseClient=supabase.createClient(
 // FULL CART SYSTEM
 // ==========================================
 
-let products=[
-  ["Men's Premium T-Shirt",499,799,"fashion","Premium+T-Shirt"],
-  ["Men's White Sneakers",1299,1999,"fashion","White+Sneakers"],
-  ["Noise ColorFit Pro 4",2499,3999,"electronics","Smart+Watch"],
-  ["Boat Rockerz 450",1599,2499,"electronics","Headphones"],
-  ["Samsung Galaxy M14 5G",10999,13999,"electronics","Samsung+M14"],
-  ["Redmi Note 13",13999,16999,"electronics","Redmi+Note+13"],
-  ["Ladies Handbag",599,899,"fashion","Handbag"],
-  ["Mobile Phone Stand",199,299,"accessories","Phone+Stand"]
-].map((x,i)=>({
-  id:i+1,
-  product_name:x[0],
-  price:x[1],
-  old_price:x[2],
-  category:x[3],
-  stock:20,
-  rating:(4.1+i%5/10).toFixed(1),
-  reviews:50+i*17,
-  image_url:"https://via.placeholder.com/600x500?text="+x[4]
-}));
 
 let cart=JSON.parse(localStorage.getItem("br_cart")||"[]");
 
