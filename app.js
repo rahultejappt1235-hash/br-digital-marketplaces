@@ -113,70 +113,144 @@ let products = [
 let cart=JSON.parse(localStorage.getItem("br_cart")||"[]");
 
 // ==========================================
-// PRODUCTS
+// PRODUCTS + CATEGORY + BRAND SYSTEM
 // ==========================================
 
+function updateBrandOptions(){
+
+  const categoryEl = document.getElementById("category");
+  const brandEl = document.getElementById("brand");
+
+  if(!categoryEl || !brandEl) return;
+
+  const category = (categoryEl.value || "all").toLowerCase();
+
+  const brands = [...new Set(
+    products
+      .filter(p =>
+        category === "all" ||
+        String(p.category).toLowerCase() === category
+      )
+      .map(p => p.brand)
+      .filter(Boolean)
+  )].sort();
+
+  brandEl.innerHTML =
+    `<option value="all">Sabhi Brands</option>` +
+    brands.map(brand =>
+      `<option value="${brand}">${brand}</option>`
+    ).join("");
+
+  renderProducts();
+}
+
+
 function renderProducts(){
-  const grid=document.getElementById("productGrid");
-  if(!grid)return;
 
-  const search=(document.getElementById("search")?.value||"")
-    .toLowerCase().trim();
+  const grid = document.getElementById("productGrid");
 
-  const category=(document.getElementById("category")?.value||"all")
-    .toLowerCase();
+  if(!grid) return;
 
-  const filtered=products.filter(p =>
-    p.product_name.toLowerCase().includes(search) &&
-    (category==="all" || p.category===category)
-  );
+  const search =
+    (document.getElementById("search")?.value || "")
+      .toLowerCase()
+      .trim();
 
-  if(filtered.length===0){
-    grid.innerHTML="<p>😔 Product nahi mila</p>";
+  const category =
+    (document.getElementById("category")?.value || "all")
+      .toLowerCase();
+
+  const brand =
+    (document.getElementById("brand")?.value || "all")
+      .toLowerCase();
+
+  const filtered = products.filter(p => {
+
+    const productName =
+      String(p.product_name || "").toLowerCase();
+
+    const productCategory =
+      String(p.category || "").toLowerCase();
+
+    const productBrand =
+      String(p.brand || "").toLowerCase();
+
+    return (
+      productName.includes(search) &&
+      (category === "all" ||
+       productCategory === category) &&
+      (brand === "all" ||
+       productBrand === brand)
+    );
+
+  });
+
+
+  if(filtered.length === 0){
+
+    grid.innerHTML =
+      "<p>😔 Is Category/Brand mein product nahi mila</p>";
+
     return;
   }
 
-  grid.innerHTML=filtered.map(p=>{
 
-    const off=Math.round(
-      ((p.old_price-p.price)*100)/p.old_price
-    );
+  grid.innerHTML = filtered.map(p => {
+
+    const off = p.old_price > 0
+      ? Math.round(
+          ((p.old_price - p.price) * 100) /
+          p.old_price
+        )
+      : 0;
 
     return `
       <article class="product-card">
 
         <div class="product-image">
+
           <img
             src="${p.image_url}"
             alt="${p.product_name}"
             onerror="this.src='https://via.placeholder.com/600x500?text=Product'"
           >
+
         </div>
 
         <h3>${p.product_name}</h3>
+
+        <p style="
+          margin:4px 0;
+          font-size:13px;
+          color:#777;
+        ">
+          Brand: <b>${p.brand || "Generic"}</b>
+        </p>
 
         <p class="rating">
           ⭐ <b>${p.rating}</b> (${p.reviews})
         </p>
 
         <div class="price-row">
+
           <span class="price">
-            ₹${p.price.toLocaleString("en-IN")}
+            ₹${Number(p.price).toLocaleString("en-IN")}
           </span>
 
           <span class="old-price">
-            ₹${p.old_price.toLocaleString("en-IN")}
+            ₹${Number(p.old_price).toLocaleString("en-IN")}
           </span>
 
           <span class="off">
             ${off}% OFF
           </span>
+
         </div>
 
         <button
           class="primary"
           onclick="addToCart(${p.id})"
-          ${p.stock<=0?"disabled":""}
+          ${p.stock <= 0 ? "disabled" : ""}
         >
           🛒 Add to Cart
         </button>
@@ -185,6 +259,71 @@ function renderProducts(){
     `;
 
   }).join("");
+}
+
+
+// ==========================================
+// QUICK CATEGORY SELECT
+// ==========================================
+
+function selectCategory(category){
+
+  const categoryEl =
+    document.getElementById("category");
+
+  if(!categoryEl) return;
+
+  categoryEl.value = category;
+
+  updateBrandOptions();
+
+  document
+    .getElementById("products")
+    ?.scrollIntoView({
+      behavior:"smooth"
+    });
+}
+
+
+// ==========================================
+// QUICK BRAND SELECT
+// ==========================================
+
+function selectBrand(brand){
+
+  const brandEl =
+    document.getElementById("brand");
+
+  if(!brandEl) return;
+
+  const categoryEl =
+    document.getElementById("category");
+
+  // पहले सभी categories रखें
+  if(categoryEl){
+    categoryEl.value = "all";
+  }
+
+  updateBrandOptions();
+
+  // Brand मिलने पर select करें
+  const option = [...brandEl.options].find(
+    o => o.value.toLowerCase() === brand.toLowerCase()
+  );
+
+  if(option){
+
+    brandEl.value = option.value;
+
+    renderProducts();
+
+    document
+      .getElementById("products")
+      ?.scrollIntoView({
+        behavior:"smooth"
+      });
+
+  }
 }
 
 // ==========================================
@@ -650,6 +789,7 @@ document.addEventListener(
   ()=>{
 
     renderProducts();
+    updateBrandOptions();
     updateCartButton();
 
     const search=
@@ -667,9 +807,9 @@ document.addEventListener(
 
     if(category){
       category.addEventListener(
-        "change",
-        renderProducts
-      );
+  "change",
+  updateBrandOptions
+);
     }
 
   }
