@@ -11,6 +11,96 @@ const supabaseClient=supabase.createClient(
 // FULL CART SYSTEM
 // ==========================================
 
+let products = [
+  {
+    id: 1,
+    product_name: "Men's Premium T-Shirt",
+    price: 499,
+    old_price: 799,
+    category: "fashion",
+    stock: 20,
+    rating: "4.3",
+    reviews: 128,
+    image_url: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600"
+  },
+  {
+    id: 2,
+    product_name: "Men's White Sneakers",
+    price: 1299,
+    old_price: 1999,
+    category: "fashion",
+    stock: 20,
+    rating: "4.5",
+    reviews: 96,
+    image_url: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600"
+  },
+  {
+    id: 3,
+    product_name: "Noise ColorFit Pro 4",
+    price: 2499,
+    old_price: 3999,
+    category: "electronics",
+    stock: 20,
+    rating: "4.4",
+    reviews: 203,
+    image_url: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600"
+  },
+  {
+    id: 4,
+    product_name: "Boat Rockerz 450",
+    price: 1599,
+    old_price: 2499,
+    category: "electronics",
+    stock: 20,
+    rating: "4.2",
+    reviews: 78,
+    image_url: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600"
+  },
+  {
+    id: 5,
+    product_name: "Samsung Galaxy M14 5G",
+    price: 10999,
+    old_price: 13999,
+    category: "electronics",
+    stock: 20,
+    rating: "4.3",
+    reviews: 152,
+    image_url: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600"
+  },
+  {
+    id: 6,
+    product_name: "Redmi Note 13",
+    price: 13999,
+    old_price: 16999,
+    category: "electronics",
+    stock: 20,
+    rating: "4.4",
+    reviews: 178,
+    image_url: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=600"
+  },
+  {
+    id: 7,
+    product_name: "Ladies Handbag",
+    price: 599,
+    old_price: 899,
+    category: "fashion",
+    stock: 20,
+    rating: "4.2",
+    reviews: 65,
+    image_url: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=600"
+  },
+  {
+    id: 8,
+    product_name: "Mobile Phone Stand",
+    price: 199,
+    old_price: 299,
+    category: "accessories",
+    stock: 20,
+    rating: "4.1",
+    reviews: 54,
+    image_url: "https://images.unsplash.com/photo-1601593346740-925612772716?w=600"
+  }
+];
 
 let cart=JSON.parse(localStorage.getItem("br_cart")||"[]");
 
