@@ -1,323 +1,423 @@
-const SUPABASE_URL =
-  "https://uryjmibcdfjfxolrijgt.supabase.co";
+const SUPABASE_URL="https://uryjmibcdfjfxolrijgt.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY="sb_publishable_uYbJw0ARCCkCpQ9QB6FxaQ_JrIxtOOp";
 
-const SUPABASE_PUBLISHABLE_KEY =
-  "sb_publishable_uYbJw0ARCCkCpQ9QB6FxaQ_JrIxtOOp";
-
-const supabaseClient = supabase.createClient(
+const supabaseClient=supabase.createClient(
   SUPABASE_URL,
   SUPABASE_PUBLISHABLE_KEY
 );
 
 // ==========================================
-// BR DIGITAL MARKETPLACE
-// Frontend Demo - No Supabase Required
+// BR DIGITAL MARKETPLACE - V2
+// FULL CART SYSTEM
 // ==========================================
 
-let products = [
-  {
-    id: 1,
-    product_name: "Men's Premium T-Shirt",
-    price: 499,
-    stock: 20,
-    category: "fashion",
-    image_url: "https://via.placeholder.com/500x400?text=Premium+T-Shirt"
-  },
-  {
-    id: 2,
-    product_name: "Smart Watch",
-    price: 999,
-    stock: 15,
-    category: "electronics",
-    image_url: "https://via.placeholder.com/500x400?text=Smart+Watch"
-  },
-  {
-    id: 3,
-    product_name: "Sports Shoes",
-    price: 799,
-    stock: 12,
-    category: "fashion",
-    image_url: "https://via.placeholder.com/500x400?text=Sports+Shoes"
-  },
-  {
-    id: 4,
-    product_name: "Wireless Earbuds",
-    price: 699,
-    stock: 25,
-    category: "electronics",
-    image_url: "https://via.placeholder.com/500x400?text=Wireless+Earbuds"
-  },
-  {
-    id: 5,
-    product_name: "Ladies Handbag",
-    price: 599,
-    stock: 10,
-    category: "fashion",
-    image_url: "https://via.placeholder.com/500x400?text=Ladies+Handbag"
-  },
-  {
-    id: 6,
-    product_name: "Mobile Phone Stand",
-    price: 199,
-    stock: 30,
-    category: "accessories",
-    image_url: "https://via.placeholder.com/500x400?text=Phone+Stand"
-  }
-];
+let products=[
+  ["Men's Premium T-Shirt",499,799,"fashion","Premium+T-Shirt"],
+  ["Men's White Sneakers",1299,1999,"fashion","White+Sneakers"],
+  ["Noise ColorFit Pro 4",2499,3999,"electronics","Smart+Watch"],
+  ["Boat Rockerz 450",1599,2499,"electronics","Headphones"],
+  ["Samsung Galaxy M14 5G",10999,13999,"electronics","Samsung+M14"],
+  ["Redmi Note 13",13999,16999,"electronics","Redmi+Note+13"],
+  ["Ladies Handbag",599,899,"fashion","Handbag"],
+  ["Mobile Phone Stand",199,299,"accessories","Phone+Stand"]
+].map((x,i)=>({
+  id:i+1,
+  product_name:x[0],
+  price:x[1],
+  old_price:x[2],
+  category:x[3],
+  stock:20,
+  rating:(4.1+i%5/10).toFixed(1),
+  reviews:50+i*17,
+  image_url:"https://via.placeholder.com/600x500?text="+x[4]
+}));
 
-let cart = JSON.parse(localStorage.getItem("br_cart") || "[]");
-
+let cart=JSON.parse(localStorage.getItem("br_cart")||"[]");
 
 // ==========================================
-// RENDER PRODUCTS
+// PRODUCTS
 // ==========================================
 
-function renderProducts() {
+function renderProducts(){
+  const grid=document.getElementById("productGrid");
+  if(!grid)return;
 
-  const grid = document.getElementById("productGrid");
+  const search=(document.getElementById("search")?.value||"")
+    .toLowerCase().trim();
 
-  if (!grid) {
-    console.log("productGrid not found");
+  const category=(document.getElementById("category")?.value||"all")
+    .toLowerCase();
+
+  const filtered=products.filter(p =>
+    p.product_name.toLowerCase().includes(search) &&
+    (category==="all" || p.category===category)
+  );
+
+  if(filtered.length===0){
+    grid.innerHTML="<p>😔 Product nahi mila</p>";
     return;
   }
 
-  const searchBox = document.getElementById("search");
-  const categoryBox = document.getElementById("category");
+  grid.innerHTML=filtered.map(p=>{
 
-  const search = searchBox
-    ? String(searchBox.value || "").toLowerCase().trim()
-    : "";
-
-  const category = categoryBox
-    ? String(categoryBox.value || "all").toLowerCase().trim()
-    : "all";
-
-  const filtered = products.filter((p) => {
-
-    const name = String(p.product_name || "").toLowerCase();
-
-    const productCategory =
-      String(p.category || "").toLowerCase().trim();
-
-    const matchSearch = name.includes(search);
-
-    const matchCategory =
-      category === "all" ||
-      category === "" ||
-      productCategory === category;
-
-    return matchSearch && matchCategory;
-  });
-
-
-  if (filtered.length === 0) {
-
-    grid.innerHTML = `
-      <div style="
-        padding:30px;
-        text-align:center;
-        width:100%;
-        color:#555;
-      ">
-        <h3>😔 Product nahi mila</h3>
-        <p>Dusra product search karke dekhein.</p>
-      </div>
-    `;
-
-    return;
-  }
-
-
-  grid.innerHTML = filtered.map((p) => {
-
-    const stock = Number(p.stock || 0);
-    const price = Number(p.price || 0);
+    const off=Math.round(
+      ((p.old_price-p.price)*100)/p.old_price
+    );
 
     return `
-      <div class="product-card">
+      <article class="product-card">
 
         <div class="product-image">
           <img
             src="${p.image_url}"
             alt="${p.product_name}"
-            onerror="this.src='https://via.placeholder.com/500x400?text=Product'"
+            onerror="this.src='https://via.placeholder.com/600x500?text=Product'"
           >
         </div>
 
         <h3>${p.product_name}</h3>
 
-        <p class="price">
-          ₹${price}
+        <p class="rating">
+          ⭐ <b>${p.rating}</b> (${p.reviews})
         </p>
 
-        <p class="muted">
-          Stock: ${stock}
-        </p>
+        <div class="price-row">
+          <span class="price">
+            ₹${p.price.toLocaleString("en-IN")}
+          </span>
+
+          <span class="old-price">
+            ₹${p.old_price.toLocaleString("en-IN")}
+          </span>
+
+          <span class="off">
+            ${off}% OFF
+          </span>
+        </div>
 
         <button
           class="primary"
           onclick="addToCart(${p.id})"
-          ${stock <= 0 ? "disabled" : ""}
+          ${p.stock<=0?"disabled":""}
         >
           🛒 Add to Cart
         </button>
 
-      </div>
+      </article>
     `;
 
   }).join("");
 }
 
-
 // ==========================================
-// ADD TO CART
+// CART SAVE
 // ==========================================
 
-function addToCart(id) {
-
-  const product = products.find((p) => p.id === id);
-
-  if (!product) return;
-
-  const existing = cart.find((p) => p.id === id);
-
-  if (existing) {
-
-    if (existing.quantity < product.stock) {
-      existing.quantity++;
-    } else {
-      alert("❌ Itna stock available nahi hai.");
-      return;
-    }
-
-  } else {
-
-    cart.push({
-      ...product,
-      quantity: 1
-    });
-
-  }
-
-  saveCart();
-
-  updateCartButton();
-
-  alert("✅ Product cart mein add ho gaya!");
-
+function saveCart(){
+  localStorage.setItem(
+    "br_cart",
+    JSON.stringify(cart)
+  );
 }
-
-
-// ==========================================
-// SAVE CART
-// ==========================================
-
-function saveCart() {
-  localStorage.setItem("br_cart", JSON.stringify(cart));
-}
-
 
 // ==========================================
 // CART COUNT
 // ==========================================
 
-function updateCartButton() {
-
-  const count = cart.reduce(
-    (total, item) => total + Number(item.quantity || 0),
+function getCartCount(){
+  return cart.reduce(
+    (total,item)=>total+Number(item.quantity||0),
     0
   );
-
-  const buttons = document.querySelectorAll("button");
-
-  buttons.forEach((button) => {
-
-    if (
-      button.innerText.includes("Cart") ||
-      button.id === "cartButton"
-    ) {
-      button.innerHTML = `🛒 Cart ${count}`;
-    }
-
-  });
 }
 
+// ==========================================
+// CART TOTAL
+// ==========================================
+
+function getCartTotal(){
+  return cart.reduce(
+    (total,item)=>
+      total+
+      Number(item.price||0)*
+      Number(item.quantity||0),
+    0
+  );
+}
+
+// ==========================================
+// UPDATE CART BUTTON
+// ==========================================
+
+function updateCartButton(){
+
+  const count=getCartCount();
+
+  const cartCount=document.getElementById("cartCount");
+  const bottomCartCount=
+    document.getElementById("bottomCartCount");
+
+  if(cartCount){
+    cartCount.textContent=count;
+  }
+
+  if(bottomCartCount){
+    bottomCartCount.textContent=count;
+  }
+
+  const cartButton=
+    document.getElementById("cartButton");
+
+  if(cartButton){
+    cartButton.innerHTML=
+      `🛒 Cart <span id="cartCount">${count}</span>`;
+  }
+}
+
+// ==========================================
+// ADD TO CART
+// ==========================================
+
+function addToCart(id){
+
+  const product=
+    products.find(p=>p.id===id);
+
+  if(!product)return;
+
+  const existing=
+    cart.find(item=>item.id===id);
+
+  if(existing){
+
+    if(existing.quantity>=product.stock){
+      alert("❌ Itna stock available nahi hai.");
+      return;
+    }
+
+    existing.quantity++;
+
+  }else{
+
+    cart.push({
+      ...product,
+      quantity:1
+    });
+
+  }
+
+  saveCart();
+  updateCartButton();
+
+  alert("✅ Product cart mein add ho gaya!");
+}
+
+// ==========================================
+// CHANGE QUANTITY
+// ==========================================
+
+function changeQuantity(id,change){
+
+  const item=
+    cart.find(p=>p.id===id);
+
+  if(!item)return;
+
+  const product=
+    products.find(p=>p.id===id);
+
+  const newQuantity=
+    Number(item.quantity||0)+change;
+
+  if(newQuantity<=0){
+    removeFromCart(id);
+    return;
+  }
+
+  if(product && newQuantity>product.stock){
+    alert(
+      "❌ Maximum stock available: "+
+      product.stock
+    );
+    return;
+  }
+
+  item.quantity=newQuantity;
+
+  saveCart();
+  updateCartButton();
+  openCart();
+}
+
+// ==========================================
+// REMOVE PRODUCT
+// ==========================================
+
+function removeFromCart(id){
+
+  cart=
+    cart.filter(item=>item.id!==id);
+
+  saveCart();
+  updateCartButton();
+  openCart();
+}
 
 // ==========================================
 // OPEN CART
 // ==========================================
 
-function openCart() {
+function openCart(){
 
-  const old = document.getElementById("cartModal");
+  const old=
+    document.getElementById("cartModal");
 
-  if (old) old.remove();
+  if(old)old.remove();
 
-  const total = cart.reduce(
-    (sum, item) =>
-      sum + Number(item.price || 0) * Number(item.quantity || 0),
-    0
-  );
+  const modal=
+    document.createElement("div");
 
+  modal.id="cartModal";
 
-  let itemsHTML = "";
+  modal.style.cssText=`
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.65);
+    z-index:99999;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:15px;
+    box-sizing:border-box;
+  `;
 
-  if (cart.length === 0) {
+  const total=getCartTotal();
 
-    itemsHTML = `
-      <div style="text-align:center;padding:30px">
-        <h3>🛒 Cart khaali hai</h3>
-        <p>Pehle koi product cart mein add karein.</p>
+  let itemsHTML="";
+
+  if(cart.length===0){
+
+    itemsHTML=`
+      <div style="
+        text-align:center;
+        padding:35px 10px;
+      ">
+
+        <div style="font-size:55px">
+          🛒
+        </div>
+
+        <h3>
+          आपका Cart खाली है
+        </h3>
+
+        <p>
+          पहले कोई product Cart में add करें।
+        </p>
+
+        <button
+          onclick="
+            document
+              .getElementById('cartModal')
+              .remove()
+          "
+          style="
+            padding:12px 20px;
+            border:0;
+            border-radius:8px;
+            background:#ff7a00;
+            color:white;
+            font-weight:bold;
+          "
+        >
+          Shopping जारी रखें
+        </button>
+
       </div>
     `;
 
-  } else {
+  }else{
 
-    itemsHTML = cart.map((item) => {
+    itemsHTML=cart.map(item=>{
+
+      const itemTotal=
+        Number(item.price||0)*
+        Number(item.quantity||0);
 
       return `
         <div style="
           display:flex;
           gap:12px;
           align-items:center;
-          padding:12px 0;
-          border-bottom:1px solid #ddd;
+          padding:14px 0;
+          border-bottom:1px solid #e5e5e5;
         ">
 
           <img
             src="${item.image_url}"
+            alt="${item.product_name}"
             style="
-              width:70px;
-              height:60px;
+              width:75px;
+              height:65px;
               object-fit:cover;
               border-radius:8px;
+              flex-shrink:0;
             "
           >
 
-          <div style="flex:1">
+          <div style="
+            flex:1;
+            min-width:0;
+          ">
 
-            <b>${item.product_name}</b>
+            <b>
+              ${item.product_name}
+            </b>
 
-            <div>
-              ₹${item.price} × ${item.quantity}
+            <div style="
+              font-size:14px;
+              color:#555;
+              margin-top:5px;
+            ">
+              ₹${Number(item.price)
+                .toLocaleString("en-IN")}
+              × ${item.quantity}
             </div>
 
-            <div style="margin-top:5px">
+            <div style="
+              font-weight:bold;
+              margin-top:4px;
+            ">
+              ₹${itemTotal
+                .toLocaleString("en-IN")}
+            </div>
+
+            <div style="margin-top:8px">
 
               <button
-                onclick="changeQuantity(${item.id}, -1)"
-                style="padding:5px 10px"
+                onclick="changeQuantity(${item.id},-1)"
+                style="
+                  padding:5px 11px;
+                  border:1px solid #ddd;
+                  background:#fff;
+                  border-radius:5px;
+                "
               >
                 −
               </button>
 
-              <b style="margin:0 10px">
+              <b style="margin:0 12px">
                 ${item.quantity}
               </b>
 
               <button
-                onclick="changeQuantity(${item.id}, 1)"
-                style="padding:5px 10px"
+                onclick="changeQuantity(${item.id},1)"
+                style="
+                  padding:5px 11px;
+                  border:1px solid #ddd;
+                  background:#fff;
+                  border-radius:5px;
+                "
               >
                 +
               </button>
@@ -326,8 +426,11 @@ function openCart() {
                 onclick="removeFromCart(${item.id})"
                 style="
                   margin-left:10px;
-                  padding:5px 8px;
+                  padding:5px 9px;
+                  border:0;
+                  background:#ffecec;
                   color:red;
+                  border-radius:5px;
                 "
               >
                 🗑️
@@ -344,44 +447,36 @@ function openCart() {
 
   }
 
+  modal.innerHTML=`
 
-  const modal = document.createElement("div");
-
-  modal.id = "cartModal";
-
-  modal.style.cssText = `
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.6);
-    z-index:9999;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:15px;
-  `;
-
-
-  modal.innerHTML = `
     <div style="
       background:white;
       width:100%;
-      max-width:500px;
+      max-width:520px;
       max-height:90vh;
       overflow:auto;
       border-radius:16px;
       padding:20px;
+      box-sizing:border-box;
     ">
 
       <div style="
         display:flex;
         justify-content:space-between;
         align-items:center;
+        margin-bottom:10px;
       ">
 
-        <h2>🛒 Your Cart</h2>
+        <h2 style="margin:0">
+          🛒 आपका Cart
+        </h2>
 
         <button
-          onclick="document.getElementById('cartModal').remove()"
+          onclick="
+            document
+              .getElementById('cartModal')
+              .remove()
+          "
           style="
             font-size:24px;
             border:0;
@@ -395,18 +490,39 @@ function openCart() {
 
       ${itemsHTML}
 
-      <h2 style="margin-top:20px">
-        Total: ₹${total}
-      </h2>
-
       ${
-        cart.length > 0
-          ? `
+        cart.length>0
+        ?`
+
+          <div style="
+            margin-top:18px;
+            padding-top:14px;
+            border-top:2px solid #222;
+          ">
+
+            <div style="
+              display:flex;
+              justify-content:space-between;
+              font-size:21px;
+              font-weight:bold;
+            ">
+
+              <span>
+                Total
+              </span>
+
+              <span>
+                ₹${total.toLocaleString("en-IN")}
+              </span>
+
+            </div>
+
             <button
-              onclick="showCODForm()"
+              onclick="checkoutFromCart()"
               style="
                 width:100%;
                 padding:15px;
+                margin-top:15px;
                 background:#ff7a00;
                 color:white;
                 border:0;
@@ -415,347 +531,93 @@ function openCart() {
                 font-weight:bold;
               "
             >
-              📦 Cash on Delivery Order
+              📦 Checkout
             </button>
-          `
-          : ""
+
+          </div>
+
+        `
+        :""
       }
 
     </div>
   `;
 
-
   document.body.appendChild(modal);
-
 }
 
-
 // ==========================================
-// QUANTITY
-// ==========================================
-
-function changeQuantity(id, change) {
-
-  const item = cart.find((p) => p.id === id);
-
-  if (!item) return;
-
-  const product = products.find((p) => p.id === id);
-
-  item.quantity += change;
-
-  if (item.quantity <= 0) {
-    cart = cart.filter((p) => p.id !== id);
-  }
-
-  if (
-    product &&
-    item.quantity > product.stock
-  ) {
-    item.quantity = product.stock;
-    alert("❌ Maximum stock available.");
-  }
-
-  saveCart();
-
-  updateCartButton();
-
-  openCart();
-
-}
-
-
-// ==========================================
-// REMOVE PRODUCT
+// CHECKOUT
 // ==========================================
 
-function removeFromCart(id) {
+function checkoutFromCart(){
 
-  cart = cart.filter((p) => p.id !== id);
-
-  saveCart();
-
-  updateCartButton();
-
-  openCart();
-
-}
-
-
-// ==========================================
-// COD FORM
-// ==========================================
-
-function showCODForm() {
-
-  const modal = document.getElementById("cartModal");
-
-  if (!modal) return;
-
-
-  modal.innerHTML = `
-    <div style="
-      background:white;
-      width:100%;
-      max-width:500px;
-      max-height:90vh;
-      overflow:auto;
-      border-radius:16px;
-      padding:20px;
-    ">
-
-      <h2>📦 Cash on Delivery</h2>
-
-      <p>
-        Delivery ke liye apni details bharein.
-      </p>
-
-      <input
-        id="customerName"
-        placeholder="👤 Full Name"
-        style="
-          width:100%;
-          padding:14px;
-          margin:8px 0;
-          box-sizing:border-box;
-          border:1px solid #ddd;
-          border-radius:8px;
-        "
-      >
-
-      <input
-        id="customerPhone"
-        placeholder="📱 Mobile Number"
-        type="tel"
-        style="
-          width:100%;
-          padding:14px;
-          margin:8px 0;
-          box-sizing:border-box;
-          border:1px solid #ddd;
-          border-radius:8px;
-        "
-      >
-
-      <textarea
-        id="customerAddress"
-        placeholder="🏠 Complete Delivery Address"
-        rows="4"
-        style="
-          width:100%;
-          padding:14px;
-          margin:8px 0;
-          box-sizing:border-box;
-          border:1px solid #ddd;
-          border-radius:8px;
-        "
-      ></textarea>
-
-      <input
-        id="customerPincode"
-        placeholder="📍 Pincode"
-        type="number"
-        style="
-          width:100%;
-          padding:14px;
-          margin:8px 0;
-          box-sizing:border-box;
-          border:1px solid #ddd;
-          border-radius:8px;
-        "
-      >
-
-      <button
-        onclick="placeCODOrder()"
-        style="
-          width:100%;
-          padding:15px;
-          margin-top:10px;
-          background:#ff7a00;
-          color:white;
-          border:0;
-          border-radius:10px;
-          font-size:18px;
-          font-weight:bold;
-        "
-      >
-        ✅ Place COD Order
-      </button>
-
-      <button
-        onclick="openCart()"
-        style="
-          width:100%;
-          padding:12px;
-          margin-top:10px;
-          background:#eee;
-          border:0;
-          border-radius:10px;
-        "
-      >
-        ← Back to Cart
-      </button>
-
-    </div>
-  `;
-
-}
-
-
-// ==========================================
-// PLACE COD ORDER
-// ==========================================
-
-async function placeCODOrder() {
-
-  const name = document.getElementById("customerName").value.trim();
-  const phone = document.getElementById("customerPhone").value.trim();
-  const address = document.getElementById("customerAddress").value.trim();
-  const pincode = document.getElementById("customerPincode").value.trim();
-
-  if (!name || !phone || !address || !pincode) {
-    alert("⚠️ Please sabhi details bharein.");
-    return;
-  }
-
-  if (phone.length < 10) {
-    alert("⚠️ Valid mobile number enter karein.");
-    return;
-  }
-
-  if (!cart.length) {
+  if(cart.length===0){
     alert("🛒 Cart khaali hai.");
     return;
   }
 
-  const subtotal = cart.reduce(
-    (sum, item) =>
-      sum + Number(item.price || 0) * Number(item.quantity || 0),
-    0
+  alert(
+    "✅ Cart ready hai!\n\n"+
+    "Agla Step: Checkout + COD Form."
   );
+}
 
-  // Save order in Supabase
-  const { data: order, error } = await supabaseClient
-    .from("orders")
-    .insert({
-      status: "pending",
-      payment_method: "cod",
-      payment_status: "pending",
-      subtotal: subtotal,
-      delivery_fee: 0,
-      discount: 0,
-      total_amount: subtotal,
-      shipping_address: address,
-      shipping_city: "",
-      shipping_state: "",
-      shipping_pincode: pincode
-    })
-    .select()
-    .single();
+// ==========================================
+// SEARCH
+// ==========================================
 
-  if (error) {
-    console.error(error);
-    alert("❌ Order save nahi hua:\n" + error.message);
-    return;
+document.addEventListener(
+  "DOMContentLoaded",
+  ()=>{
+
+    renderProducts();
+    updateCartButton();
+
+    const search=
+      document.getElementById("search");
+
+    if(search){
+      search.addEventListener(
+        "input",
+        renderProducts
+      );
+    }
+
+    const category=
+      document.getElementById("category");
+
+    if(category){
+      category.addEventListener(
+        "change",
+        renderProducts
+      );
+    }
+
   }
-
-  // WhatsApp message
-  let message = `🛒 *BR DIGITAL MARKETPLACE - NEW ORDER*
-
-🆔 Order ID: ${order.id}
-
-👤 Customer: ${name}
-📱 Mobile: ${phone}
-
-🏠 Address:
-${address}
-
-📍 Pincode: ${pincode}
-
-📦 Products:
-`;
-
-  cart.forEach((item) => {
-    message += `
-• ${item.product_name}
-  Qty: ${item.quantity}
-  Price: ₹${item.price}
-`;
-  });
-
-  message += `
-💰 Total: ₹${subtotal}
-💳 Payment: Cash on Delivery
-📦 Status: Pending
-`;
-
-  const whatsappNumber = "917050207479";
-
-  const whatsappURL =
-    `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-
-  alert("✅ Order save ho gaya!\nOrder ID: " + order.id);
-
-  window.location.href = whatsappURL;
-
-  cart = [];
-  saveCart();
-  updateCartButton();
-
-  const modal = document.getElementById("cartModal");
-  if (modal) modal.remove();
-}
-const categoryInput =
-  document.getElementById("category");
-
-if (categoryInput) {
-
-  categoryInput.addEventListener(
-    "change",
-    renderProducts
-  );
-
-}
-
+);
 
 // ==========================================
 // CART BUTTON
 // ==========================================
 
-document.addEventListener("click", function (e) {
-
-  const button = e.target.closest("button");
-
-  if (!button) return;
-
-  if (
-    button.id === "cartButton" ||
-    button.innerText.includes("Cart")
-  ) {
-
-    openCart();
-
-  }
-
-});
-
-
-// ==========================================
-// INITIAL LOAD
-// ==========================================
-
 document.addEventListener(
-  "DOMContentLoaded",
-  function () {
+  "click",
+  e=>{
 
-    renderProducts();
+    const button=
+      e.target.closest("button");
 
-    updateCartButton();
+    if(!button)return;
+
+    if(
+      button.id==="cartButton" ||
+      button.innerText.includes("Cart")
+    ){
+
+      openCart();
+
+    }
 
   }
 );
-
-
-// Also run immediately
-renderProducts();
-updateCartButton();
