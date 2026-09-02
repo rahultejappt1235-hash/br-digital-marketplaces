@@ -13,7 +13,69 @@ async function startEdit(id){try{const r=await supabaseClient.from('products').s
 function clearForm(){productName.value='';price.value='';stock.value='';category.value='mobiles';imageInput.value='';preview.src='';preview.style.display='none'}
 function cancelEdit(){editId=null;currentImageUrl='';history.replaceState({},'','seller.html');clearForm();editMode.style.display='none';cancelBtn.style.display='none';saveBtn.textContent='➕ Product Add करें'}
 async function deleteProduct(id){if(!confirm('क्या आप यह Product delete करना चाहते हैं?'))return;try{const r=await supabaseClient.from('products').delete().eq('id',id);if(r.error)throw r.error;showMessage('✅ Product delete हो गया!');if(String(editId)===String(id))cancelEdit();await loadProducts()}catch(e){showMessage('❌ Delete failed: '+(e.message||e),false)}}
-async function generateAIImage(){const name=productName.value.trim();if(!name)return showMessage('❌ पहले Product Name डालें।',false);const b=document.getElementById('aiImageBtn');b.disabled=true;b.textContent='🤖 AI Image बना रहा है...';try{const x=await fetch('/api/generate-image',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({productName:name})});const d=await x.json().catch(()=>({}));if(!x.ok)throw Error(d.error||'AI API उपलब्ध नहीं है');if(!d.image)throw Error('AI response में image नहीं मिली');const bytes=Uint8Array.from(atob(d.image),c=>c.charCodeAt(0)),blob=new Blob([bytes],{type:'image/png'});preview.src=URL.createObjectURL(blob);preview.style.display='block';const dt=new DataTransfer();dt.items.add(new File([blob],'ai-product-image.png',{type:'image/png'}));imageInput.files=dt.files;showMessage('✅ AI Product Image ready है!')}catch(e){showMessage('⚠️ AI image अभी नहीं बनी: '+(e.message||e)+' — आपकी original photo से Product फिर भी add किया जा सकता है।',false)}finally{b.disabled=false;b.textContent='🤖 AI से Professional Product Image बनाएं'}}
+async function makeProfessionalImage(){
+  const file=imageInput.files[0];
+  if(!file){
+    showMessage("❌ पहले Product Photo चुनें।",false);
+    return;
+  }
+  const b=document.getElementById("aiImageBtn");
+  b.disabled=true;
+  b.textContent="✨ Professional image तैयार हो रही है...";
+  try{
+    const bitmap=await createImageBitmap(file);
+    const size=1200, pad=90;
+    const canvas=document.createElement("canvas");
+    canvas.width=size; canvas.height=size;
+    const ctx=canvas.getContext("2d");
+
+    // Clean studio background
+    ctx.fillStyle="#ffffff";
+    ctx.fillRect(0,0,size,size);
+
+    // Soft marketplace shadow
+    ctx.save();
+    ctx.filter="blur(28px)";
+    ctx.fillStyle="rgba(0,0,0,.18)";
+    ctx.beginPath();
+    ctx.ellipse(size/2, size*0.80, size*0.30, size*0.055, 0, 0, Math.PI*2);
+    ctx.fill();
+    ctx.restore();
+
+    const maxW=size-pad*2, maxH=size-pad*2;
+    const scale=Math.min(maxW/bitmap.width,maxH/bitmap.height);
+    const w=bitmap.width*scale, h=bitmap.height*scale;
+    const x=(size-w)/2, y=(size-h)/2-25;
+
+    // Rounded white product card
+    ctx.save();
+    ctx.shadowColor="rgba(0,0,0,.14)";
+    ctx.shadowBlur=22;
+    ctx.shadowOffsetY=8;
+    ctx.fillStyle="#fff";
+    ctx.fillRect(x-18,y-18,w+36,h+36);
+    ctx.restore();
+
+    ctx.drawImage(bitmap,x,y,w,h);
+
+    const blob=await new Promise(resolve=>canvas.toBlob(resolve,"image/jpeg",0.92));
+    if(!blob) throw Error("Image processing failed");
+
+    preview.src=URL.createObjectURL(blob);
+    preview.style.display="block";
+
+    const dt=new DataTransfer();
+    dt.items.add(new File([blob],"professional-product-image.jpg",{type:"image/jpeg"}));
+    imageInput.files=dt.files;
+
+    showMessage("✅ Professional Product Image ready है।");
+  }catch(e){
+    showMessage("❌ Image तैयार नहीं हुई: "+e.message,false);
+  }finally{
+    b.disabled=false;
+    b.textContent="✨ Professional Product Image बनाएं";
+  }
+}
 async function saveProduct(){const name=productName.value.trim(),p=Number(price.value),s=Number(stock.value),c=category.value,f=imageInput.files[0];if(!name)return showMessage('❌ Product Name डालें।',false);if(!Number.isFinite(p)||p<=0)return showMessage('❌ सही Price डालें।',false);if(!Number.isInteger(s)||s<0)return showMessage('❌ सही Stock डालें।',false);saveBtn.disabled=true;saveBtn.textContent=editId?'⏳ Product update हो रहा है...':'⏳ Product add हो रहा है...';try{let url=currentImageUrl;if(f){const fn=Date.now()+'-'+f.name.replace(/[^a-zA-Z0-9._-]/g,'-');const u=await supabaseClient.storage.from('product-images').upload(fn,f,{upsert:false});if(u.error)throw u.error;const g=supabaseClient.storage.from('product-images').getPublicUrl(fn);url=g.data.publicUrl}if(!url)throw Error('Product Photo चुनें।');const payload={product_name:name,price:p,stock:s,category:c,image_url:url};const r=editId?await supabaseClient.from('products').update(payload).eq('id',editId):await supabaseClient.from('products').insert([payload]);if(r.error)throw r.error;showMessage(editId?'✅ Product successfully update हो गया!':'✅ Product successfully add हो गया!');cancelEdit();await loadProducts()}catch(e){console.error(e);showMessage('❌ काम नहीं हुआ: '+(e.message||e),false)}finally{saveBtn.disabled=false;if(!editId)saveBtn.textContent='➕ Product Add करें'}}
 document.getElementById('aiImageBtn').onclick=generateAIImage;document.getElementById('saveBtn').onclick=saveProduct;cancelBtn.onclick=cancelEdit;document.getElementById('testBtn').onclick=testConnection;loadProducts();if(editId)startEdit(editId);
 </script></body></html>
