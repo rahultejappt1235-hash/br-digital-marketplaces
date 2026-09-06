@@ -1,4 +1,4 @@
-const SUPABASE_URL="https://urymibcdfjfxolrijgt.supabase.co";
+const SUPABASE_URL="https://uryjmibcdfjfxoljrigt.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY="sb_publishable_uYbJw0ARCCkCpQ9QB6FxaQ_JrIxtOOp";
 const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 let products=[];let cart=JSON.parse(localStorage.getItem("br_cart")||"[]");
