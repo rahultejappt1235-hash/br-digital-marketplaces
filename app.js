@@ -1,4 +1,4 @@
-const SUPABASE_URL="https://urymibcdfjfxolrijgt.supabase.co";
+const SUPABASE_URL="https://uryjmibcdfjfxoljrigt.supabase.co;
 const KEY="sb_publishable_uYbJw0ARCCkCpQ9QB6FxaQ_JrIxtOOp";
 let products=[],activeCategory="all",searchTerm="";
 let cart=JSON.parse(localStorage.getItem("br_cart")||"[]");
