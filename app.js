@@ -1,20 +1,160 @@
-const SUPABASE_URL="https://uryjmibcdfjfxoljrigt.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY="sb_publishable_uYbJw0ARCCkCpQ9QB6FxaQ_JrIxtOOp";
-const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
-let products=[];let cart=JSON.parse(localStorage.getItem("br_cart")||"[]");
-const esc=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
-const categoryLabel=v=>({"mobiles":"Mobiles","electronics":"Electronics","fashion":"Fashion","home":"Home","beauty":"Beauty","toys-games":"Toys & Games","accessories":"Accessories","sports":"Sports","grocery":"Grocery","other":"Other"}[String(v||"").toLowerCase()]||v||"Other");
-async function loadProducts(){const s=document.getElementById("status");s.textContent="Products load ho rahe hain...";try{const {data,error}=await supabaseClient.from("products").select("id,product_name,price,stock,category,image_url").order("id",{ascending:false});if(error)throw error;products=data||[];s.textContent=`${products.length} Products`;renderProducts()}catch(e){console.error(e);s.textContent="Connection error";document.getElementById("productGrid").innerHTML=`<div style="grid-column:1/-1;background:#fff;padding:25px;border-radius:16px;text-align:center">❌ Products load नहीं हुए।<br><small>${esc(e.message||e)}</small></div>`}}
-function renderProducts(){const g=document.getElementById("productGrid"),q=(document.getElementById("search").value||"").toLowerCase().trim(),c=(document.getElementById("category").value||"all").toLowerCase();const f=products.filter(p=>String(p.product_name||"").toLowerCase().includes(q)&&(c==="all"||String(p.category||"").toLowerCase()===c));if(!f.length){g.innerHTML=`<div style="grid-column:1/-1;background:#fff;padding:30px;border-radius:16px;text-align:center"><h3>😔 Product nahi mila</h3><p>Dusra search/category try karein.</p></div>`;return}g.innerHTML=f.map(p=>{const st=Number(p.stock||0),pr=Number(p.price||0);return `<article class="product-card" onclick="openProduct(${JSON.stringify(p.id)})"><div class="product-image"><img src="${esc(p.image_url)}" alt="${esc(p.product_name)}" onerror="this.src='https://placehold.co/600x600?text=Product'"></div><h3>${esc(p.product_name)}</h3><p class="brand-line">🏷️ ${esc(categoryLabel(p.category))}</p><p class="price">₹${pr.toLocaleString("en-IN")}</p><p class="stock">${st>0?"✓ Stock available":"Out of stock"}</p><div class="card-actions"><button class="add" onclick="event.stopPropagation();addToCart(${JSON.stringify(p.id)})" ${st<=0?"disabled":""}>🛒 Cart</button><button class="buy" onclick="event.stopPropagation();openProduct(${JSON.stringify(p.id)})">⚡ Buy Now</button></div></article>`}).join("")}
-function openProduct(id){const p=products.find(x=>String(x.id)===String(id));if(!p)return;const m=document.getElementById("detailModal");m.classList.remove("hidden");m.innerHTML=`<div class="modal-card"><button class="close" onclick="closeDetail()">×</button><div class="detail-image"><img src="${esc(p.image_url)}" alt="${esc(p.product_name)}"></div><h2>${esc(p.product_name)}</h2><p>🏷️ Category: ${esc(categoryLabel(p.category))}</p><h2>₹${Number(p.price||0).toLocaleString("en-IN")}</h2><p>${Number(p.stock||0)>0?"✅ Stock available":"❌ Out of stock"}</p><button class="full" onclick="addToCart(${JSON.stringify(p.id)});closeDetail()">🛒 Add to Cart</button></div>`}
-function closeDetail(){document.getElementById("detailModal").classList.add("hidden")}
-function addToCart(id){const p=products.find(x=>String(x.id)===String(id));if(!p)return;const e=cart.find(x=>String(x.id)===String(id));if(e){if(e.quantity>=Number(p.stock||0)){alert("❌ Itna stock available nahi hai.");return}e.quantity++}else cart.push({...p,quantity:1});saveCart();updateCartButton();alert("✅ Product cart mein add ho gaya!")}
-function saveCart(){localStorage.setItem("br_cart",JSON.stringify(cart))}
-function updateCartButton(){document.getElementById("cartCount").textContent=cart.reduce((s,x)=>s+Number(x.quantity||0),0)}
-function openCart(){const m=document.getElementById("cartModal");m.classList.remove("hidden");const t=cart.reduce((s,x)=>s+Number(x.price||0)*Number(x.quantity||0),0);m.innerHTML=`<div class="modal-card"><button class="close" onclick="closeCart()">×</button><h2>🛒 Your Cart</h2>${cart.length?cart.map(x=>`<div style="display:flex;gap:10px;padding:12px 0;border-bottom:1px solid #eee"><img src="${esc(x.image_url)}" style="width:70px;height:70px;object-fit:contain;border-radius:10px;background:#f5f5f5"><div style="flex:1"><b>${esc(x.product_name)}</b><div>₹${Number(x.price||0)} × ${x.quantity}</div><div style="margin-top:7px"><button onclick="changeQuantity(${JSON.stringify(x.id)},-1)">−</button> <b>${x.quantity}</b> <button onclick="changeQuantity(${JSON.stringify(x.id)},1)">+</button> <button onclick="removeFromCart(${JSON.stringify(x.id)})">🗑️</button></div></div></div>`).join(""):`<div style="padding:30px;text-align:center">🛒 Cart khaali hai</div>`}<h2>Total: ₹${t.toLocaleString("en-IN")}</h2>${cart.length?`<button class="full" onclick="showCODForm()">📦 Cash on Delivery Order</button>`:""}</div>`}
+const SUPABASE_URL = "https://urymibcdfjfxolrijgt.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_uYbJw0ARCCkCpQ9QB6FxaQ_JrIxtOOp";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+let products = [];
+let activeCategory = "all";
+let searchTerm = "";
+let cart = JSON.parse(localStorage.getItem("br_cart") || "[]");
+let wishlist = JSON.parse(localStorage.getItem("br_wishlist") || "[]");
+
+const categories = [
+  ["mobiles","Mobiles","📱"],["electronics","Electronics","💻"],["fashion","Fashion","👕"],
+  ["home","Home","🛋️"],["beauty","Beauty","💄"],["grocery","Grocery","🛒"],
+  ["sports","Sports","⚽"],["toys-games","Toys","🧸"],["books","Books","📘"],["other","More","▦"]
+];
+
+function normalizeCategory(v){
+  const x=String(v||"").toLowerCase().trim();
+  const map={
+    mobile:"mobiles",mobiles:"mobiles",electronics:"electronics",
+    fashion:"fashion",clothing:"fashion",home:"home",beauty:"beauty",
+    grocery:"grocery",sports:"sports","toys & games":"toys-games",
+    "toys-games":"toys-games",toys:"toys-games",books:"books",accessories:"other"
+  };
+  return map[x] || x || "other";
+}
+function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
+function money(v){return "₹"+Number(v||0).toLocaleString("en-IN");}
+function placeholder(name){return "https://placehold.co/600x500/f3f4f6/111827?text="+encodeURIComponent(name||"Product");}
+
+function renderCategories(){
+  const el=document.getElementById("categoryGrid");
+  el.innerHTML=categories.map(([value,name,icon])=>`
+    <button class="category" onclick="filterCategory('${value}')">
+      <span class="cat-icon">${icon}</span><span>${name}</span>
+    </button>`).join("");
+}
+
+function filteredProducts(){
+  return products.filter(p=>{
+    const c=normalizeCategory(p.category);
+    const hay=[p.product_name,p.description,p.brand,p.category].map(x=>String(x||"").toLowerCase()).join(" ");
+    return (activeCategory==="all" || c===activeCategory) && (!searchTerm || hay.includes(searchTerm));
+  });
+}
+
+function renderProducts(){
+  const grid=document.getElementById("productGrid");
+  const state=document.getElementById("connectionState");
+  const list=filteredProducts();
+  state.classList.remove("show");
+  if(!list.length){
+    grid.innerHTML=`<div style="grid-column:1/-1;padding:30px;text-align:center;color:#667085">Is category/search mein abhi product available nahi hai.</div>`;
+    return;
+  }
+  grid.innerHTML=list.map(p=>{
+    const price=Number(p.price||0);
+    const old=Number(p.mrp||p.old_price||0);
+    const discount=old>price ? Math.round((1-price/old)*100) : 0;
+    const liked=wishlist.includes(String(p.id));
+    return `<article class="product-card">
+      <div class="product-image">
+        <img src="${esc(p.image_url||placeholder(p.product_name))}" alt="${esc(p.product_name)}" loading="lazy" onerror="this.src='${placeholder(p.product_name)}'">
+        <button class="wish ${liked?"liked":""}" onclick="toggleWish('${esc(p.id)}')" aria-label="Wishlist">${liked?"♥":"♡"}</button>
+      </div>
+      <div class="product-info">
+        <div class="product-name">${esc(p.product_name||"Product")}</div>
+        <div class="rating"><b>★</b> ${p.rating ? Number(p.rating).toFixed(1) : "4.3"} ${p.review_count ? "("+esc(p.review_count)+")" : ""}</div>
+        <div class="price-row"><span class="price">${money(price)}</span>${old?`<span class="old-price">${money(old)}</span>`:""}${discount?`<span class="discount">${discount}% OFF</span>`:""}</div>
+        <div class="stock">${Number(p.stock||0)>0 ? "In Stock" : "Out of Stock"}</div>
+        <button class="add-btn" ${Number(p.stock||0)<=0?"disabled":""} onclick="addToCart('${esc(p.id)}')">🛒 Add to Cart</button>
+      </div>
+    </article>`;
+  }).join("");
+}
+
+async function loadProducts(){
+  const state=document.getElementById("connectionState");
+  state.textContent="Products load ho rahe hain...";
+  state.classList.add("show");
+  try{
+    const {data,error}=await supabaseClient.from("products")
+      .select("id,barcode,product_name,description,image_url,category,price,stock")
+      .order("id",{ascending:false});
+    if(error) throw error;
+    products=data||[];
+    state.classList.remove("show");
+    renderProducts();
+  }catch(error){
+    console.error(error);
+    state.textContent="Products abhi load nahi ho pa rahe. Please refresh karke dobara try karein.";
+    state.classList.add("show");
+    document.getElementById("productGrid").innerHTML="";
+  }
+}
+
+function setSearch(v){
+  searchTerm=String(v||"").toLowerCase().trim();
+  document.getElementById("desktopSearch").value=v;
+  document.getElementById("mobileSearch").value=v;
+  renderProducts();
+}
+function filterCategory(cat){
+  activeCategory=normalizeCategory(cat);
+  document.querySelectorAll(".filter").forEach(b=>b.classList.toggle("active",b.dataset.category===activeCategory));
+  renderProducts();
+  document.getElementById("products").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function clearFilters(){activeCategory="all";searchTerm="";document.querySelectorAll(".filter").forEach(b=>b.classList.toggle("active",b.dataset.category==="all"));setSearch("");}
+function showAllCategories(){document.getElementById("categories").scrollIntoView({behavior:"smooth"});}
+function scrollToProducts(){document.getElementById("products").scrollIntoView({behavior:"smooth"});}
+function toggleWish(id){
+  id=String(id);
+  wishlist=wishlist.includes(id)?wishlist.filter(x=>x!==id):[...wishlist,id];
+  localStorage.setItem("br_wishlist",JSON.stringify(wishlist));
+  updateBadges();renderProducts();
+}
+function addToCart(id){
+  const p=products.find(x=>String(x.id)===String(id));
+  if(!p)return;
+  const item=cart.find(x=>String(x.id)===String(id));
+  if(item)item.qty++;
+  else cart.push({id:p.id,name:p.product_name,price:Number(p.price||0),image:p.image_url||placeholder(p.product_name),qty:1});
+  saveCart();
+}
+function saveCart(){localStorage.setItem("br_cart",JSON.stringify(cart));updateBadges();}
+function updateBadges(){
+  const count=cart.reduce((s,x)=>s+Number(x.qty||0),0);
+  document.getElementById("cartBadge").textContent=count;
+  document.getElementById("bottomCartBadge").textContent=count;
+  document.getElementById("wishBadge").textContent=wishlist.length;
+}
+function openCart(){renderCart();document.getElementById("cartModal").classList.remove("hidden")}
 function closeCart(){document.getElementById("cartModal").classList.add("hidden")}
-function changeQuantity(id,d){const x=cart.find(p=>String(p.id)===String(id));if(!x)return;const p=products.find(p=>String(p.id)===String(id));x.quantity+=d;if(x.quantity<=0)cart=cart.filter(p=>String(p.id)!==String(id));if(p&&x.quantity>Number(p.stock||0))x.quantity=Number(p.stock||0);saveCart();updateCartButton();openCart()}
-function removeFromCart(id){cart=cart.filter(p=>String(p.id)!==String(id));saveCart();updateCartButton();openCart()}
-function showCODForm(){const m=document.getElementById("cartModal");m.innerHTML=`<div class="modal-card"><button class="close" onclick="closeCart()">×</button><h2>📦 Cash on Delivery</h2><input id="customerName" placeholder="👤 Full Name" style="width:100%;padding:14px;margin:7px 0;border:1px solid #ddd;border-radius:10px"><input id="customerPhone" placeholder="📱 Mobile Number" type="tel" style="width:100%;padding:14px;margin:7px 0;border:1px solid #ddd;border-radius:10px"><textarea id="customerAddress" placeholder="🏠 Complete Delivery Address" rows="4" style="width:100%;padding:14px;margin:7px 0;border:1px solid #ddd;border-radius:10px"></textarea><input id="customerPincode" placeholder="📍 Pincode" inputmode="numeric" style="width:100%;padding:14px;margin:7px 0;border:1px solid #ddd;border-radius:10px"><button class="full" onclick="placeCODOrder()">✅ Place COD Order</button></div>`}
-function placeCODOrder(){const n=document.getElementById("customerName").value.trim(),ph=document.getElementById("customerPhone").value.trim(),a=document.getElementById("customerAddress").value.trim(),pin=document.getElementById("customerPincode").value.trim();if(!n||ph.length<10||!a||!pin){alert("⚠️ Please sabhi details sahi se bharein.");return}const t=cart.reduce((s,x)=>s+Number(x.price||0)*Number(x.quantity||0),0);let msg=`🛒 *BR DIGITAL MARKETPLACE - NEW ORDER*\n\n👤 Customer: ${n}\n📱 Mobile: ${ph}\n🏠 Address: ${a}\n📍 Pincode: ${pin}\n\n📦 Products:\n`;cart.forEach(x=>msg+=`\n• ${x.product_name}\n  Qty: ${x.quantity}\n  Price: ₹${x.price}\n`);msg+=`\n💰 *Total: ₹${t}*\n💳 Payment: Cash on Delivery`;const whatsappNumber="919229864665";window.location.href=`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`;cart=[];saveCart();updateCartButton()}
-document.getElementById("search").addEventListener("input",renderProducts);document.getElementById("category").addEventListener("change",renderProducts);document.addEventListener("DOMContentLoaded",()=>{updateCartButton();loadProducts()});
+function renderCart(){
+  const box=document.getElementById("cartItems");
+  if(!cart.length){box.innerHTML="<p style='text-align:center;color:#667085;padding:30px'>Cart abhi empty hai.</p>";document.getElementById("cartTotal").textContent="0";return;}
+  box.innerHTML=cart.map((x,i)=>`<div class="cart-line">
+    <img src="${esc(x.image)}" alt="">
+    <div><b>${esc(x.name)}</b><div>${money(x.price)}</div>
+      <div class="qty"><button onclick="changeQty(${i},-1)">−</button> ${x.qty} <button onclick="changeQty(${i},1)">+</button>
+      <button onclick="removeCart(${i})" style="margin-left:8px;border:0;background:none;color:#e11d48">Remove</button></div>
+    </div></div>`).join("");
+  document.getElementById("cartTotal").textContent=cart.reduce((s,x)=>s+x.price*x.qty,0).toLocaleString("en-IN");
+}
+function changeQty(i,d){cart[i].qty+=d;if(cart[i].qty<=0)cart.splice(i,1);saveCart();renderCart();}
+function removeCart(i){cart.splice(i,1);saveCart();renderCart();}
+function checkout(){
+  if(!cart.length){alert("Cart empty hai.");return;}
+  alert("Order page next step mein connect kiya jayega. Cart ka data safe hai.");
+}
+function goAccount(){alert("Account page next step mein connect kiya jayega.");}
+function showOrderMessage(){alert("Orders page next step mein connect kiya jayega.");}
+function closeDrawer(){document.getElementById("drawer").classList.remove("open")}
+
+document.getElementById("menuBtn").onclick=()=>document.getElementById("drawer").classList.add("open");
+document.getElementById("desktopSearch").addEventListener("input",e=>setSearch(e.target.value));
+document.getElementById("mobileSearch").addEventListener("input",e=>setSearch(e.target.value));
+document.querySelectorAll(".filter").forEach(b=>b.addEventListener("click",()=>filterCategory(b.dataset.category)));
+renderCategories();updateBadges();loadProducts();
