@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="hi"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Account - BR Digital Marketplace</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#f6f7f9;color:#17202a}
+header{background:#fff;padding:14px 18px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 10px #0001;position:sticky;top:0}
+.logo{background:#ff7a00;color:white;border-radius:12px;padding:10px 13px;font-weight:800;font-size:20px}.brand{font-weight:800;font-size:19px}
+main{max-width:760px;margin:20px auto;padding:0 14px}.card{background:#fff;padding:20px;border-radius:18px;margin-bottom:16px;box-shadow:0 3px 15px #0000000d}
+h1{margin:4px 0 8px}.muted{color:#667085}label{display:block;font-weight:700;margin:12px 0 6px}
+input,textarea{width:100%;padding:13px;border:1px solid #d7dbe0;border-radius:10px;font-size:16px}textarea{min-height:100px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+button{border:0;border-radius:10px;padding:12px 15px;font-weight:700}.primary{background:#ff7a00;color:white}.dark{background:#17202a;color:white}.danger{background:#fee2e2;color:#991b1b}
+.notice{padding:12px;border-radius:10px;background:#fff7ed;border:1px solid #fed7aa;margin:12px 0}.hidden{display:none!important}
+.item{padding:12px 0;border-bottom:1px solid #eee}.bottom{display:flex;justify-content:space-around;background:#fff;border-top:1px solid #ddd;position:sticky;bottom:0;padding:10px}.bottom a{text-decoration:none;color:#333;text-align:center}
+@media(max-width:560px){.row{grid-template-columns:1fr}}
+</style></head><body>
+<header><span class="logo">BR</span><span class="brand">BR Digital Marketplace</span></header>
+<main>
+<section class="card" id="loginCard">
+<h1>👤 My Account</h1><p class="muted">Login karke profile aur orders dekhein.</p>
+<div id="loginNotice" class="notice hidden"></div>
+<label>Email</label><input id="email" type="email" placeholder="Aapka email">
+<label>Password</label><input id="password" type="password" placeholder="Password">
+<div class="actions"><button class="primary" onclick="login()">🔐 Login</button><button class="dark" onclick="signup()">➕ Create Account</button></div>
+</section>
+<section class="card hidden" id="accountCard">
+<h1>👋 <span id="hello">My Account</span></h1><p id="accountEmail" class="muted"></p><div id="notice" class="notice hidden"></div>
+<h2>✏️ Profile</h2><div class="row">
+<div><label>नाम</label><input id="fullName" placeholder="आपका नाम"></div>
+<div><label>Mobile</label><input id="phone" placeholder="Mobile number"></div></div>
+<div class="actions"><button class="primary" onclick="saveProfile()">💾 Profile Save</button><button class="danger" onclick="logout()">Logout</button></div>
+<h2>📍 Delivery Address</h2><textarea id="address" placeholder="House, Road, City, State, Pincode"></textarea>
+<div class="actions"><button class="primary" onclick="saveAddress()">📍 Address Save</button></div>
+<h2>📦 My Orders</h2><div id="orders"><p class="muted">Orders load ho rahe hain...</p></div>
+<h2>❤️ Wishlist</h2><div id="wishlist"><p class="muted">Wishlist load ho rahi hai...</p></div>
+</section></main>
+<nav class="bottom"><a href="index.html">🏠<br>Home</a><a href="seller-login.html">👨‍💼<br>Seller</a><a href="account.html">👤<br>Account</a><a href="index.html#products">🛍️<br>Products</a></nav>
+<script>
+const SUPABASE_URL="https://urymibcdfjfxolrijgt.supabase.co";
+const SUPABASE_KEY="sb_publishable_uYbJw0ARCCkCpQ9QB6FxaQ_JrI";
+const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+function show(id,t){const e=document.getElementById(id);e.textContent=t;e.classList.remove("hidden")}
+function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+async function login(){const email=document.getElementById("email").value.trim(),password=document.getElementById("password").value;if(!email||!password)return show("loginNotice","Email aur password dono bharna zaroori hai.");const r=await db.auth.signInWithPassword({email,password});if(r.error)return show("loginNotice","❌ "+r.error.message);init()}
+async function signup(){const email=document.getElementById("email").value.trim(),password=document.getElementById("password").value;if(!email||!password)return show("loginNotice","Email aur password dono bharna zaroori hai.");if(password.length<6)return show("loginNotice","Password kam se kam 6 characters ka hona chahiye.");const r=await db.auth.signUp({email,password});if(r.error)return show("loginNotice","❌ "+r.error.message);show("loginNotice",r.data.session?"✅ Account ready.":"✅ Account ban gaya. Email verify karke login karein.")}
+async function init(){const {data:{user}}=await db.auth.getUser();if(!user)return;document.getElementById("loginCard").classList.add("hidden");document.getElementById("accountCard").classList.remove("hidden");document.getElementById("accountEmail").textContent=user.email||"";const r=await db.from("profiles").select("full_name,phone").eq("id",user.id).maybeSingle();document.getElementById("fullName").value=r.data?.full_name||"";document.getElementById("phone").value=r.data?.phone||"";document.getElementById("hello").textContent=r.data?.full_name||"My Account";document.getElementById("address").value=localStorage.getItem("br_delivery_address")||"";loadOrders(user.id);loadWishlist()}
+async function saveProfile(){const {data:{user}}=await db.auth.getUser();if(!user)return;const full_name=document.getElementById("fullName").value.trim(),phone=document.getElementById("phone").value.trim();const r=await db.from("profiles").update({full_name,phone}).eq("id",user.id);if(r.error)return show("notice","❌ Profile save nahi hua: "+r.error.message);document.getElementById("hello").textContent=full_name||"My Account";show("notice","✅ Profile save ho gaya.")}
+function saveAddress(){localStorage.setItem("br_delivery_address",document.getElementById("address").value.trim());show("notice","✅ Address save ho gaya.")}
+async function loadOrders(uid){const e=document.getElementById("orders"),r=await db.from("orders").select("*").eq("customer_id",uid).order("created_at",{ascending:false});if(r.error){e.innerHTML='<p class="muted">Orders abhi load nahi ho pa rahe.</p>';return}if(!r.data?.length){e.innerHTML='<p class="muted">Abhi koi order nahi hai.</p>';return}e.innerHTML=r.data.map(o=>'<div class="item"><b>Order #'+esc(o.id)+'</b><br>₹'+Number(o.total_amount||0).toFixed(2)+' • '+esc(o.status||"pending")+'</div>').join("")}
+function loadWishlist(){let a=[];try{a=JSON.parse(localStorage.getItem("br_wishlist")||"[]")}catch(e){}const e=document.getElementById("wishlist");e.innerHTML=a.length?a.map(x=>'<div class="item">❤️ '+esc(x.name||x.product_name||"Product")+'</div>').join(""):'<p class="muted">Wishlist mein abhi koi item nahi hai.</p>'}
+async function logout(){await db.auth.signOut();location.reload()}init();
+</script></body></html>
