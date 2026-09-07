@@ -2,112 +2,139 @@
 <html lang="hi">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>BR Digital Marketplace</title>
+<meta name="description" content="BR Digital Marketplace - Bihar ka online marketplace">
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 <header class="topbar">
-  <div class="brand"><span class="logo">BR</span><div><b>BR Digital</b><small>Marketplace</small></div></div>
-  <div class="actions"><a href="seller-dashboard.html">Seller</a><button id="cartBtn">🛒 <span id="cartCount">0</span></button></div>
+  <a class="brand" href="index.html"><span class="logo">BR</span><span><b>BR Digital</b><small>Marketplace</small></span></a>
+  <div class="headActions"><a class="seller" href="seller-dashboard.html">Seller</a><button class="cartBtn" id="cartBtn">🛒 <em id="cartCount">0</em></button></div>
 </header>
 
 <section class="hero">
-  <div class="heroText">
-    <span class="pill">🇮🇳 Bihar ka Digital Marketplace</span>
-    <h1>Shopping ka <strong>naya digital address</strong></h1>
-    <p>Local sellers se products dekhiye, compare kijiye aur online order kijiye.</p>
-    <a class="heroBtn" href="#products">Shop Now →</a>
+  <div class="heroCopy">
+    <div class="eyebrow">🇮🇳 Bihar ka Digital Marketplace</div>
+    <h1>Shopping ka <span>naya digital address</span></h1>
+    <p>Local sellers ke products ek hi jagah. Search karein, cart mein add karein aur order karein.</p>
+    <a href="#products" class="heroCTA">Shop Now <b>→</b></a>
+    <div class="trust"><span>✓ Local Sellers</span><span>✓ Wide Choice</span><span>✓ Easy Ordering</span></div>
   </div>
-  <div class="hero3d"><div class="orb"></div><div class="card3d c1">📱<b>Mobiles</b></div><div class="card3d c2">👟<b>Fashion</b></div><div class="card3d c3">🎧<b>Electronics</b></div></div>
+  <div class="heroVisual" aria-hidden="true">
+    <div class="glow g1"></div><div class="glow g2"></div>
+    <div class="floatCard phone"><div class="phoneScreen">📱</div><b>Mobiles</b><small>Top picks</small></div>
+    <div class="floatCard shoe">👟<b>Fashion</b><small>Trending</small></div>
+    <div class="floatCard buds">🎧<b>Electronics</b><small>Best deals</small></div>
+    <div class="coin">₹</div>
+  </div>
 </section>
 
 <section class="section">
-<h2>Shop by Category</h2>
-<div id="categories" class="categoryGrid"></div>
+  <div class="sectionHead"><div><span class="miniTitle">EXPLORE</span><h2>Shop by Category</h2></div></div>
+  <div id="categories" class="categoryGrid"></div>
 </section>
 
-<section class="searchBox">
-  <input id="search" placeholder="🔎 Product search karein...">
+<section class="searchPanel">
+  <div class="searchWrap"><span>🔎</span><input id="search" placeholder="Product search karein..."><button id="clearSearch">×</button></div>
   <select id="category"><option value="">All Categories</option></select>
 </section>
 
 <section class="section">
-<h2>Brands in Spotlight</h2>
-<div id="brands" class="brands"></div>
+  <div class="sectionHead"><div><span class="miniTitle">TOP BRANDS</span><h2>Brands in Spotlight</h2></div><button id="allBrands">All</button></div>
+  <div id="brands" class="brandRail"></div>
 </section>
 
 <section class="section" id="products">
-<div class="titleRow"><h2>Popular Products</h2><span id="status">Loading...</span></div>
-<div id="productGrid" class="productGrid"></div>
+  <div class="sectionHead"><div><span class="miniTitle">LIVE MARKETPLACE</span><h2>Popular Products</h2></div><span id="status" class="status">Loading...</span></div>
+  <div id="productGrid" class="productGrid"></div>
 </section>
 
 <section class="benefits">
-<div>🚚<b>Fast Delivery</b><span>Doorstep delivery</span></div>
-<div>💳<b>Easy Payment</b><span>Simple checkout</span></div>
-<div>🛡️<b>Trusted Sellers</b><span>Marketplace sellers</span></div>
-<div>📞<b>Support</b><span>Customer assistance</span></div>
+  <div class="benefit b1"><i>🚚</i><b>Fast Delivery</b><span>Doorstep delivery</span></div>
+  <div class="benefit b2"><i>🛡️</i><b>Trusted Sellers</b><span>Local marketplace sellers</span></div>
+  <div class="benefit b3"><i>💳</i><b>Easy Ordering</b><span>Simple & convenient</span></div>
+  <div class="benefit b4"><i>📞</i><b>Customer Support</b><span>Help when you need it</span></div>
 </section>
 
-<footer><b>BR Digital Marketplace</b><p>Bihar se Bharat tak — digital shopping ka apna marketplace.</p></footer>
+<section class="how">
+  <span class="miniTitle">SIMPLE SHOPPING</span><h2>Kaise Order Karein?</h2>
+  <div class="steps"><div><strong>01</strong><b>Product Chunein</b><span>Apni pasand ka product dekhein.</span></div><div><strong>02</strong><b>Cart Mein Add</b><span>Product ko cart mein add karein.</span></div><div><strong>03</strong><b>Order Karein</b><span>Order details dekar place karein.</span></div></div>
+</section>
 
-<div id="cartModal" class="modal"><div class="modalCard"><button class="close" id="closeCart">×</button><h2>Your Cart</h2><div id="cartItems"></div><div class="cartTotal">Total: ₹<span id="cartTotal">0</span></div><button id="orderBtn" class="orderBtn">Order via WhatsApp</button></div></div>
+<footer><div class="footerLogo"><span class="logo">BR</span><b>BR Digital Marketplace</b></div><p>Bihar se Bharat tak — digital shopping ka apna marketplace.</p><small>© 2026 BR Digital Marketplace</small></footer>
+
+<div id="cartModal" class="modal"><div class="modalCard"><button class="close" id="closeCart">×</button><h2>🛒 Your Cart</h2><div id="cartItems"></div><div class="total">Total <b>₹<span id="cartTotal">0</span></b></div><button id="orderBtn" class="orderBtn">Order via WhatsApp →</button></div></div>
 
 <script>
-const SUPABASE_URL="https://uryjmibcdfjfxolrijgt.supabase.co";
-const SUPABASE_KEY="YOUR_SUPABASE_PUBLISHABLE_KEY";
-const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-let products=[], selectedBrand="", cart=JSON.parse(localStorage.getItem("br_cart")||"[]");
+const SUPABASE_URL="https://urymibcdfjfxolrijgt.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY="sb_publishable_uYbJw0ARCCkCpQ9QB6FxaQ_JrI";
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+let products=[],selectedBrand="",cart=JSON.parse(localStorage.getItem("br_cart")||"[]");
 
-const catNames=["Mobiles","Electronics","Fashion","Home","Beauty","Grocery","Sports","Toys & Games","Accessories","Other"];
-const fixedBrands=["Samsung","boAt","realme","Redmi","OnePlus","vivo","OPPO","Nike"];
+const cats=[
+ ["Mobiles","📱","linear-gradient(135deg,#dff3ff,#5ab7ff)"],
+ ["Electronics","🎧","linear-gradient(135deg,#e9e1ff,#9a70ff)"],
+ ["Fashion","👕","linear-gradient(135deg,#ffe4ee,#ff6d9f)"],
+ ["Home","🏠","linear-gradient(135deg,#fff0c7,#ffb347)"],
+ ["Beauty","💄","linear-gradient(135deg,#ffe0e8,#ff6b81)"],
+ ["Grocery","🛒","linear-gradient(135deg,#dcffd9,#62cf72)"],
+ ["Sports","🏏","linear-gradient(135deg,#fff1c9,#ff9f43)"],
+ ["Toys & Games","🎮","linear-gradient(135deg,#e1dcff,#7565ff)"],
+ ["Accessories","👜","linear-gradient(135deg,#ffe7cf,#ff8d45)"],
+ ["Other","✨","linear-gradient(135deg,#e9e9ee,#a7a7b4)"]
+];
+const brands=["Samsung","boAt","realme","Redmi","OnePlus","vivo","OPPO","Nike"];
+const brandClass={Samsung:"sam",boAt:"boat",realme:"realme",Redmi:"redmi",OnePlus:"one",vivo:"vivo",OPPO:"oppo",Nike:"nike"};
 
 function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
-function field(p,a,b){return p?.[a]??p?.[b]??""}
-
-function drawCategories(){
- const box=document.querySelector("#categories"), sel=document.querySelector("#category");
- const icons={"Mobiles":"📱","Electronics":"🎧","Fashion":"👕","Home":"🏠","Beauty":"💄","Grocery":"🛒","Sports":"🏏","Toys & Games":"🎮","Accessories":"👜","Other":"✨"};
- box.innerHTML=catNames.map(c=>`<button class="cat" onclick="filterCat('${c}')"><span>${icons[c]}</span><b>${c}</b></button>`).join("");
- sel.innerHTML='<option value="">All Categories</option>'+catNames.map(c=>`<option>${c}</option>`).join("");
+function val(p,a,b){return p?.[a]??p?.[b]??""}
+function drawCats(){
+ document.querySelector("#categories").innerHTML=cats.map(([n,ic,bg])=>`<button class="catCard" style="--catbg:${bg}" onclick="pickCat('${n}')"><span class="catIcon">${ic}</span><b>${n}</b><small>Explore →</small></button>`).join("");
+ document.querySelector("#category").innerHTML='<option value="">All Categories</option>'+cats.map(x=>`<option value="${x[0]}">${x[0]}</option>`).join("");
 }
-function filterCat(c){document.querySelector("#category").value=c; render()}
+function pickCat(c){document.querySelector("#category").value=c;render()}
 function drawBrands(){
- let dynamic=[...new Set(products.map(p=>field(p,"brand","Brand")).filter(Boolean))];
- let names=[...new Set([...fixedBrands,...dynamic])];
- document.querySelector("#brands").innerHTML=names.map(b=>`<button class="brand" onclick="filterBrand('${esc(b)}')"><span>${esc(b[0]||"B")}</span><b>${esc(b)}</b></button>`).join("");
+ const dynamic=products.map(p=>val(p,"brand","Brand")).filter(Boolean);
+ const names=[...new Set([...brands,...dynamic])];
+ document.querySelector("#brands").innerHTML=names.map((b,i)=>`<button class="brandCard ${brandClass[b]||"custom"}" onclick="pickBrand('${esc(b)}')"><span>${esc((b[0]||"B").toUpperCase())}</span><b>${esc(b)}</b><small>View products</small></button>`).join("");
 }
-function filterBrand(b){selectedBrand=b;render();document.querySelector("#products").scrollIntoView({behavior:"smooth"})}
-
+function pickBrand(b){selectedBrand=b;render();document.querySelector("#products").scrollIntoView({behavior:"smooth",block:"start"})}
 function render(){
- const q=document.querySelector("#search").value.toLowerCase().trim(), cat=document.querySelector("#category").value;
- let list=products.filter(p=>{
-  const name=field(p,"product_name","name"), c=field(p,"category","Category"), b=field(p,"brand","Brand");
-  return (!q||name.toLowerCase().includes(q)||String(field(p,"description","Description")).toLowerCase().includes(q))
-   &&(!cat||String(c).toLowerCase()===cat.toLowerCase())
-   &&(!selectedBrand||String(b).toLowerCase()===selectedBrand.toLowerCase());
+ const q=document.querySelector("#search").value.toLowerCase().trim(),cat=document.querySelector("#category").value;
+ const list=products.filter(p=>{
+  const n=String(val(p,"product_name","name")).toLowerCase(),d=String(val(p,"description","Description")).toLowerCase(),c=String(val(p,"category","Category")),b=String(val(p,"brand","Brand"));
+  return (!q||n.includes(q)||d.includes(q))&&(!cat||c.toLowerCase()===cat.toLowerCase())&&(!selectedBrand||b.toLowerCase()===selectedBrand.toLowerCase());
  });
- document.querySelector("#status").textContent=list.length+" products";
+ document.querySelector("#status").textContent=(list.length+" products");
  document.querySelector("#productGrid").innerHTML=list.map(p=>{
-  const id=p.id, name=field(p,"product_name","name"), price=Number(field(p,"price","Price")||0), img=field(p,"image_url","Image_url")||"https://placehold.co/500x400?text=Product";
-  return `<article class="product"><div class="pic"><img src="${esc(img)}" onerror="this.src='https://placehold.co/500x400?text=Product'"></div><div class="pbody"><small>${esc(field(p,"brand","Brand")||field(p,"category","Category")||"BR Marketplace")}</small><h3>${esc(name)}</h3><b class="price">₹${price.toLocaleString("en-IN")}</b><button onclick="addCart('${esc(id)}')">Add to Cart</button></div></article>`
- }).join("")||'<div class="empty">Product nahi mila.</div>';
+  const id=p.id,n=val(p,"product_name","name"),price=Number(val(p,"price","Price")||0),stock=Number(val(p,"stock","Stock")||0),img=val(p,"image_url","Image_url")||"https://placehold.co/600x500?text=Product",brand=val(p,"brand","Brand")||val(p,"category","Category")||"BR Marketplace";
+  return `<article class="productCard"><div class="productImage"><span class="shine"></span><img src="${esc(img)}" onerror="this.src='https://placehold.co/600x500?text=Product'"></div><div class="productInfo"><small>${esc(brand)}</small><h3>${esc(n)}</h3><div class="priceRow"><b>₹${price.toLocaleString("en-IN")}</b>${stock?`<span>${stock} left</span>`:""}</div><button onclick="addCart('${esc(id)}')">Add to Cart</button></div></article>`
+ }).join("")||`<div class="empty"><div>🔍</div><b>Product nahi mila</b><span>Search ya category change karke dekhein.</span></div>`;
 }
 async function loadProducts(){
- const {data,error}=await sb.from("products").select("*");
- if(error){document.querySelector("#status").textContent="Products load nahi hue";console.error(error);return}
- products=data||[]; drawBrands(); render();
+ let res=await sb.from("products").select("*");
+ if(res.error){document.querySelector("#status").textContent="Live products unavailable";console.error(res.error);return}
+ products=res.data||[];drawBrands();render();
 }
-function addCart(id){const p=products.find(x=>String(x.id)===String(id));if(!p)return;cart.push(p);localStorage.setItem("br_cart",JSON.stringify(cart));updateCart();alert("Product cart mein add ho gaya.");}
-function updateCart(){document.querySelector("#cartCount").textContent=cart.length;document.querySelector("#cartItems").innerHTML=cart.map((p,i)=>`<div class="cartItem"><span>${esc(field(p,"product_name","name"))}</span><b>₹${Number(field(p,"price","Price")||0).toLocaleString("en-IN")}</b><button onclick="removeCart(${i})">×</button></div>`).join("")||"<p>Cart empty hai.</p>";document.querySelector("#cartTotal").textContent=cart.reduce((s,p)=>s+Number(field(p,"price","Price")||0),0).toLocaleString("en-IN")}
+function addCart(id){const p=products.find(x=>String(x.id)===String(id));if(!p)return;cart.push(p);localStorage.setItem("br_cart",JSON.stringify(cart));updateCart();toast("Product cart mein add ho gaya ✓")}
+function updateCart(){
+ document.querySelector("#cartCount").textContent=cart.length;
+ document.querySelector("#cartItems").innerHTML=cart.map((p,i)=>`<div class="cartLine"><span>${esc(val(p,"product_name","name"))}</span><b>₹${Number(val(p,"price","Price")||0).toLocaleString("en-IN")}</b><button onclick="removeCart(${i})">×</button></div>`).join("")||"<p class='emptyCart'>Cart abhi empty hai.</p>";
+ document.querySelector("#cartTotal").textContent=cart.reduce((s,p)=>s+Number(val(p,"price","Price")||0),0).toLocaleString("en-IN");
+}
 function removeCart(i){cart.splice(i,1);localStorage.setItem("br_cart",JSON.stringify(cart));updateCart()}
-document.querySelector("#search").addEventListener("input",render);
-document.querySelector("#category").addEventListener("change",render);
+function toast(t){const x=document.createElement("div");x.className="toast";x.textContent=t;document.body.appendChild(x);setTimeout(()=>x.remove(),1800)}
+document.querySelector("#search").oninput=render;
+document.querySelector("#category").onchange=render;
+document.querySelector("#clearSearch").onclick=()=>{document.querySelector("#search").value="";render()};
+document.querySelector("#allBrands").onclick=()=>{selectedBrand="";render()};
 document.querySelector("#cartBtn").onclick=()=>{updateCart();document.querySelector("#cartModal").classList.add("show")};
 document.querySelector("#closeCart").onclick=()=>document.querySelector("#cartModal").classList.remove("show");
-document.querySelector("#orderBtn").onclick=()=>{if(!cart.length)return alert("Cart empty hai.");let text="BR Digital Marketplace Order%0A"+cart.map(p=>encodeURIComponent(field(p,"product_name","name"))).join("%0A");window.open("https://wa.me/917050207479?text="+text,"_blank")};
-drawCategories();updateCart();loadProducts();
+document.querySelector("#cartModal").onclick=e=>{if(e.target.id==="cartModal")e.currentTarget.classList.remove("show")};
+document.querySelector("#orderBtn").onclick=()=>{if(!cart.length)return toast("Cart empty hai");const items=cart.map(p=>val(p,"product_name","name")).join(", ");window.open("https://wa.me/917050207479?text="+encodeURIComponent("BR Digital Marketplace Order\nProducts: "+items+"\nPlease confirm my order."),"_blank")};
+drawCats();updateCart();loadProducts();
 </script>
 </body>
 </html>
