@@ -141,7 +141,8 @@
   <div class="card">
 
     <h1>🛍️ Seller Dashboard</h1>
-    <p>Apna product marketplace par add karein.</p>
+    <p id="sellerStatus">Seller account verify ho raha hai...</p>
+    <button type="button" id="logoutBtn" style="background:#18202a;margin-top:10px" onclick="sellerLogout()">Logout</button>
 
     <label>Product Name</label>
     <input
@@ -149,6 +150,12 @@
       id="productName"
       placeholder="Example: Men's Premium T-Shirt"
     >
+
+    <label>Brand</label>
+    <input type="text" id="brand" placeholder="Example: Samsung / boAt / Local Brand">
+
+    <label>Description</label>
+    <input type="text" id="description" placeholder="Product description">
 
     <label>Price (₹)</label>
     <input
@@ -181,7 +188,13 @@
       id="productImage"
       accept="image/*"
     >
-
+<button
+  type="button"
+  id="aiImageBtn"
+  onclick="generateAIImage()"
+>
+  🤖 AI से Product Image बनाएं
+</button>
     <div class="preview">
       <img id="previewImage" alt="Product Preview">
     </div>
@@ -202,11 +215,9 @@
 
 <script>
 
-const SUPABASE_URL =
-  "https://uryjmibcdfjfxolrijgt.supabase.co";
+const SUPABASE_URL = "https://uryjmibcdfjfxolrijgt.supabase.co";
 
-const SUPABASE_PUBLISHABLE_KEY =
-  "sb_publishable_uYbJw0ARCCkCpQ9QB6FxaQ_JrIxtOOp";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_uYbJw0ARCCkQ9QB6FxaQ_JrIxtOOp";
 
 const supabaseClient = supabase.createClient(
   SUPABASE_URL,
@@ -229,7 +240,112 @@ document
     preview.src = URL.createObjectURL(file);
     preview.style.display = "block";
   });
+// AI PRODUCT IMAGE
+async function generateAIImage() {
 
+  const productName =
+    document.getElementById("productName").value.trim();
+
+  if (!productName) {
+    showMessage("❌ पहले Product Name डालें", false);
+    return;
+  }
+
+  const button =
+    document.getElementById("aiImageBtn");
+
+  button.disabled = true;
+  button.innerText = "🤖 AI Image बना रहा है...";
+
+  try {
+
+    const response = await fetch(
+      "/api/generate-image",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          productName: productName
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.error || "AI image generate नहीं हुई"
+      );
+    }
+
+    const byteCharacters = atob(data.image);
+    const byteNumbers =
+      new Array(byteCharacters.length);
+
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] =
+        byteCharacters.charCodeAt(i);
+    }
+
+    const byteArray =
+      new Uint8Array(byteNumbers);
+
+    const blob =
+      new Blob([byteArray], {
+        type: "image/png"
+      });
+
+    const file =
+      new File(
+        [blob],
+        "ai-product-image.png",
+        {
+          type: "image/png"
+        }
+      );
+
+    const dataTransfer =
+      new DataTransfer();
+
+    dataTransfer.items.add(file);
+
+    document.getElementById(
+      "productImage"
+    ).files = dataTransfer.files;
+
+    const preview =
+      document.getElementById(
+        "previewImage"
+      );
+
+    preview.src =
+      URL.createObjectURL(blob);
+
+    preview.style.display = "block";
+
+    showMessage(
+      "✅ AI Product Image ready hai!"
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      "❌ AI image नहीं बनी: " +
+      error.message,
+      false
+    );
+
+  } finally {
+
+    button.disabled = false;
+    button.innerText =
+      "🤖 AI से Product Image बनाएं";
+  }
+}
 
 // MESSAGE
 function showMessage(text, success = true) {
@@ -249,135 +365,89 @@ function showMessage(text, success = true) {
 
 
 // ADD PRODUCT
+async function requireSeller() {
+  const { data: { user }, error } = await supabaseClient.auth.getUser();
+  if (error || !user) {
+    location.href = "seller-login.html";
+    return null;
+  }
+  const { data: seller, error: se } = await supabaseClient.from("sellers")
+    .select("id,business_name,owner_name,status,is_active")
+    .eq("id", user.id).maybeSingle();
+  if (se || !seller || String(seller.status || "").toLowerCase() !== "approved" || seller.is_active !== true) {
+    await supabaseClient.auth.signOut();
+    location.href = "seller-login.html";
+    return null;
+  }
+  document.getElementById("sellerStatus").textContent =
+    "🏪 " + (seller.business_name || seller.owner_name || user.email) + " • Approved";
+  return { user, seller };
+}
+
 async function addProduct() {
+  const session = await requireSeller();
+  if (!session) return;
 
-  const productName =
-    document.getElementById("productName").value.trim();
+  const productName = document.getElementById("productName").value.trim();
+  const brand = document.getElementById("brand").value.trim();
+  const description = document.getElementById("description").value.trim();
+  const price = Number(document.getElementById("price").value);
+  const stock = Number(document.getElementById("stock").value);
+  const category = document.getElementById("category").value;
+  const imageFile = document.getElementById("productImage").files[0];
+  const button = document.getElementById("addProductBtn");
 
-  const price =
-    Number(document.getElementById("price").value);
-
-  const stock =
-    Number(document.getElementById("stock").value);
-
-  const category =
-    document.getElementById("category").value;
-
-  const imageFile =
-    document.getElementById("productImage").files[0];
-
-  const button =
-    document.getElementById("addProductBtn");
-
-
-  if (!productName) {
-    showMessage("❌ Product name डालें", false);
-    return;
-  }
-
-  if (!price || price <= 0) {
-    showMessage("❌ सही price डालें", false);
-    return;
-  }
-
-  if (stock < 0) {
-    showMessage("❌ सही stock डालें", false);
-    return;
-  }
-
-  if (!imageFile) {
-    showMessage("❌ Product image चुनें", false);
-    return;
-  }
-
+  if (!productName) return showMessage("❌ Product name डालें", false);
+  if (!price || price <= 0) return showMessage("❌ सही price डालें", false);
+  if (stock < 0) return showMessage("❌ सही stock डालें", false);
+  if (!imageFile) return showMessage("❌ Product image चुनें", false);
 
   button.disabled = true;
   button.innerText = "⏳ Product add ho raha hai...";
 
-
   try {
+    const safeName = imageFile.name.replace(/[^a-zA-Z0-9._-]/g, "-");
+    const fileName = session.user.id + "/" + Date.now() + "-" + safeName;
 
-    // FILE NAME
-    const fileName =
-      Date.now() + "-" +
-      imageFile.name.replace(/\s+/g, "-");
+    const { error: uploadError } = await supabaseClient.storage
+      .from("product-images").upload(fileName, imageFile, { upsert: false });
+    if (uploadError) throw uploadError;
 
+    const { data: imageData } = supabaseClient.storage
+      .from("product-images").getPublicUrl(fileName);
 
-    // IMAGE UPLOAD
-    const { error: uploadError } =
-      await supabaseClient
-        .storage
-        .from("product-images")
-        .upload(fileName, imageFile);
+    const payload = {
+      product_name: productName,
+      price, stock, category,
+      image_url: imageData.publicUrl,
+      seller_id: session.user.id
+    };
+    if (brand) payload.brand = brand;
+    if (description) payload.description = description;
 
+    const { error: productError } = await supabaseClient.from("products").insert([payload]);
+    if (productError) throw productError;
 
-    if (uploadError) {
-      throw uploadError;
-    }
-
-
-    // IMAGE URL
-    const { data: imageData } =
-      supabaseClient
-        .storage
-        .from("product-images")
-        .getPublicUrl(fileName);
-
-
-    const imageUrl =
-      imageData.publicUrl;
-
-
-    // SAVE PRODUCT
-    const { error: productError } =
-      await supabaseClient
-        .from("products")
-        .insert([{
-          product_name: productName,
-          price: price,
-          stock: stock,
-          category: category,
-          image_url: imageUrl
-        }]);
-
-
-    if (productError) {
-      throw productError;
-    }
-
-
-    showMessage(
-      "✅ Product successfully add ho gaya!"
-    );
-
-
-    // CLEAR FORM
-    document.getElementById("productName").value = "";
-    document.getElementById("price").value = "";
-    document.getElementById("stock").value = "";
-    document.getElementById("productImage").value = "";
-
-    document.getElementById("previewImage").style.display =
-      "none";
-
-
+    showMessage("✅ Product successfully add ho gaya!", true);
+    ["productName","brand","description","price","stock","productImage"].forEach(id => {
+      const el=document.getElementById(id); if(el) el.value="";
+    });
+    document.getElementById("previewImage").style.display="none";
   } catch (error) {
-
     console.error(error);
-
-    showMessage(
-      "❌ Product add nahi hua: " +
-      error.message,
-      false
-    );
-
+    showMessage("❌ Product add nahi hua: " + error.message, false);
+  } finally {
+    button.disabled = false;
+    button.innerText = "➕ Add Product";
   }
-
-
-  button.disabled = false;
-  button.innerText = "➕ Add Product";
 }
 
+async function sellerLogout() {
+  await supabaseClient.auth.signOut();
+  location.href = "seller-login.html";
+}
+
+requireSeller();
 </script>
 
 </body>
