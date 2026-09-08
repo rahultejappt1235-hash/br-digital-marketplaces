@@ -130,6 +130,15 @@
         Seller login ya naya account banayein
       </p>
 
+      <label>Business / Shop Name</label>
+      <input type="text" id="businessName" placeholder="Example: Rahul Mobile Shop">
+
+      <label>Owner Name</label>
+      <input type="text" id="ownerName" placeholder="Your full name">
+
+      <label>Phone</label>
+      <input type="tel" id="phone" placeholder="10 digit mobile number">
+
       <label>Email</label>
       <input
         type="email"
@@ -170,11 +179,9 @@
   // SUPABASE CONFIG
   // ================================
 
-  const SUPABASE_URL =
-    "https://uryjmibcdfjfxolrijgt.supabase.co";
+  const SUPABASE_URL = "https://uryjmibcdfjfxolrijgt.supabase.co";
 
-  const SUPABASE_PUBLISHABLE_KEY =
-    "sb_publishable_uYbJw0ARCCkP9QB6FxaQ_JrIxtOOpxtOOp";
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_uYbJw0ARCCkQ9QB6FxaQ_JrIxtOOp";
 
   const supabaseClient =
     supabase.createClient(
@@ -209,118 +216,90 @@
 // ================================
 
 async function sellerSignup() {
+  const businessName = document.getElementById("businessName").value.trim();
+  const ownerName = document.getElementById("ownerName").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
 
-  const email =
-    document.getElementById("email").value.trim();
-
-  const password =
-    document.getElementById("password").value;
-
-
-  if (!email || !password) {
-    showMessage(
-      "Email aur password dono bharna zaroori hai."
-    );
+  if (!businessName || !ownerName || !phone || !email || !password) {
+    showMessage("Business name, owner name, phone, email aur password sab bharna zaroori hai.");
     return;
   }
-
-
+  if (!/^[0-9]{10}$/.test(phone)) {
+    showMessage("10 digit mobile number daaliye.");
+    return;
+  }
   if (password.length < 6) {
-    showMessage(
-      "Password kam se kam 6 characters ka hona chahiye."
-    );
+    showMessage("Password kam se kam 6 characters ka hona chahiye.");
     return;
   }
-
 
   try {
+    const { data, error } = await supabaseClient.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          role: "seller",
+          business_name: businessName,
+          owner_name: ownerName,
+          full_name: ownerName,
+          phone
+        }
+      }
+    });
+    if (error) throw error;
 
-    const { data, error } =
-      await supabaseClient.auth.signUp({
-        email: email,
-        password: password
-      });
-
-
-    if (error) {
-      throw error;
+    if (data.session) {
+      showMessage("✅ Seller account create ho gaya. Admin approval ke baad dashboard use kar sakenge.", true);
+    } else {
+      showMessage("✅ Account request create ho gayi. Email verify karein. Admin approval ke baad seller dashboard khulega.", true);
     }
-
-
-    showMessage(
-      "✅ Seller account create ho gaya. Email verify karein.",
-      true
-    );
-
   } catch (error) {
-
-    showMessage(
-      "❌ Signup Error: " + error.message
-    );
-
+    showMessage("❌ Signup Error: " + error.message);
   }
 }
-
 
 // ================================
 // SELLER LOGIN
 // ================================
 
 async function sellerLogin() {
-
-  const email =
-    document.getElementById("email").value.trim();
-
-  const password =
-    document.getElementById("password").value;
-
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
 
   if (!email || !password) {
-    showMessage(
-      "Email aur password dono bharna zaroori hai."
-    );
+    showMessage("Email aur password dono bharna zaroori hai.");
     return;
   }
 
-
   try {
+    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    if (error) throw error;
 
-    const { data, error } =
-      await supabaseClient.auth.signInWithPassword({
-        email: email,
-        password: password
-      });
+    const user = data.user;
+    const { data: seller, error: sellerError } =
+      await supabaseClient.from("sellers").select("id,business_name,owner_name,status,is_active")
+        .eq("id", user.id).maybeSingle();
 
-
-    if (error) {
-      throw error;
+    if (sellerError) throw sellerError;
+    if (!seller) {
+      await supabaseClient.auth.signOut();
+      throw new Error("Seller profile nahi mila. Account registration dobara check karein.");
+    }
+    if (String(seller.status || "").toLowerCase() !== "approved" || seller.is_active !== true) {
+      await supabaseClient.auth.signOut();
+      showMessage("⏳ Seller account abhi Admin approval ka wait kar raha hai.");
+      return;
     }
 
-
-    showMessage(
-      "✅ Login successful! Dashboard khul raha hai...",
-      true
-    );
-
-
-    setTimeout(function() {
-
-      window.location.href =
-        "seller-dashboard.html";
-
-    }, 1000);
-
-
+    showMessage("✅ Login successful! Seller Dashboard khul raha hai...", true);
+    setTimeout(() => { window.location.href = "seller-dashboard.html"; }, 700);
   } catch (error) {
-
-    showMessage(
-      "❌ Login Error: " + error.message
-    );
-
+    showMessage("❌ Login Error: " + error.message);
   }
-
 }
-
 </script>
 
 </body>
