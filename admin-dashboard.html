@@ -38,21 +38,8 @@ async function guard(){
     return null;
   }
 
-  const { data: permission, error: permissionError } =
-    await supabaseClient
-      .from('admin_permissions')
-      .select('*')
-      .eq('admin_id', user.id)
-      .maybeSingle();
-
-  if (permissionError || !permission) {
-    await supabaseClient.auth.signOut();
-    location.href = 'admin-login.html';
-    return null;
-  }
-
   document.getElementById('adminName').textContent =
-    (user.email || 'Admin') + ' • main_admin';
+    (user.email || 'Admin') + ' • Main Admin';
 
   return user;
 }
