@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login - BR Digital Marketplace</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f5f7fb;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.login{
+  width:min(92%,420px);
+  background:#fff;
+  padding:30px;
+  border-radius:22px;
+  box-shadow:0 10px 35px rgba(0,0,0,.12);
+}
+
+.logo{
+  width:70px;
+  height:70px;
+  border-radius:18px;
+  background:#ff7a00;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:28px;
+  font-weight:800;
+  margin:0 auto 15px;
+}
+
+h1{
+  text-align:center;
+  margin:5px 0;
+  color:#172033;
+}
+
+.sub{
+  text-align:center;
+  color:#667085;
+  margin-bottom:25px;
+}
+
+label{
+  display:block;
+  font-weight:700;
+  margin:14px 0 7px;
+}
+
+input{
+  width:100%;
+  padding:14px;
+  border:1px solid #d0d5dd;
+  border-radius:12px;
+  font-size:16px;
+  outline:none;
+}
+
+input:focus{
+  border-color:#ff7900;
+}
+
+button{
+  width:100%;
+  border:0;
+  padding:15px;
+  margin-top:20px;
+  border-radius:12px;
+  background:#ff7900;
+  color:#fff;
+  font-size:17px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+button:disabled{
+  opacity:.6;
+}
+
+.message{
+  margin-top:15px;
+  padding:12px;
+  border-radius:10px;
+  display:none;
+  text-align:center;
+}
+
+.error{
+  background:#fee4e2;
+  color:#b42318;
+}
+
+.success{
+  background:#dcfae6;
+  color:#027a48;
+}
+
+.back{
+  display:block;
+  text-align:center;
+  margin-top:20px;
+  color:#ff7900;
+  text-decoration:none;
+  font-weight:700;
+}
+</style>
+</head>
+
+<body>
+
+<div class="login">
+
+  <div class="logo">BR</div>
+
+  <h1>Admin Login</h1>
+  <div class="sub">BR Digital Marketplace</div>
+
+  <label>Email</label>
+  <input
+    type="email"
+    id="email"
+    placeholder="Admin Email"
+    autocomplete="email"
+  >
+
+  <label>Password</label>
+  <input
+    type="password"
+    id="password"
+    placeholder="Password"
+    autocomplete="current-password"
+  >
+
+  <button id="loginBtn">🔐 Login as Admin</button>
+
+  <div id="message" class="message"></div>
+
+  <a class="back" href="index.html">← वापस Home पर जाएँ</a>
+
+</div>
+
+<script>
+const SUPABASE_URL =
+"https://uryjmibcdfjfxoljrigt.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+"sb_publishable_uYbJw0ARCCkQ9QB6FxaQ_JrIxtOOp";
+
+const db = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
+
+const btn = document.getElementById("loginBtn");
+const message = document.getElementById("message");
+
+function showMessage(text,type){
+  message.textContent=text;
+  message.className="message "+type;
+  message.style.display="block";
+}
+
+btn.onclick = async () => {
+
+  const email =
+    document.getElementById("email").value.trim();
+
+  const password =
+    document.getElementById("password").value;
+
+  if(!email || !password){
+    showMessage("Email और Password भरें।","error");
+    return;
+  }
+
+  btn.disabled=true;
+  btn.textContent="Login हो रहा है...";
+
+  try{
+
+    const {data,error} =
+      await db.auth.signInWithPassword({
+        email,
+        password
+      });
+
+    if(error) throw error;
+
+    const user = data.user;
+
+    if(!user){
+      throw new Error("User नहीं मिला।");
+    }
+
+    const {data:permission,error:permissionError} =
+      await db
+        .from("admin_permissions")
+        .select("*")
+        .eq("admin_id",user.id)
+        .maybeSingle();
+
+    if(permissionError){
+      await db.auth.signOut();
+      throw permissionError;
+    }
+
+    if(!permission){
+      await db.auth.signOut();
+      throw new Error(
+        "यह Account Admin नहीं है।"
+      );
+    }
+
+    showMessage(
+      "Admin Login सफल! Admin Panel खुल रहा है...",
+      "success"
+    );
+
+    setTimeout(()=>{
+      window.location.href="admin.html";
+    },800);
+
+  }catch(error){
+
+    console.error(error);
+
+    showMessage(
+      error.message || "Login failed.",
+      "error"
+    );
+
+    btn.disabled=false;
+    btn.textContent="🔐 Login as Admin";
+  }
+};
+</script>
+
+</body>
+</html>
