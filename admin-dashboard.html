@@ -28,7 +28,34 @@
 const SUPABASE_URL="https://uryjmibcdfjfxolrijgt.supabase.co";const SUPABASE_PUBLISHABLE_KEY="sb_publishable_uYbJw0ARCCkCpQ9QB6FxaQ_JrIxtOOp";const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);let products=[],profiles=[],orders=[];
 function showTab(id,btn){document.querySelectorAll('.panel').forEach(x=>x.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));btn.classList.add('active')}
 function notice(t){const n=document.getElementById('notice');n.textContent=t;n.classList.remove('hidden')}
-async function guard(){const {data:{user},error}=await supabaseClient.auth.getUser();if(error||!user){location.href='admin-login.html';return null}const {data:profile,error:pe}=await supabaseClient.from('profiles').select('id,full_name,role,is_active').eq('id',user.id).maybeSingle();if(pe||!profile||profile.role!=='main_admin'||profile.is_active!==true){await supabaseClient.auth.signOut();location.href='admin-login.html';return null}document.getElementById('adminName').textContent=(profile.full_name||user.email)+' • main_admin';return user}
+async function guard(){
+
+  const { data: { user }, error } =
+    await supabaseClient.auth.getUser();
+
+  if (error || !user) {
+    location.href = 'admin-login.html';
+    return null;
+  }
+
+  const { data: permission, error: permissionError } =
+    await supabaseClient
+      .from('admin_permissions')
+      .select('*')
+      .eq('admin_id', user.id)
+      .maybeSingle();
+
+  if (permissionError || !permission) {
+    await supabaseClient.auth.signOut();
+    location.href = 'admin-login.html';
+    return null;
+  }
+
+  document.getElementById('adminName').textContent =
+    (user.email || 'Admin') + ' • main_admin';
+
+  return user;
+}
 async function load(){const user=await guard();if(!user)return;const [pr,pu]=await Promise.all([supabaseClient.from('products').select('*').order('id',{ascending:false}),supabaseClient.from('profiles').select('id,full_name,phone,role,is_active,created_at').order('created_at',{ascending:false})]);if(pr.error){notice('⚠️ Products load nahi hue: '+pr.error.message)}else products=pr.data||[];if(pu.error){notice('⚠️ Profiles load nahi hue. Supabase RLS policy check karein: '+pu.error.message)}else profiles=pu.data||[];updateStats();renderProducts();renderProfiles();await loadSellers();await loadOrders()}
 function updateStats(){document.getElementById('productCount').textContent=products.length;document.getElementById('sellerCount').textContent=profiles.filter(x=>x.role==='seller').length;document.getElementById('userCount').textContent=profiles.filter(x=>x.is_active===true).length;document.getElementById('lowStock').textContent=products.filter(x=>Number(x.stock||0)<=5).length}
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
