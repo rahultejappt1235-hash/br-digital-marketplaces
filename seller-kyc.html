@@ -9,9 +9,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-*{
-  box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
 body{
   margin:0;
@@ -32,9 +30,7 @@ body{
   font-weight:800;
 }
 
-.logo span{
-  color:#f47700;
-}
+.logo span{color:#f47700}
 
 .container{
   max-width:650px;
@@ -83,9 +79,7 @@ h1{
   margin-bottom:7px;
 }
 
-.required{
-  color:red;
-}
+.required{color:red}
 
 .help{
   color:#777;
@@ -188,7 +182,6 @@ input[type=file]{
     Upload the required documents for seller verification.
   </div>
 
-
   <!-- AADHAAR -->
 
   <div class="upload-card">
@@ -256,10 +249,7 @@ input[type=file]{
       onchange="showFile('businessProof','businessProofName')"
     >
 
-    <div
-      id="businessProofName"
-      class="file-name"
-    ></div>
+    <div id="businessProofName" class="file-name"></div>
 
   </div>
 
@@ -289,14 +279,15 @@ input[type=file]{
 
 
   <div class="note">
-    🔐 Your documents will be submitted for seller verification.
-    Admin approval is required before the seller account becomes
-    fully approved.
+    🔐 Your documents are stored securely in our private
+    verification storage. Admin approval is required before
+    the seller account becomes fully approved.
   </div>
 
 
   <button
     class="continue"
+    id="continueBtn"
     onclick="submitKYC()"
   >
     Continue →
@@ -306,10 +297,7 @@ input[type=file]{
   <div id="message" class="message"></div>
 
 
-  <a
-    href="seller-gst.html"
-    class="back"
-  >
+  <a href="seller-gst.html" class="back">
     ← Back to GST Details
   </a>
 
@@ -330,8 +318,7 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
 "sb_publishable_uYbJw0ARCCkCpQ9QB6FxaQ_JrIxtOOp";
 
-const db =
-supabase.createClient(
+const db = supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
@@ -343,11 +330,9 @@ supabase.createClient(
 
 function showMessage(text,type){
 
-  const box =
-    document.getElementById("message");
+  const box = document.getElementById("message");
 
-  box.className =
-    "message " + type;
+  box.className = "message " + type;
 
   box.innerHTML = text;
 }
@@ -359,11 +344,9 @@ function showMessage(text,type){
 
 function showFile(inputId,nameId){
 
-  const input =
-    document.getElementById(inputId);
+  const input = document.getElementById(inputId);
 
-  const output =
-    document.getElementById(nameId);
+  const output = document.getElementById(nameId);
 
   if(input.files.length){
 
@@ -379,10 +362,48 @@ function showFile(inputId,nameId){
 
 
 /* =========================
-   UPLOAD FILE
+   CHECK FILE
+========================= */
+
+function validateFile(file,type){
+
+  if(!file){
+    throw new Error(type + " file missing.");
+  }
+
+  const maxSize = 5 * 1024 * 1024;
+
+  if(file.size > maxSize){
+
+    throw new Error(
+      type + " file 5 MB से छोटा होना चाहिए।"
+    );
+
+  }
+
+  const allowed = [
+    "image/jpeg",
+    "image/png",
+    "application/pdf"
+  ];
+
+  if(!allowed.includes(file.type)){
+
+    throw new Error(
+      type + " केवल JPG, PNG या PDF होना चाहिए।"
+    );
+
+  }
+}
+
+
+/* =========================
+   UPLOAD PRIVATE FILE
 ========================= */
 
 async function uploadFile(file,userId,type){
+
+  validateFile(file,type);
 
   const extension =
     file.name
@@ -400,15 +421,14 @@ async function uploadFile(file,userId,type){
     extension;
 
 
-  const {
-    error
-  } =
+  const { error } =
     await db.storage
       .from("seller-kyc")
       .upload(
         filePath,
         file,
         {
+          cacheControl:"3600",
           upsert:true
         }
       );
@@ -426,15 +446,15 @@ async function uploadFile(file,userId,type){
   }
 
 
-  const {
-    data
-  } =
-    db.storage
-      .from("seller-kyc")
-      .getPublicUrl(filePath);
+  /*
+    IMPORTANT:
+    Private bucket होने के कारण
+    getPublicUrl() इस्तेमाल नहीं किया गया।
+    
+    केवल storage path return होगा।
+  */
 
-
-  return data.publicUrl;
+  return filePath;
 }
 
 
@@ -443,6 +463,10 @@ async function uploadFile(file,userId,type){
 ========================= */
 
 async function submitKYC(){
+
+  const button =
+    document.getElementById("continueBtn");
+
 
   const aadhaar =
     document.getElementById("aadhaar").files[0];
@@ -494,13 +518,21 @@ async function submitKYC(){
 
   try{
 
+    button.disabled = true;
+
+    button.innerText =
+      "⏳ Uploading...";
+
+
     showMessage(
-      "⏳ Documents upload हो रहे हैं... कृपया page बंद न करें।",
+      "⏳ Documents securely upload हो रहे हैं... कृपया page बंद न करें।",
       "loading"
     );
 
 
-    /* LOGIN */
+    /* =========================
+       LOGIN CHECK
+    ========================= */
 
     const {
       data:{
@@ -514,17 +546,65 @@ async function submitKYC(){
     if(userError || !user){
 
       showMessage(
-        "❌ Seller login नहीं है। पहले login करें।",
+        "❌ Seller login नहीं है। पहले seller login करें।",
         "error"
       );
+
+      button.disabled = false;
+
+      button.innerText =
+        "Continue →";
 
       return;
     }
 
 
-    /* UPLOAD */
+    /* =========================
+       SELLER CHECK
+    ========================= */
 
-    const aadhaarURL =
+    const {
+      data:seller,
+      error:sellerError
+    } =
+      await db
+        .from("sellers")
+        .select("id,user_id,status")
+        .eq("user_id",user.id)
+        .maybeSingle();
+
+
+    if(sellerError){
+
+      throw new Error(
+        "Seller account check failed: " +
+        sellerError.message
+      );
+
+    }
+
+
+    if(!seller){
+
+      showMessage(
+        "❌ Seller profile नहीं मिला। पहले seller account create करें।",
+        "error"
+      );
+
+      button.disabled = false;
+
+      button.innerText =
+        "Continue →";
+
+      return;
+    }
+
+
+    /* =========================
+       UPLOAD
+    ========================= */
+
+    const aadhaarPath =
       await uploadFile(
         aadhaar,
         user.id,
@@ -532,7 +612,7 @@ async function submitKYC(){
       );
 
 
-    const panURL =
+    const panPath =
       await uploadFile(
         pan,
         user.id,
@@ -540,7 +620,7 @@ async function submitKYC(){
       );
 
 
-    const shopPhotoURL =
+    const shopPhotoPath =
       await uploadFile(
         shopPhoto,
         user.id,
@@ -548,12 +628,12 @@ async function submitKYC(){
       );
 
 
-    let businessProofURL = null;
+    let businessProofPath = null;
 
 
     if(businessProof){
 
-      businessProofURL =
+      businessProofPath =
         await uploadFile(
           businessProof,
           user.id,
@@ -563,21 +643,29 @@ async function submitKYC(){
     }
 
 
-    /* SAVE DATABASE */
+    /* =========================
+       SAVE DATABASE
+    ========================= */
 
     const updateData = {
 
       aadhaar_document_url:
-        aadhaarURL,
+        aadhaarPath,
 
       pan_document_url:
-        panURL,
+        panPath,
 
       shop_photo_url:
-        shopPhotoURL,
+        shopPhotoPath,
 
       kyc_status:
         "submitted",
+
+      verification_status:
+        "submitted",
+
+      status:
+        "pending",
 
       updated_at:
         new Date().toISOString()
@@ -585,16 +673,16 @@ async function submitKYC(){
     };
 
 
-    if(businessProofURL){
+    if(businessProofPath){
 
       updateData.business_proof_url =
-        businessProofURL;
+        businessProofPath;
 
     }
 
 
     const {
-      error
+      error:updateError
     } =
       await db
         .from("sellers")
@@ -602,25 +690,31 @@ async function submitKYC(){
         .eq("user_id",user.id);
 
 
-    if(error){
+    if(updateError){
 
-      console.error(error);
+      console.error(updateError);
 
-      showMessage(
-        "❌ Database Error: " +
-        error.message,
-        "error"
+      throw new Error(
+        "Database Error: " +
+        updateError.message
       );
 
-      return;
     }
 
+
+    /* =========================
+       SUCCESS
+    ========================= */
 
     showMessage(
       "✅ KYC Documents successfully submitted!<br><br>" +
       "⏭️ अब Step 6 — Product Invoice / Proof खुलेगा...",
       "success"
     );
+
+
+    button.innerText =
+      "✅ Submitted";
 
 
     setTimeout(function(){
@@ -639,6 +733,12 @@ async function submitKYC(){
       "❌ " + error.message,
       "error"
     );
+
+
+    button.disabled = false;
+
+    button.innerText =
+      "Continue →";
 
   }
 
