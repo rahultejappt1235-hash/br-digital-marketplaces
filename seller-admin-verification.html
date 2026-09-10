@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>Seller Verification - BR Digital Marketplace</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  background:#f5f7fa;
+  font-family:Arial,sans-serif;
+  color:#17212b;
+}
+
+.header{
+  background:#fff;
+  padding:18px;
+  box-shadow:0 2px 10px rgba(0,0,0,.08);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.logo{
+  font-size:22px;
+  font-weight:800;
+}
+
+.logo span{
+  color:#f47700;
+}
+
+.admin{
+  color:#1677ed;
+  font-weight:bold;
+}
+
+.container{
+  max-width:900px;
+  margin:25px auto;
+  padding:0 15px;
+}
+
+.card{
+  background:#fff;
+  border-radius:20px;
+  padding:22px;
+  margin-bottom:20px;
+  box-shadow:0 5px 25px rgba(0,0,0,.08);
+}
+
+h1{
+  color:#f47700;
+  margin-top:0;
+}
+
+h2{
+  color:#1677ed;
+  font-size:20px;
+}
+
+.status{
+  display:inline-block;
+  padding:8px 14px;
+  border-radius:20px;
+  background:#fff3cd;
+  color:#856404;
+  font-weight:bold;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px;
+}
+
+.item{
+  background:#f8fafc;
+  padding:13px;
+  border-radius:12px;
+}
+
+.label{
+  color:#777;
+  font-size:12px;
+  margin-bottom:5px;
+}
+
+.value{
+  font-weight:bold;
+  word-break:break-word;
+}
+
+.document{
+  border:1px solid #ddd;
+  border-radius:14px;
+  padding:15px;
+  margin-bottom:12px;
+}
+
+.document-title{
+  font-weight:bold;
+  margin-bottom:10px;
+}
+
+.doc-btn{
+  display:inline-block;
+  padding:10px 15px;
+  border-radius:10px;
+  background:#1677ed;
+  color:white;
+  text-decoration:none;
+  border:0;
+  cursor:pointer;
+}
+
+.approve{
+  width:100%;
+  border:0;
+  border-radius:14px;
+  padding:16px;
+  background:#16a34a;
+  color:white;
+  font-size:18px;
+  font-weight:bold;
+  margin-top:10px;
+}
+
+.reject{
+  width:100%;
+  border:0;
+  border-radius:14px;
+  padding:16px;
+  background:#dc2626;
+  color:white;
+  font-size:18px;
+  font-weight:bold;
+  margin-top:10px;
+}
+
+.message{
+  display:none;
+  padding:14px;
+  border-radius:12px;
+  margin-bottom:18px;
+  text-align:center;
+  line-height:1.5;
+}
+
+.success{
+  display:block;
+  background:#dcfce7;
+  color:#166534;
+}
+
+.error{
+  display:block;
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+.loading{
+  display:block;
+  background:#dbeafe;
+  color:#1e40af;
+}
+
+.empty{
+  text-align:center;
+  padding:40px;
+  color:#777;
+}
+
+@media(max-width:650px){
+
+  .grid{
+    grid-template-columns:1fr;
+  }
+
+  .header{
+    display:block;
+    text-align:center;
+  }
+
+  .admin{
+    margin-top:8px;
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+
+  <div class="logo">
+    🏪 BR <span>Digital Marketplace</span>
+  </div>
+
+  <div class="admin">
+    🔐 Admin Verification
+  </div>
+
+</header>
+
+
+<div class="container">
+
+  <div id="message" class="message"></div>
+
+  <div class="card">
+
+    <h1>👨‍💼 Seller Verification</h1>
+
+    <p>
+      Pending seller applications नीचे दिखाई जाएँगी।
+      Admin documents verify करके seller को approve या reject कर सकता है।
+    </p>
+
+  </div>
+
+
+  <div id="sellerList"></div>
+
+</div>
+
+
+<script>
+
+/* =========================
+   SUPABASE
+========================= */
+
+const SUPABASE_URL =
+"https://uryjmibcdfjfxoljrigt.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_uYbJw0ARCCkCpQ9QB6FxaQ_JrIxtOOp";
+
+const db =
+supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+/* =========================
+   MESSAGE
+========================= */
+
+function showMessage(text,type){
+
+  const box =
+    document.getElementById("message");
+
+  box.className =
+    "message " + type;
+
+  box.innerHTML = text;
+}
+
+
+/* =========================
+   ADMIN CHECK
+========================= */
+
+async function checkAdmin(){
+
+  const {
+    data:{
+      user
+    },
+    error
+  } =
+  await db.auth.getUser();
+
+  if(error || !user){
+
+    window.location.href =
+      "admin-login.html";
+
+    return null;
+
+  }
+
+
+  const {
+    data:permission,
+    error:permissionError
+  } =
+  await db
+    .from("admin_permissions")
+    .select("admin_id")
+    .eq("admin_id",user.id)
+    .maybeSingle();
+
+
+  if(permissionError || !permission){
+
+    showMessage(
+      "❌ आपके account को Admin permission नहीं है।",
+      "error"
+    );
+
+    await db.auth.signOut();
+
+    setTimeout(function(){
+
+      window.location.href =
+        "admin-login.html";
+
+    },1500);
+
+    return null;
+
+  }
+
+
+  return user;
+
+}
+
+
+/* =========================
+   LOAD SELLERS
+========================= */
+
+async function loadSellers(){
+
+  const list =
+    document.getElementById("sellerList");
+
+  list.innerHTML =
+    "<div class='card empty'>⏳ Seller applications loading...</div>";
+
+
+  const {
+    data:sellers,
+    error
+  } =
+  await db
+    .from("sellers")
+    .select("*")
+    .order("created_at",{
+      ascending:false
+    });
+
+
+  if(error){
+
+    list.innerHTML =
+      "<div class='card empty'>❌ " +
+      error.message +
+      "</div>";
+
+    return;
+
+  }
+
+
+  if(!sellers || sellers.length === 0){
+
+    list.innerHTML =
+      "<div class='card empty'>" +
+      "📭 अभी कोई seller application नहीं है।" +
+      "</div>";
+
+    return;
+
+  }
+
+
+  list.innerHTML = "";
+
+
+  sellers.forEach(function(seller){
+
+    const card =
+      document.createElement("div");
+
+    card.className =
+      "card";
+
+
+    card.innerHTML = `
+
+      <h2>
+        🏪 ${escapeHTML(seller.business_name || "Seller")}
+      </h2>
+
+      <span class="status">
+        ${escapeHTML(
+          seller.application_status ||
+          seller.status ||
+          "pending"
+        )}
+      </span>
+
+
+      <h2>👤 Personal Details</h2>
+
+      <div class="grid">
+
+        ${field(
+          "Owner Name",
+          seller.owner_name
+        )}
+
+        ${field(
+          "Phone",
+          seller.phone
+        )}
+
+        ${field(
+          "Email",
+          seller.email
+        )}
+
+      </div>
+
+
+      <h2>🏪 Business Details</h2>
+
+      <div class="grid">
+
+        ${field(
+          "Business Name",
+          seller.business_name
+        )}
+
+        ${field(
+          "Business Type",
+          seller.business_type
+        )}
+
+        ${field(
+          "Shop Registration",
+          seller.shop_registration
+        )}
+
+        ${field(
+          "Business Description",
+          seller.business_description
+        )}
+
+      </div>
+
+
+      <h2>📍 Address</h2>
+
+      <div class="grid">
+
+        ${field(
+          "Shop Address",
+          seller.shop_address
+        )}
+
+        ${field(
+          "City",
+          seller.city
+        )}
+
+        ${field(
+          "State",
+          seller.state
+        )}
+
+        ${field(
+          "PIN Code",
+          seller.pincode
+        )}
+
+        ${field(
+          "Latitude",
+          seller.latitude
+        )}
+
+        ${field(
+          "Longitude",
+          seller.longitude
+        )}
+
+      </div>
+
+
+      <h2>🧾 GST Details</h2>
+
+      <div class="grid">
+
+        ${field(
+          "Has GSTIN",
+          seller.has_gstin ? "Yes" : "No"
+        )}
+
+        ${field(
+          "GSTIN",
+          seller.gstin
+        )}
+
+        ${field(
+          "GST Verification",
+          seller.gstin_verification_status
+        )}
+
+      </div>
+
+
+      <h2>🪪 KYC Documents</h2>
+
+      ${documentBox(
+        "Aadhaar Card",
+        seller.aadhaar_document_url
+      )}
+
+      ${documentBox(
+        "PAN Card",
+        seller.pan_document_url
+      )}
+
+      ${documentBox(
+        "Business Proof",
+        seller.business_proof_url
+      )}
+
+      ${documentBox(
+        "Shop Photo",
+        seller.shop_photo_url
+      )}
+
+
+      <h2>🧾 Invoice / Product Proof</h2>
+
+      ${documentBox(
+        "Purchase Invoice",
+        seller.invoice_document_url
+      )}
+
+      ${documentBox(
+        "Other Documents",
+        seller.other_documents_url
+      )}
+
+
+      <div class="grid">
+
+        ${field(
+          "KYC Status",
+          seller.kyc_status
+        )}
+
+        ${field(
+          "Invoice Status",
+          seller.invoice_status
+        )}
+
+        ${field(
+          "Application Status",
+          seller.application_status
+        )}
+
+        ${field(
+          "Submitted At",
+          formatDate(seller.submitted_at)
+        )}
+
+      </div>
+
+
+      <button
+        class="approve"
+        onclick="approveSeller('${seller.id}')"
+      >
+        ✅ APPROVE SELLER
+      </button>
+
+
+      <button
+        class="reject"
+        onclick="rejectSeller('${seller.id}')"
+      >
+        ❌ REJECT SELLER
+      </button>
+
+    `;
+
+
+    list.appendChild(card);
+
+  });
+
+}
+
+
+/* =========================
+   FIELD
+========================= */
+
+function field(label,value){
+
+  return `
+    <div class="item">
+      <div class="label">
+        ${escapeHTML(label)}
+      </div>
+
+      <div class="value">
+        ${escapeHTML(
+          value === null ||
+          value === undefined ||
+          value === ""
+          ? "Not provided"
+          : String(value)
+        )}
+      </div>
+    </div>
+  `;
+
+}
+
+
+/* =========================
+   DOCUMENT BOX
+========================= */
+
+function documentBox(title,path){
+
+  if(!path){
+
+    return `
+      <div class="document">
+        <div class="document-title">
+          ${escapeHTML(title)}
+        </div>
+
+        <div style="color:#777">
+          ❌ Document not uploaded
+        </div>
+      </div>
+    `;
+
+  }
+
+
+  return `
+    <div class="document">
+
+      <div class="document-title">
+        📄 ${escapeHTML(title)}
+      </div>
+
+      <button
+        class="doc-btn"
+        onclick='openDocument(${JSON.stringify(path)})'
+      >
+        🔐 View Document
+      </button>
+
+    </div>
+  `;
+
+}
+
+
+/* =========================
+   OPEN PRIVATE DOCUMENT
+========================= */
+
+async function openDocument(path){
+
+  try{
+
+    showMessage(
+      "⏳ Secure document link बनाया जा रहा है...",
+      "loading"
+    );
+
+
+    const {
+      data,
+      error
+    } =
+    await db.storage
+      .from("seller-kyc")
+      .createSignedUrl(
+        path,
+        300
+      );
+
+
+    if(error){
+
+      throw error;
+
+    }
+
+
+    window.open(
+      data.signedUrl,
+      "_blank"
+    );
+
+
+    showMessage(
+      "✅ Secure document link बनाया गया।",
+      "success"
+    );
+
+
+  }catch(error){
+
+    showMessage(
+      "❌ Document open नहीं हुआ: " +
+      error.message,
+      "error"
+    );
+
+  }
+
+}
+
+
+/* =========================
+   APPROVE SELLER
+========================= */
+
+async function approveSeller(id){
+
+  const ok =
+    confirm(
+      "क्या आप इस seller को APPROVE करना चाहते हैं?"
+    );
+
+
+  if(!ok) return;
+
+
+  showMessage(
+    "⏳ Seller approve हो रहा है...",
+    "loading"
+  );
+
+
+  const {
+    error
+  } =
+  await db
+    .from("sellers")
+    .update({
+
+      status:"approved",
+
+      is_active:true,
+
+      verification_status:"verified",
+
+      application_status:"approved",
+
+      updated_at:
+        new Date().toISOString()
+
+    })
+    .eq("id",id);
+
+
+  if(error){
+
+    showMessage(
+      "❌ Approval failed: " +
+      error.message,
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  showMessage(
+    "✅ Seller successfully APPROVED हो गया।",
+    "success"
+  );
+
+
+  setTimeout(
+    loadSellers,
+    1000
+  );
+
+}
+
+
+/* =========================
+   REJECT SELLER
+========================= */
+
+async function rejectSeller(id){
+
+  const reason =
+    prompt(
+      "Seller reject करने का कारण लिखें:"
+    );
+
+
+  if(reason === null) return;
+
+
+  showMessage(
+    "⏳ Seller reject हो रहा है...",
+    "loading"
+  );
+
+
+  const {
+    error
+  } =
+  await db
+    .from("sellers")
+    .update({
+
+      status:"rejected",
+
+      is_active:false,
+
+      application_status:"rejected",
+
+      verification_status:"rejected",
+
+      updated_at:
+        new Date().toISOString()
+
+    })
+    .eq("id",id);
+
+
+  if(error){
+
+    showMessage(
+      "❌ Rejection failed: " +
+      error.message,
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  showMessage(
+    "❌ Seller rejected हो गया।<br>" +
+    "Reason: " +
+    escapeHTML(reason || "Not provided"),
+    "success"
+  );
+
+
+  setTimeout(
+    loadSellers,
+    1200
+  );
+
+}
+
+
+/* =========================
+   HTML SAFE
+========================= */
+
+function escapeHTML(value){
+
+  return String(value)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================
+   DATE
+========================= */
+
+function formatDate(value){
+
+  if(!value) return "Not submitted";
+
+  try{
+
+    return new Date(value)
+      .toLocaleString("en-IN");
+
+  }catch(e){
+
+    return value;
+
+  }
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+async function start(){
+
+  const admin =
+    await checkAdmin();
+
+  if(!admin) return;
+
+  await loadSellers();
+
+}
+
+
+start();
+
+</script>
+
+</body>
+</html>
