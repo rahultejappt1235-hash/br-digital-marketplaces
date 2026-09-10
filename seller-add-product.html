@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>Add Product - BR Digital Marketplace</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f4f7fb;
+  color:#17212b;
+}
+
+.header{
+  background:#fff;
+  padding:16px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  box-shadow:0 2px 10px rgba(0,0,0,.08);
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+.logo{
+  font-size:22px;
+  font-weight:800;
+}
+
+.logo span{
+  color:#f47700;
+}
+
+.back{
+  color:#1677ed;
+  font-weight:bold;
+  text-decoration:none;
+}
+
+.container{
+  max-width:720px;
+  margin:25px auto;
+  padding:0 15px;
+}
+
+.card{
+  background:#fff;
+  border-radius:24px;
+  padding:25px;
+  box-shadow:0 8px 30px rgba(0,0,0,.08);
+}
+
+.step{
+  display:inline-block;
+  background:#1677ed;
+  color:white;
+  padding:8px 15px;
+  border-radius:20px;
+  font-weight:bold;
+}
+
+h1{
+  margin:15px 0 8px;
+  color:#f47700;
+}
+
+.subtitle{
+  color:#666;
+  line-height:1.5;
+  margin-bottom:25px;
+}
+
+label{
+  display:block;
+  margin:17px 0 7px;
+  font-weight:bold;
+}
+
+.required{
+  color:red;
+}
+
+input,
+select,
+textarea{
+  width:100%;
+  padding:14px;
+  border:1px solid #d6dde5;
+  border-radius:12px;
+  font-size:15px;
+  outline:none;
+  background:#fff;
+}
+
+textarea{
+  min-height:120px;
+  resize:vertical;
+}
+
+.row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
+}
+
+.upload-box{
+  border:2px dashed #1677ed;
+  border-radius:15px;
+  padding:20px;
+  background:#f7fbff;
+  text-align:center;
+}
+
+.upload-box input{
+  border:0;
+  padding:5px;
+  background:transparent;
+}
+
+.preview{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+
+.preview img{
+  width:85px;
+  height:85px;
+  object-fit:cover;
+  border-radius:10px;
+  border:1px solid #ddd;
+}
+
+.file-name{
+  margin-top:10px;
+  color:#16834a;
+  font-size:13px;
+  word-break:break-word;
+}
+
+.info{
+  background:#fff7df;
+  color:#765500;
+  padding:15px;
+  border-radius:14px;
+  margin:20px 0;
+  line-height:1.5;
+  font-size:14px;
+}
+
+.submit{
+  width:100%;
+  border:0;
+  background:#f47700;
+  color:#fff;
+  padding:17px;
+  border-radius:14px;
+  font-size:18px;
+  font-weight:800;
+  margin-top:25px;
+  cursor:pointer;
+}
+
+.submit:disabled{
+  opacity:.6;
+}
+
+.message{
+  display:none;
+  margin-top:18px;
+  padding:15px;
+  border-radius:12px;
+  text-align:center;
+  line-height:1.5;
+}
+
+.success{
+  display:block;
+  background:#dcfce7;
+  color:#166534;
+}
+
+.error{
+  display:block;
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+.loading{
+  display:block;
+  background:#dbeafe;
+  color:#1e40af;
+}
+
+@media(max-width:600px){
+
+  .header{
+    padding:14px;
+  }
+
+  .logo{
+    font-size:18px;
+  }
+
+  .container{
+    margin:15px auto;
+  }
+
+  .card{
+    padding:20px 16px;
+    border-radius:20px;
+  }
+
+  .row{
+    grid-template-columns:1fr;
+    gap:0;
+  }
+
+  h1{
+    font-size:28px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+
+  <div class="logo">
+    🏪 BR <span>Digital Marketplace</span>
+  </div>
+
+  <a
+    href="seller-dashboard.html"
+    class="back">
+    ← Dashboard
+  </a>
+
+</header>
+
+
+<div class="container">
+
+<div class="card">
+
+  <div class="step">
+    1️⃣ Add Product
+  </div>
+
+  <h1>
+    Add New Product 📦
+  </h1>
+
+  <div class="subtitle">
+    अपने असली product की जानकारी और invoice/bill upload करें।
+    Product submit होने के बाद Admin verification करेगा।
+  </div>
+
+
+  <!-- PRODUCT NAME -->
+
+  <label>
+    Product Name <span class="required">*</span>
+  </label>
+
+  <input
+    type="text"
+    id="productName"
+    placeholder="जैसे Redmi Note 13"
+    required>
+
+
+  <!-- BRAND + CATEGORY -->
+
+  <div class="row">
+
+    <div>
+
+      <label>
+        Brand <span class="required">*</span>
+      </label>
+
+      <input
+        type="text"
+        id="brand"
+        placeholder="जैसे Xiaomi"
+        required>
+
+    </div>
+
+
+    <div>
+
+      <label>
+        Category <span class="required">*</span>
+      </label>
+
+      <select id="category">
+
+        <option value="">
+          Select Category
+        </option>
+
+        <option value="Mobiles">
+          Mobiles
+        </option>
+
+        <option value="Electronics">
+          Electronics
+        </option>
+
+        <option value="Fashion">
+          Fashion
+        </option>
+
+        <option value="Home">
+          Home
+        </option>
+
+        <option value="Beauty">
+          Beauty
+        </option>
+
+        <option value="Appliances">
+          Appliances
+        </option>
+
+        <option value="Grocery">
+          Grocery
+        </option>
+
+        <option value="Other">
+          Other
+        </option>
+
+      </select>
+
+    </div>
+
+  </div>
+
+
+  <!-- PRICE + STOCK -->
+
+  <div class="row">
+
+    <div>
+
+      <label>
+        Price ₹ <span class="required">*</span>
+      </label>
+
+      <input
+        type="number"
+        id="price"
+        min="1"
+        placeholder="12999"
+        required>
+
+    </div>
+
+
+    <div>
+
+      <label>
+        Stock <span class="required">*</span>
+      </label>
+
+      <input
+        type="number"
+        id="stock"
+        min="0"
+        placeholder="10"
+        required>
+
+    </div>
+
+  </div>
+
+
+  <!-- DESCRIPTION -->
+
+  <label>
+    Product Description <span class="required">*</span>
+  </label>
+
+  <textarea
+    id="description"
+    placeholder="Product की पूरी जानकारी लिखें..."
+    required></textarea>
+
+
+  <!-- PRODUCT IMAGES -->
+
+  <label>
+    Product Images
+    <span class="required">*</span>
+  </label>
+
+  <div class="upload-box">
+
+    📷 <b>Product Photos Upload करें</b>
+
+    <br><br>
+
+    <input
+      type="file"
+      id="productImages"
+      accept="image/jpeg,image/png,image/webp"
+      multiple
+      onchange="previewImages()">
+
+    <div>
+      Maximum 5 images
+    </div>
+
+  </div>
+
+  <div
+    id="imagePreview"
+    class="preview">
+  </div>
+
+
+  <!-- SERIAL / IMEI -->
+
+  <label>
+    Product Serial / IMEI
+    <span style="color:#777;font-size:13px;">
+      (If Applicable)
+    </span>
+  </label>
+
+  <input
+    type="text"
+    id="serial"
+    placeholder="Serial / IMEI number">
+
+
+  <!-- INVOICE -->
+
+  <label>
+    Purchase Invoice / Bill
+    <span class="required">*</span>
+  </label>
+
+  <div class="upload-box">
+
+    🧾 <b>Original Purchase Invoice Upload करें</b>
+
+    <br><br>
+
+    <input
+      type="file"
+      id="invoice"
+      accept=".jpg,.jpeg,.png,.pdf"
+      onchange="showInvoice()">
+
+    <div>
+      JPG, PNG या PDF • Maximum 5 MB
+    </div>
+
+  </div>
+
+  <div
+    id="invoiceName"
+    class="file-name">
+  </div>
+
+
+  <div class="info">
+
+    🛡️ <b>Product Verification</b>
+
+    <br><br>
+
+    आपका product पहले <b>Pending Approval</b> में जाएगा।
+    Admin product photo, invoice और अन्य जानकारी verify करेगा।
+
+    <br><br>
+
+    ✅ Approved होने के बाद ही product marketplace पर दिखाई देगा।
+
+  </div>
+
+
+  <button
+    id="submitBtn"
+    class="submit"
+    onclick="submitProduct()">
+
+    🚀 Submit for Review
+
+  </button>
+
+
+  <div
+    id="message"
+    class="message">
+  </div>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =========================
+   SUPABASE
+========================= */
+
+const SUPABASE_URL =
+"https://uryjmibcdfjfxoljrigt.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_uYbJw0ARCCkCpQ9QB6FxaQ_JrIxtOOp";
+
+const db =
+supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+/* =========================
+   MESSAGE
+========================= */
+
+function showMessage(text,type){
+
+  const box =
+    document.getElementById("message");
+
+  box.className =
+    "message " + type;
+
+  box.innerHTML = text;
+}
+
+
+/* =========================
+   IMAGE PREVIEW
+========================= */
+
+function previewImages(){
+
+  const input =
+    document.getElementById("productImages");
+
+  const preview =
+    document.getElementById("imagePreview");
+
+  preview.innerHTML = "";
+
+
+  if(input.files.length > 5){
+
+    showMessage(
+      "❌ Maximum 5 product images allowed.",
+      "error"
+    );
+
+    input.value = "";
+
+    return;
+  }
+
+
+  Array.from(input.files).forEach(file => {
+
+    if(!file.type.startsWith("image/")){
+      return;
+    }
+
+    const img =
+      document.createElement("img");
+
+    img.src =
+      URL.createObjectURL(file);
+
+    preview.appendChild(img);
+
+  });
+
+}
+
+
+/* =========================
+   INVOICE NAME
+========================= */
+
+function showInvoice(){
+
+  const input =
+    document.getElementById("invoice");
+
+  const output =
+    document.getElementById("invoiceName");
+
+
+  if(input.files.length){
+
+    output.innerHTML =
+      "✅ " + input.files[0].name;
+
+  }else{
+
+    output.innerHTML = "";
+
+  }
+
+}
+
+
+/* =========================
+   FILE VALIDATION
+========================= */
+
+function validateInvoice(file){
+
+  if(!file){
+
+    throw new Error(
+      "Purchase Invoice / Bill upload करें।"
+    );
+
+  }
+
+
+  if(file.size > 5 * 1024 * 1024){
+
+    throw new Error(
+      "Invoice maximum 5 MB होना चाहिए।"
+    );
+
+  }
+
+
+  const allowed = [
+    "image/jpeg",
+    "image/png",
+    "application/pdf"
+  ];
+
+
+  if(!allowed.includes(file.type)){
+
+    throw new Error(
+      "Invoice केवल JPG, PNG या PDF होना चाहिए।"
+    );
+
+  }
+
+}
+
+
+/* =========================
+   UPLOAD PRODUCT IMAGE
+========================= */
+
+async function uploadProductImage(
+  file,
+  userId,
+  index
+){
+
+  if(file.size > 5 * 1024 * 1024){
+
+    throw new Error(
+      "Product image 5 MB से छोटी होनी चाहिए।"
+    );
+
+  }
+
+
+  const extension =
+    file.name
+      .split(".")
+      .pop()
+      .toLowerCase();
+
+
+  const path =
+    userId +
+    "/products/" +
+    Date.now() +
+    "_" +
+    index +
+    "." +
+    extension;
+
+
+  const {error} =
+    await db.storage
+      .from("product-images")
+      .upload(
+        path,
+        file,
+        {
+          cacheControl:"3600",
+          upsert:false
+        }
+      );
+
+
+  if(error){
+
+    throw new Error(
+      "Product image upload failed: " +
+      error.message
+    );
+
+  }
+
+
+  /*
+    Product images bucket public होना चाहिए
+    ताकि marketplace में image दिखाई दे।
+  */
+
+  const {
+    data
+  } =
+  db.storage
+    .from("product-images")
+    .getPublicUrl(path);
+
+
+  return data.publicUrl;
+
+}
+
+
+/* =========================
+   UPLOAD INVOICE
+========================= */
+
+async function uploadInvoice(
+  file,
+  userId
+){
+
+  validateInvoice(file);
+
+
+  const extension =
+    file.name
+      .split(".")
+      .pop()
+      .toLowerCase();
+
+
+  const path =
+    userId +
+    "/products/invoice_" +
+    Date.now() +
+    "." +
+    extension;
+
+
+  const {error} =
+    await db.storage
+      .from("seller-kyc")
+      .upload(
+        path,
+        file,
+        {
+          cacheControl:"3600",
+          upsert:false
+        }
+      );
+
+
+  if(error){
+
+    throw new Error(
+      "Invoice upload failed: " +
+      error.message
+    );
+
+  }
+
+
+  /*
+    seller-kyc PRIVATE bucket है।
+    Database में केवल storage path save होगा।
+  */
+
+  return path;
+
+}
+
+
+/* =========================
+   SUBMIT PRODUCT
+========================= */
+
+async function submitProduct(){
+
+  const button =
+    document.getElementById("submitBtn");
+
+
+  try{
+
+    /* =========================
+       FORM VALUES
+    ========================= */
+
+    const productName =
+      document
+        .getElementById("productName")
+        .value.trim();
+
+
+    const brand =
+      document
+        .getElementById("brand")
+        .value.trim();
+
+
+    const category =
+      document
+        .getElementById("category")
+        .value;
+
+
+    const price =
+      Number(
+        document
+          .getElementById("price")
+          .value
+      );
+
+
+    const stock =
+      Number(
+        document
+          .getElementById("stock")
+          .value
+      );
+
+
+    const description =
+      document
+        .getElementById("description")
+        .value.trim();
+
+
+    const serial =
+      document
+        .getElementById("serial")
+        .value.trim();
+
+
+    const imageInput =
+      document
+        .getElementById("productImages");
+
+
+    const invoice =
+      document
+        .getElementById("invoice")
+        .files[0];
+
+
+    /* =========================
+       VALIDATION
+    ========================= */
+
+    if(!productName){
+
+      throw new Error(
+        "Product Name भरें।"
+      );
+
+    }
+
+
+    if(!brand){
+
+      throw new Error(
+        "Brand भरें।"
+      );
+
+    }
+
+
+    if(!category){
+
+      throw new Error(
+        "Category select करें।"
+      );
+
+    }
+
+
+    if(!price || price <= 0){
+
+      throw new Error(
+        "Valid product price डालें।"
+      );
+
+    }
+
+
+    if(stock < 0){
+
+      throw new Error(
+        "Stock सही डालें।"
+      );
+
+    }
+
+
+    if(!description){
+
+      throw new Error(
+        "Product description भरें।"
+      );
+
+    }
+
+
+    if(!imageInput.files.length){
+
+      throw new Error(
+        "कम से कम 1 product image upload करें।"
+      );
+
+    }
+
+
+    if(imageInput.files.length > 5){
+
+      throw new Error(
+        "Maximum 5 images allowed."
+      );
+
+    }
+
+
+    validateInvoice(invoice);
+
+
+    /* =========================
+       LOGIN
+    ========================= */
+
+    button.disabled = true;
+
+    button.innerText =
+      "⏳ Submitting...";
+
+
+    showMessage(
+      "⏳ Product submit हो रहा है... कृपया page बंद न करें।",
+      "loading"
+    );
+
+
+    const {
+      data:{
+        user
+      },
+      error:userError
+    } =
+    await db.auth.getUser();
+
+
+    if(userError || !user){
+
+      throw new Error(
+        "Seller login नहीं है। पहले Seller Login करें।"
+      );
+
+    }
+
+
+    /* =========================
+       SELLER CHECK
+    ========================= */
+
+    const {
+      data:seller,
+      error:sellerError
+    } =
+    await db
+      .from("sellers")
+      .select(
+        "id,user_id,status,is_active"
+      )
+      .eq("user_id",user.id)
+      .maybeSingle();
+
+
+    if(sellerError){
+
+      throw new Error(
+        "Seller check failed: " +
+        sellerError.message
+      );
+
+    }
+
+
+    if(!seller){
+
+      throw new Error(
+        "Seller profile नहीं मिला।"
+      );
+
+    }
+
+
+    if(
+      seller.status !== "approved" ||
+      seller.is_active !== true
+    ){
+
+      throw new Error(
+        "आपका seller account अभी approved नहीं है।"
+      );
+
+    }
+
+
+    /* =========================
+       UPLOAD IMAGES
+    ========================= */
+
+    const imageUrls = [];
+
+
+    for(
+      let i = 0;
+      i < imageInput.files.length;
+      i++
+    ){
+
+      showMessage(
+        "⏳ Product image " +
+        (i + 1) +
+        " upload हो रही है...",
+        "loading"
+      );
+
+
+      const url =
+        await uploadProductImage(
+          imageInput.files[i],
+          user.id,
+          i
+        );
+
+
+      imageUrls.push(url);
+
+    }
+
+
+    /* =========================
+       UPLOAD INVOICE
+    ========================= */
+
+    showMessage(
+      "⏳ Purchase invoice securely upload हो रहा है...",
+      "loading"
+    );
+
+
+    const invoicePath =
+      await uploadInvoice(
+        invoice,
+        user.id
+      );
+
+
+    /* =========================
+       PRODUCT DATABASE
+    ========================= */
+
+    showMessage(
+      "⏳ Product database में save हो रहा है...",
+      "loading"
+    );
+
+
+    const productData = {
+
+      seller_id:
+        user.id,
+
+      product_name:
+        productName,
+
+      brand:
+        brand,
+
+      category:
+        category,
+
+      price:
+        price,
+
+      stock:
+        stock,
+
+      description:
+        description,
+
+      image_url:
+        imageUrls[0],
+
+      status:
+        "pending",
+
+      invoice_document_url:
+        invoicePath
+
+    };
+
+
+    /*
+      Optional serial field.
+      अगर products table में serial_number
+      मौजूद है तो इसे भेजा जाएगा।
+    */
+
+    if(serial){
+
+      productData.serial_number =
+        serial;
+
+    }
+
+
+    const {
+      data:product,
+      error:productError
+    } =
+    await db
+      .from("products")
+      .insert(productData)
+      .select()
+      .single();
+
+
+    if(productError){
+
+      throw new Error(
+        "Product database error: " +
+        productError.message
+      );
+
+    }
+
+
+    /* =========================
+       SUCCESS
+    ========================= */
+
+    showMessage(
+      "✅ Product successfully submitted!<br><br>" +
+      "⏳ Status: Pending Approval<br><br>" +
+      "Admin verification के बाद approved product marketplace पर दिखाई देगा।",
+      "success"
+    );
+
+
+    button.innerText =
+      "✅ Submitted for Review";
+
+
+    setTimeout(() => {
+
+      window.location.href =
+        "seller-dashboard.html";
+
+    },2000);
+
+
+  }catch(error){
+
+    console.error(error);
+
+
+    showMessage(
+      "❌ " + error.message,
+      "error"
+    );
+
+
+    button.disabled = false;
+
+    button.innerText =
+      "🚀 Submit for Review";
+
+  }
+
+}
+
+</script>
+
+</body>
+        </html>
