@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -21,8 +21,9 @@ body{
 }
 
 /* HEADER */
+
 .header{
-  height:70px;
+  height:78px;
   background:#fff;
   display:flex;
   align-items:center;
@@ -31,354 +32,141 @@ body{
   box-shadow:0 2px 12px rgba(0,0,0,.08);
   position:sticky;
   top:0;
-  z-index:100;
+  z-index:1000;
 }
 
-.logo{
+.brand{
   font-size:24px;
-  font-weight:900;
+  font-weight:800;
 }
 
-.logo span{
+.brand span{
   color:#f47700;
 }
 
-.user{
+.seller-top{
   display:flex;
   align-items:center;
   gap:10px;
+  font-size:18px;
   font-weight:bold;
 }
 
 .avatar{
-  width:42px;
-  height:42px;
+  width:46px;
+  height:46px;
   border-radius:50%;
   background:#1677ed;
-  color:white;
+  color:#fff;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:20px;
+  font-size:24px;
+}
+
+/* MENU BUTTON */
+
+.menu-btn{
+  display:none;
+  border:0;
+  background:#1677ed;
+  color:#fff;
+  width:45px;
+  height:45px;
+  border-radius:10px;
+  font-size:25px;
 }
 
 /* LAYOUT */
+
 .layout{
   display:flex;
-  min-height:calc(100vh - 70px);
+  min-height:calc(100vh - 78px);
 }
 
 /* SIDEBAR */
+
 .sidebar{
   width:245px;
-  background:#102a43;
-  color:white;
-  padding:20px 12px;
+  background:#102f4d;
+  color:#fff;
+  padding:20px 14px;
+  flex-shrink:0;
 }
 
-.shop-card{
-  background:#173b5d;
-  border-radius:15px;
-  padding:18px 12px;
-  margin-bottom:20px;
+.seller-box{
   text-align:center;
+  padding:15px 5px 20px;
+  border-bottom:1px solid rgba(255,255,255,.2);
+  margin-bottom:15px;
 }
 
-.shop-icon{
-  width:60px;
-  height:60px;
+.seller-icon{
+  width:70px;
+  height:70px;
   border-radius:50%;
   background:#f47700;
-  margin:auto;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:30px;
+  margin:auto;
+  font-size:38px;
 }
 
-.shop-name{
-  font-size:17px;
-  font-weight:bold;
+.seller-name{
   margin-top:10px;
+  font-weight:bold;
+  font-size:16px;
 }
 
 .verified{
   display:inline-block;
-  margin-top:8px;
+  margin-top:6px;
   background:#16a34a;
   padding:5px 10px;
   border-radius:20px;
   font-size:12px;
 }
 
-.menu{
+.nav{
   display:flex;
   flex-direction:column;
   gap:7px;
 }
 
-.menu button{
-  width:100%;
+.nav button{
   border:0;
   background:transparent;
-  color:white;
-  padding:13px 14px;
-  border-radius:10px;
+  color:#fff;
   text-align:left;
+  padding:13px 12px;
+  border-radius:10px;
   font-size:15px;
   cursor:pointer;
 }
 
-.menu button:hover,
-.menu button.active{
+.nav button:hover,
+.nav button.active{
   background:#1677ed;
 }
 
-.logout{
-  margin-top:25px;
-  background:#b91c1c !important;
-}
-
 /* MAIN */
+
 .main{
   flex:1;
   padding:25px;
-  overflow:hidden;
-}
-
-.welcome{
-  background:linear-gradient(135deg,#fff3e5,#fff);
-  border-radius:20px;
-  padding:22px;
-  margin-bottom:22px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:15px;
-}
-
-.welcome h1{
-  margin:0 0 8px;
-  color:#102a43;
-}
-
-.welcome p{
-  margin:0;
-  color:#666;
-}
-
-.add-btn{
-  border:0;
-  background:#f47700;
-  color:white;
-  padding:14px 20px;
-  border-radius:12px;
-  font-size:16px;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-/* STATS */
-.stats{
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:15px;
-  margin-bottom:22px;
-}
-
-.stat{
-  background:white;
-  border-radius:17px;
-  padding:20px;
-  box-shadow:0 4px 18px rgba(0,0,0,.07);
-}
-
-.stat-icon{
-  font-size:25px;
-}
-
-.stat-number{
-  font-size:25px;
-  font-weight:900;
-  margin-top:10px;
-}
-
-.stat-title{
-  color:#666;
-  font-size:14px;
-  margin-top:5px;
-}
-
-.stat-link{
-  color:#1677ed;
-  font-size:13px;
-  margin-top:12px;
-  display:block;
-  cursor:pointer;
-}
-
-/* GRID */
-.content-grid{
-  display:grid;
-  grid-template-columns:1.3fr 1fr;
-  gap:20px;
-}
-
-.card{
-  background:white;
-  border-radius:18px;
-  padding:20px;
-  box-shadow:0 4px 18px rgba(0,0,0,.07);
-}
-
-.card h2{
-  margin:0 0 18px;
-  font-size:20px;
-}
-
-/* ORDERS */
-.order{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  padding:12px 0;
-  border-bottom:1px solid #eee;
-}
-
-.order:last-child{
-  border-bottom:0;
-}
-
-.order-left{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.order-icon{
-  width:42px;
-  height:42px;
-  border-radius:10px;
-  background:#eef5ff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:21px;
-}
-
-.order-id{
-  font-weight:bold;
-  font-size:14px;
-}
-
-.order-date{
-  color:#777;
-  font-size:12px;
-  margin-top:3px;
-}
-
-.order-price{
-  font-weight:bold;
-}
-
-.badge{
-  display:inline-block;
-  padding:5px 9px;
-  border-radius:15px;
-  font-size:11px;
-  font-weight:bold;
-  margin-top:4px;
-}
-
-.pending{
-  background:#fff1c7;
-  color:#9a6700;
-}
-
-.approved{
-  background:#dcfce7;
-  color:#166534;
-}
-
-.rejected{
-  background:#fee2e2;
-  color:#991b1b;
-}
-
-/* KYC */
-.kyc-row{
-  display:flex;
-  justify-content:space-between;
-  padding:13px 0;
-  border-bottom:1px solid #eee;
-}
-
-.kyc-row:last-child{
-  border-bottom:0;
-}
-
-.ok{
-  color:#16a34a;
-  font-weight:bold;
-}
-
-/* PRODUCTS */
-.products{
-  margin-top:20px;
-}
-
-.product-table{
+  max-width:1200px;
+  margin:auto;
   width:100%;
-  border-collapse:collapse;
-}
-
-.product-table th,
-.product-table td{
-  padding:12px 8px;
-  border-bottom:1px solid #eee;
-  text-align:left;
-  font-size:13px;
-}
-
-.product-table th{
-  color:#666;
-}
-
-.empty{
-  text-align:center;
-  padding:30px 10px;
-  color:#777;
-}
-
-/* QUICK ACTIONS */
-.quick{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-}
-
-.quick button{
-  border:1px solid #e0e6ed;
-  background:#fff;
-  padding:15px 10px;
-  border-radius:12px;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-.quick button:hover{
-  border-color:#1677ed;
-  color:#1677ed;
 }
 
 /* MESSAGE */
+
 .message{
+  padding:15px;
+  border-radius:14px;
+  margin-bottom:20px;
   display:none;
-  padding:14px;
-  margin-bottom:18px;
-  border-radius:12px;
-  text-align:center;
   font-weight:bold;
 }
 
@@ -388,57 +176,156 @@ body{
   color:#991b1b;
 }
 
-.loading{
+.success{
   display:block;
-  background:#dbeafe;
-  color:#1e40af;
+  background:#dcfce7;
+  color:#166534;
+}
+
+/* WELCOME */
+
+.welcome{
+  background:linear-gradient(135deg,#fff7ed,#fff);
+  border-radius:25px;
+  padding:30px;
+  margin-bottom:22px;
+  box-shadow:0 5px 20px rgba(0,0,0,.07);
+}
+
+.welcome h1{
+  margin:0 0 10px;
+  font-size:38px;
+}
+
+.welcome p{
+  color:#666;
+  font-size:18px;
+  line-height:1.5;
+}
+
+.add-btn{
+  border:0;
+  background:#f47700;
+  color:white;
+  padding:16px 25px;
+  border-radius:14px;
+  font-size:18px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+/* STATS */
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:18px;
+}
+
+.stat{
+  background:#fff;
+  border-radius:20px;
+  padding:22px;
+  min-height:145px;
+  box-shadow:0 5px 20px rgba(0,0,0,.06);
+}
+
+.stat-icon{
+  font-size:35px;
+}
+
+.stat-number{
+  font-size:32px;
+  font-weight:800;
+  margin:7px 0;
+}
+
+.stat-title{
+  color:#666;
+  font-size:16px;
+}
+
+.stat-link{
+  display:block;
+  margin-top:13px;
+  color:#1677ed;
+  font-weight:bold;
+  text-decoration:none;
+}
+
+/* QUICK ACTIONS */
+
+.quick{
+  margin-top:22px;
+  background:#fff;
+  border-radius:20px;
+  padding:22px;
+  box-shadow:0 5px 20px rgba(0,0,0,.06);
+}
+
+.quick h2{
+  margin-top:0;
+}
+
+.quick-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+}
+
+.quick button{
+  border:0;
+  padding:16px;
+  border-radius:13px;
+  background:#eef6ff;
+  color:#174a7e;
+  font-size:16px;
+  font-weight:bold;
 }
 
 /* MOBILE */
-@media(max-width:1000px){
-
-  .stats{
-    grid-template-columns:repeat(2,1fr);
-  }
-
-  .content-grid{
-    grid-template-columns:1fr;
-  }
-
-}
 
 @media(max-width:700px){
 
   .header{
+    height:70px;
     padding:0 12px;
   }
 
-  .logo{
-    font-size:18px;
+  .brand{
+    font-size:19px;
+  }
+
+  .seller-top{
+    font-size:15px;
+  }
+
+  .avatar{
+    width:40px;
+    height:40px;
+  }
+
+  .menu-btn{
+    display:block;
+  }
+
+  .layout{
+    display:block;
   }
 
   .sidebar{
-    width:72px;
-    padding:12px 8px;
+    position:fixed;
+    left:-270px;
+    top:70px;
+    bottom:0;
+    width:260px;
+    z-index:2000;
+    transition:.3s;
+    overflow-y:auto;
   }
 
-  .shop-card{
-    padding:10px 5px;
-  }
-
-  .shop-name,
-  .verified{
-    display:none;
-  }
-
-  .menu button{
-    text-align:center;
-    padding:13px 5px;
-    font-size:0;
-  }
-
-  .menu button::first-letter{
-    font-size:20px;
+  .sidebar.open{
+    left:0;
   }
 
   .main{
@@ -446,34 +333,56 @@ body{
   }
 
   .welcome{
-    display:block;
+    padding:22px;
+    border-radius:22px;
+  }
+
+  .welcome h1{
+    font-size:34px;
+  }
+
+  .welcome p{
+    font-size:17px;
   }
 
   .add-btn{
     width:100%;
-    margin-top:15px;
   }
 
+  /* ONE COLUMN */
+
   .stats{
-    grid-template-columns:1fr 1fr;
+    grid-template-columns:1fr;
   }
 
   .stat{
-    padding:14px;
+    min-height:125px;
+  }
+
+  .quick-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+/* SMALL PHONE */
+
+@media(max-width:400px){
+
+  .brand{
+    font-size:17px;
+  }
+
+  .seller-top{
+    font-size:14px;
+  }
+
+  .welcome h1{
+    font-size:29px;
   }
 
   .stat-number{
-    font-size:21px;
+    font-size:29px;
   }
-
-  .product-table{
-    min-width:650px;
-  }
-
-  .products{
-    overflow-x:auto;
-  }
-
 }
 </style>
 </head>
@@ -484,12 +393,18 @@ body{
 
 <header class="header">
 
-  <div class="logo">
+  <button
+    class="menu-btn"
+    onclick="toggleMenu()">
+    ☰
+  </button>
+
+  <div class="brand">
     🏪 BR <span>Digital Marketplace</span>
   </div>
 
-  <div class="user">
-    <span id="topShopName">Seller</span>
+  <div class="seller-top">
+    <span id="topSellerName">Seller</span>
     <div class="avatar">👤</div>
   </div>
 
@@ -500,32 +415,36 @@ body{
 
 <!-- SIDEBAR -->
 
-<aside class="sidebar">
+<aside
+  id="sidebar"
+  class="sidebar">
 
-  <div class="shop-card">
+  <div class="seller-box">
 
-    <div class="shop-icon">
+    <div class="seller-icon">
       🏪
     </div>
 
     <div
-      class="shop-name"
-      id="shopName">
-      Loading...
+      id="sideSellerName"
+      class="seller-name">
+      Seller
     </div>
 
-    <div class="verified">
-      ✓ Verified Seller
+    <div
+      id="sellerStatus"
+      class="verified">
+      Checking...
     </div>
 
   </div>
 
 
-  <div class="menu">
+  <nav class="nav">
 
     <button
       class="active"
-      onclick="dashboard()">
+      onclick="goDashboard()">
       🏠 Dashboard
     </button>
 
@@ -533,37 +452,39 @@ body{
       ➕ Add Product
     </button>
 
-    <button onclick="myProducts()">
+    <button onclick="viewProducts()">
       📦 My Products
     </button>
 
-    <button onclick="orders()">
+    <button onclick="viewPending()">
+      ⏳ Pending Approval
+    </button>
+
+    <button onclick="viewApproved()">
+      ✅ Approved Products
+    </button>
+
+    <button onclick="viewOrders()">
       🛒 Orders
     </button>
 
-    <button onclick="earnings()">
+    <button onclick="viewEarnings()">
       💰 Earnings
     </button>
 
-    <button onclick="storeSettings()">
-      🏪 Store Settings
-    </button>
-
-    <button onclick="documents()">
+    <button onclick="viewDocuments()">
       📄 Documents
     </button>
 
-    <button onclick="help()">
-      🆘 Help & Support
+    <button onclick="viewSettings()">
+      ⚙️ Settings
     </button>
 
-    <button
-      class="logout"
-      onclick="logout()">
+    <button onclick="logout()">
       🚪 Logout
     </button>
 
-  </div>
+  </nav>
 
 </aside>
 
@@ -572,25 +493,25 @@ body{
 
 <main class="main">
 
-  <div id="message" class="message"></div>
+  <div
+    id="message"
+    class="message">
+  </div>
 
 
   <!-- WELCOME -->
 
   <section class="welcome">
 
-    <div>
+    <h1>
+      👋 Welcome,
+      <span id="welcomeName">Seller</span>!
+    </h1>
 
-      <h1>
-        👋 Welcome, <span id="ownerName">Seller</span>!
-      </h1>
-
-      <p>
-        Manage your products, orders and grow your business
-        with BR Digital Marketplace.
-      </p>
-
-    </div>
+    <p>
+      Manage your products, orders and grow your
+      business with BR Digital Marketplace.
+    </p>
 
     <button
       class="add-btn"
@@ -601,7 +522,7 @@ body{
   </section>
 
 
-  <!-- STATS -->
+  <!-- REAL DATABASE STATS -->
 
   <section class="stats">
 
@@ -610,8 +531,8 @@ body{
       <div class="stat-icon">📦</div>
 
       <div
-        class="stat-number"
-        id="totalProducts">
+        id="totalProducts"
+        class="stat-number">
         0
       </div>
 
@@ -619,11 +540,12 @@ body{
         Total Products
       </div>
 
-      <span
-        class="stat-link"
-        onclick="myProducts()">
+      <a
+        href="#"
+        onclick="viewProducts();return false;"
+        class="stat-link">
         View Products →
-      </span>
+      </a>
 
     </div>
 
@@ -633,8 +555,8 @@ body{
       <div class="stat-icon">⏳</div>
 
       <div
-        class="stat-number"
-        id="pendingProducts">
+        id="pendingProducts"
+        class="stat-number">
         0
       </div>
 
@@ -642,11 +564,12 @@ body{
         Pending Approval
       </div>
 
-      <span
-        class="stat-link"
-        onclick="myProducts()">
+      <a
+        href="#"
+        onclick="viewPending();return false;"
+        class="stat-link">
         View Pending →
-      </span>
+      </a>
 
     </div>
 
@@ -656,8 +579,8 @@ body{
       <div class="stat-icon">✅</div>
 
       <div
-        class="stat-number"
-        id="approvedProducts">
+        id="approvedProducts"
+        class="stat-number">
         0
       </div>
 
@@ -665,11 +588,12 @@ body{
         Approved Products
       </div>
 
-      <span
-        class="stat-link"
-        onclick="myProducts()">
+      <a
+        href="#"
+        onclick="viewApproved();return false;"
+        class="stat-link">
         View Approved →
-      </span>
+      </a>
 
     </div>
 
@@ -679,8 +603,8 @@ body{
       <div class="stat-icon">🛒</div>
 
       <div
-        class="stat-number"
-        id="totalOrders">
+        id="totalOrders"
+        class="stat-number">
         0
       </div>
 
@@ -688,11 +612,12 @@ body{
         Total Orders
       </div>
 
-      <span
-        class="stat-link"
-        onclick="orders()">
+      <a
+        href="#"
+        onclick="viewOrders();return false;"
+        class="stat-link">
         View Orders →
-      </span>
+      </a>
 
     </div>
 
@@ -702,8 +627,8 @@ body{
       <div class="stat-icon">₹</div>
 
       <div
-        class="stat-number"
-        id="totalSales">
+        id="totalSales"
+        class="stat-number">
         ₹0
       </div>
 
@@ -711,105 +636,12 @@ body{
         Total Sales
       </div>
 
-      <span
-        class="stat-link"
-        onclick="earnings()">
+      <a
+        href="#"
+        onclick="viewEarnings();return false;"
+        class="stat-link">
         View Reports →
-      </span>
-
-    </div>
-
-  </section>
-
-
-  <!-- MAIN CONTENT -->
-
-  <section class="content-grid">
-
-
-    <!-- RECENT ORDERS -->
-
-    <div class="card">
-
-      <h2>
-        🛒 Recent Orders
-      </h2>
-
-      <div id="recentOrders">
-
-        <div class="empty">
-          अभी कोई order नहीं है।
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <!-- KYC -->
-
-    <div class="card">
-
-      <h2>
-        🪪 KYC & Verification
-      </h2>
-
-      <div class="kyc-row">
-        <span>🔐 Aadhaar Card</span>
-        <span class="ok">✓ Submitted</span>
-      </div>
-
-      <div class="kyc-row">
-        <span>📄 PAN Card</span>
-        <span class="ok">✓ Submitted</span>
-      </div>
-
-      <div class="kyc-row">
-        <span>🏪 Business Proof</span>
-        <span class="ok">✓ Submitted</span>
-      </div>
-
-      <div class="kyc-row">
-        <span>📸 Shop Photo</span>
-        <span class="ok">✓ Submitted</span>
-      </div>
-
-      <div class="kyc-row">
-        <span>🧾 GST Details</span>
-        <span
-          class="ok"
-          id="gstStatus">
-          ✓ Submitted
-        </span>
-      </div>
-
-      <div class="kyc-row">
-        <span>🧾 Invoice / Proof</span>
-        <span
-          class="ok"
-          id="invoiceStatus">
-          ✓ Submitted
-        </span>
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- PRODUCTS -->
-
-  <section class="card products">
-
-    <h2>
-      📦 My Products
-    </h2>
-
-    <div id="productsArea">
-
-      <div class="empty">
-        Products loading...
-      </div>
+      </a>
 
     </div>
 
@@ -818,50 +650,33 @@ body{
 
   <!-- QUICK ACTIONS -->
 
-  <section
-    class="card"
-    style="margin-top:20px;">
+  <section class="quick">
 
     <h2>
-      ⚡ Quick Actions
+      Quick Actions
     </h2>
 
-    <div class="quick">
+    <div class="quick-grid">
 
       <button onclick="addProduct()">
-        ➕<br>
-        Add Product
+        ➕ Add Product
       </button>
 
-      <button onclick="orders()">
-        🛒<br>
-        View Orders
+      <button onclick="viewProducts()">
+        📦 My Products
       </button>
 
-      <button onclick="storeSettings()">
-        🏪<br>
-        Shop Profile
+      <button onclick="viewOrders()">
+        🛒 View Orders
       </button>
 
-      <button onclick="earnings()">
-        📊<br>
-        Sales Report
-      </button>
-
-      <button onclick="documents()">
-        📄<br>
-        Documents
-      </button>
-
-      <button onclick="help()">
-        🆘<br>
-        Help & Support
+      <button onclick="viewDocuments()">
+        📄 Documents
       </button>
 
     </div>
 
   </section>
-
 
 </main>
 
@@ -870,9 +685,9 @@ body{
 
 <script>
 
-/* =====================================
+/* =========================
    SUPABASE
-===================================== */
+========================= */
 
 const SUPABASE_URL =
 "https://uryjmibcdfjfxoljrigt.supabase.co";
@@ -887,11 +702,32 @@ supabase.createClient(
 );
 
 
-/* =====================================
-   MESSAGE
-===================================== */
+/* =========================
+   GLOBAL
+========================= */
 
-function showMessage(text,type){
+let currentUser = null;
+let currentSeller = null;
+
+
+/* =========================
+   MENU
+========================= */
+
+function toggleMenu(){
+
+  document
+    .getElementById("sidebar")
+    .classList.toggle("open");
+
+}
+
+
+/* =========================
+   MESSAGE
+========================= */
+
+function showMessage(text,type="error"){
 
   const box =
     document.getElementById("message");
@@ -904,633 +740,330 @@ function showMessage(text,type){
 }
 
 
-/* =====================================
-   START
-===================================== */
+/* =========================
+   CLOSE MENU
+========================= */
 
-document.addEventListener(
-  "DOMContentLoaded",
-  loadDashboard
-);
+function closeMenu(){
+
+  document
+    .getElementById("sidebar")
+    .classList.remove("open");
+
+}
 
 
-/* =====================================
-   LOAD DASHBOARD
-===================================== */
+/* =========================
+   CHECK LOGIN
+========================= */
 
-async function loadDashboard(){
+async function checkSeller(){
 
-  try{
+  const {
+    data:{
+      user
+    },
+    error
+  } =
+  await db.auth.getUser();
+
+
+  if(error || !user){
+
+    window.location.href =
+      "seller-login.html";
+
+    return false;
+
+  }
+
+
+  currentUser = user;
+
+
+  /* =========================
+     GET SELLER
+  ========================= */
+
+  const {
+    data:seller,
+    error:sellerError
+  } =
+  await db
+    .from("sellers")
+    .select(`
+      id,
+      user_id,
+      business_name,
+      owner_name,
+      status,
+      is_active
+    `)
+    .eq("user_id",user.id)
+    .maybeSingle();
+
+
+  if(sellerError){
+
+    console.error(sellerError);
 
     showMessage(
-      "⏳ Seller Dashboard loading...",
-      "loading"
-    );
-
-
-    /* LOGIN CHECK */
-
-    const {
-      data:{
-        user
-      },
-      error:userError
-    } =
-      await db.auth.getUser();
-
-
-    if(userError || !user){
-
-      window.location.href =
-        "seller-login.html";
-
-      return;
-
-    }
-
-
-    /* SELLER CHECK */
-
-    const {
-      data:seller,
-      error:sellerError
-    } =
-      await db
-        .from("sellers")
-        .select("*")
-        .eq("user_id",user.id)
-        .maybeSingle();
-
-
-    if(sellerError){
-
-      throw sellerError;
-
-    }
-
-
-    if(!seller){
-
-      showMessage(
-        "❌ Seller profile नहीं मिला।",
-        "error"
-      );
-
-      return;
-
-    }
-
-
-    /* APPROVAL CHECK */
-
-    const approved =
-      seller.status === "approved"
-      &&
-      seller.is_active === true;
-
-
-    if(!approved){
-
-      showMessage(
-        "⏳ आपका seller account अभी approved नहीं है।",
-        "error"
-      );
-
-      setTimeout(
-        function(){
-          window.location.href =
-            "seller-submitted.html";
-        },
-        2000
-      );
-
-      return;
-
-    }
-
-
-    /* SELLER NAME */
-
-    const name =
-      seller.owner_name
-      ||
-      seller.business_name
-      ||
-      user.email
-      ||
-      "Seller";
-
-
-    document.getElementById(
-      "ownerName"
-    ).textContent = name;
-
-
-    document.getElementById(
-      "shopName"
-    ).textContent =
-      seller.business_name ||
-      "My Shop";
-
-
-    document.getElementById(
-      "topShopName"
-    ).textContent =
-      seller.business_name ||
-      "Seller";
-
-
-    /* KYC STATUS */
-
-    if(seller.gstin){
-
-      document.getElementById(
-        "gstStatus"
-      ).textContent =
-        "✓ GSTIN Added";
-
-    }
-
-
-    if(seller.invoice_document_url){
-
-      document.getElementById(
-        "invoiceStatus"
-      ).textContent =
-        "✓ Submitted";
-
-    }
-
-
-    /* LOAD PRODUCTS */
-
-    await loadProducts(user.id);
-
-
-    /* LOAD ORDERS */
-
-    await loadOrders(user.id);
-
-
-    /* CLEAR LOADING */
-
-    document.getElementById(
-      "message"
-    ).style.display = "none";
-
-
-  }catch(error){
-
-    console.error(error);
-
-    showMessage(
-      "❌ Dashboard Error: " +
-      error.message,
+      "❌ Seller profile check failed: " +
+      sellerError.message,
       "error"
     );
 
+    return false;
+
   }
+
+
+  if(!seller){
+
+    showMessage(
+      "❌ Seller profile नहीं मिला। पहले Seller account बनाइए।",
+      "error"
+    );
+
+    document.getElementById(
+      "sellerStatus"
+    ).textContent =
+      "Not Registered";
+
+    return false;
+
+  }
+
+
+  currentSeller = seller;
+
+
+  /* =========================
+     SELLER NAME
+  ========================= */
+
+  const sellerName =
+    seller.business_name ||
+    seller.owner_name ||
+    user.email ||
+    "Seller";
+
+
+  document.getElementById(
+    "topSellerName"
+  ).textContent = sellerName;
+
+
+  document.getElementById(
+    "sideSellerName"
+  ).textContent = sellerName;
+
+
+  document.getElementById(
+    "welcomeName"
+  ).textContent = sellerName;
+
+
+  /* =========================
+     STATUS
+  ========================= */
+
+  if(
+    seller.status === "approved" &&
+    seller.is_active === true
+  ){
+
+    document.getElementById(
+      "sellerStatus"
+    ).textContent =
+      "✓ Verified Seller";
+
+  }else{
+
+    document.getElementById(
+      "sellerStatus"
+    ).textContent =
+      seller.status || "Pending";
+
+  }
+
+
+  /* =========================
+     LOAD DATA
+  ========================= */
+
+  await loadDashboardData();
+
+  return true;
 
 }
 
 
-/* =====================================
-   PRODUCTS
-===================================== */
+/* =========================
+   LOAD DASHBOARD DATA
+========================= */
 
-async function loadProducts(userId){
+async function loadDashboardData(){
 
-  const area =
-    document.getElementById(
-      "productsArea"
-    );
+  if(!currentUser){
+    return;
+  }
 
+
+  /* =========================
+     PRODUCTS
+  ========================= */
 
   const {
     data:products,
-    error
+    error:productError
   } =
-    await db
-      .from("products")
-      .select("*")
-      .eq("seller_id",userId)
-      .order(
-        "created_at",
-        {
-          ascending:false
-        }
-      );
+  await db
+    .from("products")
+    .select("*")
+    .eq("seller_id",currentUser.id);
 
 
-  if(error){
+  if(productError){
 
     console.error(
-      "Products error:",
-      error
+      "Product error:",
+      productError
     );
 
-    area.innerHTML = `
-      <div class="empty">
-        अभी products उपलब्ध नहीं हैं।
-      </div>
-    `;
+  }else{
 
-    return;
+    const list =
+      products || [];
 
-  }
 
+    const total =
+      list.length;
 
-  const list =
-    products || [];
 
+    const pending =
+      list.filter(
+        p =>
+          String(p.status || "")
+            .toLowerCase() ===
+          "pending"
+      ).length;
 
-  document.getElementById(
-    "totalProducts"
-  ).textContent =
-    list.length;
 
+    const approved =
+      list.filter(
+        p =>
+          String(p.status || "")
+            .toLowerCase() ===
+          "approved"
+      ).length;
 
-  const pending =
-    list.filter(
-      p =>
-        String(p.status || "")
-        .toLowerCase()
-        === "pending"
-    ).length;
 
-
-  const approved =
-    list.filter(
-      p =>
-        String(p.status || "")
-        .toLowerCase()
-        === "approved"
-    ).length;
-
-
-  document.getElementById(
-    "pendingProducts"
-  ).textContent =
-    pending;
-
-
-  document.getElementById(
-    "approvedProducts"
-  ).textContent =
-    approved;
-
-
-  if(list.length === 0){
-
-    area.innerHTML = `
-      <div class="empty">
-
-        📦 अभी कोई product नहीं है।
-
-        <br><br>
-
-        <button
-          class="add-btn"
-          onclick="addProduct()">
-          ➕ पहला Product Add करें
-        </button>
-
-      </div>
-    `;
-
-    return;
-
-  }
-
-
-  let html = `
-
-    <div style="overflow-x:auto">
-
-    <table class="product-table">
-
-      <thead>
-
-        <tr>
-
-          <th>Product</th>
-          <th>Category</th>
-          <th>Price</th>
-          <th>Stock</th>
-          <th>Status</th>
-
-        </tr>
-
-      </thead>
-
-      <tbody>
-
-  `;
-
-
-  list.forEach(function(product){
-
-    const status =
-      String(
-        product.status || "pending"
-      ).toLowerCase();
-
-
-    let badgeClass =
-      "pending";
-
-    let badgeText =
-      "Pending";
-
-
-    if(status === "approved"){
-
-      badgeClass =
-        "approved";
-
-      badgeText =
-        "Approved";
-
-    }
-
-
-    if(status === "rejected"){
-
-      badgeClass =
-        "rejected";
-
-      badgeText =
-        "Rejected";
-
-    }
-
-
-    html += `
-
-      <tr>
-
-        <td>
-          <b>
-            ${escapeHTML(
-              product.product_name ||
-              "Product"
-            )}
-          </b>
-        </td>
-
-        <td>
-          ${escapeHTML(
-            product.category ||
-            "-"
-          )}
-        </td>
-
-        <td>
-          ₹${Number(
-            product.price || 0
-          ).toLocaleString("en-IN")}
-        </td>
-
-        <td>
-          ${product.stock ?? 0}
-        </td>
-
-        <td>
-          <span class="badge ${badgeClass}">
-            ${badgeText}
-          </span>
-        </td>
-
-      </tr>
-
-    `;
-
-  });
-
-
-  html += `
-
-      </tbody>
-
-    </table>
-
-    </div>
-
-  `;
-
-
-  area.innerHTML =
-    html;
-
-}
-
-
-/* =====================================
-   ORDERS
-===================================== */
-
-async function loadOrders(userId){
-
-  const area =
     document.getElementById(
-      "recentOrders"
-    );
+      "totalProducts"
+    ).textContent =
+      total;
 
 
-  /*
-    Orders table में seller_id होने पर
-    seller के orders दिखेंगे।
-  */
+    document.getElementById(
+      "pendingProducts"
+    ).textContent =
+      pending;
+
+
+    document.getElementById(
+      "approvedProducts"
+    ).textContent =
+      approved;
+
+  }
+
+
+  /* =========================
+     ORDERS
+  ========================= */
 
   const {
-    data:ordersData,
-    error
+    data:orders,
+    error:orderError
   } =
-    await db
-      .from("orders")
-      .select("*")
-      .eq("seller_id",userId)
-      .order(
-        "created_at",
-        {
-          ascending:false
-        }
-      )
-      .limit(5);
+  await db
+    .from("orders")
+    .select("*");
 
 
-  if(error){
+  if(orderError){
 
     console.log(
-      "Orders अभी उपलब्ध नहीं:",
-      error.message
+      "Orders:",
+      orderError.message
     );
 
-    area.innerHTML = `
-      <div class="empty">
-        🛒 अभी कोई order नहीं है।
-      </div>
-    `;
+  }else{
+
+    const list =
+      orders || [];
+
 
     document.getElementById(
       "totalOrders"
-    ).textContent = "0";
+    ).textContent =
+      list.length;
+
+
+    let sales = 0;
+
+
+    list.forEach(order => {
+
+      const amount =
+        Number(
+          order.total_amount ||
+          order.total ||
+          order.amount ||
+          0
+        );
+
+      sales += amount;
+
+    });
+
 
     document.getElementById(
       "totalSales"
-    ).textContent = "₹0";
-
-    return;
-
-  }
-
-
-  const list =
-    ordersData || [];
-
-
-  document.getElementById(
-    "totalOrders"
-  ).textContent =
-    list.length;
-
-
-  let sales = 0;
-
-
-  list.forEach(function(order){
-
-    sales += Number(
-      order.total_amount ||
-      order.total ||
-      order.amount ||
-      0
-    );
-
-  });
-
-
-  document.getElementById(
-    "totalSales"
-  ).textContent =
-    "₹" +
-    sales.toLocaleString(
-      "en-IN"
-    );
-
-
-  if(list.length === 0){
-
-    area.innerHTML = `
-      <div class="empty">
-        🛒 अभी कोई order नहीं है।
-      </div>
-    `;
-
-    return;
+    ).textContent =
+      "₹" +
+      sales.toLocaleString("en-IN");
 
   }
-
-
-  let html = "";
-
-
-  list.forEach(function(order){
-
-    html += `
-
-      <div class="order">
-
-        <div class="order-left">
-
-          <div class="order-icon">
-            🛒
-          </div>
-
-          <div>
-
-            <div class="order-id">
-              #${escapeHTML(
-                String(
-                  order.id || ""
-                ).slice(0,8)
-              )}
-            </div>
-
-            <div class="order-date">
-              ${order.created_at
-                ? new Date(
-                    order.created_at
-                  ).toLocaleDateString("en-IN")
-                : ""}
-            </div>
-
-          </div>
-
-        </div>
-
-        <div>
-
-          <div class="order-price">
-            ₹${Number(
-              order.total_amount ||
-              order.total ||
-              order.amount ||
-              0
-            ).toLocaleString("en-IN")}
-          </div>
-
-          <span class="badge pending">
-            ${escapeHTML(
-              order.status ||
-              "Pending"
-            )}
-          </span>
-
-        </div>
-
-      </div>
-
-    `;
-
-  });
-
-
-  area.innerHTML =
-    html;
 
 }
 
 
-/* =====================================
-   SAFE HTML
-===================================== */
-
-function escapeHTML(value){
-
-  return String(value)
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-
-}
-
-
-/* =====================================
+/* =========================
    NAVIGATION
-===================================== */
+========================= */
 
-function dashboard(){
+function goDashboard(){
 
-  window.location.href =
-    "seller-dashboard.html";
+  closeMenu();
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
 
 }
 
 
 function addProduct(){
+
+  closeMenu();
+
+  /*
+    Step 12 में हम real
+    Add Product page बनाएँगे.
+  */
 
   window.location.href =
     "seller-add-product.html";
@@ -1538,7 +1071,9 @@ function addProduct(){
 }
 
 
-function myProducts(){
+function viewProducts(){
+
+  closeMenu();
 
   window.location.href =
     "seller-products.html";
@@ -1546,7 +1081,29 @@ function myProducts(){
 }
 
 
-function orders(){
+function viewPending(){
+
+  closeMenu();
+
+  window.location.href =
+    "seller-products.html?status=pending";
+
+}
+
+
+function viewApproved(){
+
+  closeMenu();
+
+  window.location.href =
+    "seller-products.html?status=approved";
+
+}
+
+
+function viewOrders(){
+
+  closeMenu();
 
   window.location.href =
     "seller-orders.html";
@@ -1554,7 +1111,9 @@ function orders(){
 }
 
 
-function earnings(){
+function viewEarnings(){
+
+  closeMenu();
 
   window.location.href =
     "seller-earnings.html";
@@ -1562,15 +1121,9 @@ function earnings(){
 }
 
 
-function storeSettings(){
+function viewDocuments(){
 
-  window.location.href =
-    "seller-store-settings.html";
-
-}
-
-
-function documents(){
+  closeMenu();
 
   window.location.href =
     "seller-documents.html";
@@ -1578,40 +1131,56 @@ function documents(){
 }
 
 
-function help(){
+function viewSettings(){
+
+  closeMenu();
 
   window.location.href =
-    "seller-help.html";
+    "seller-settings.html";
 
 }
 
 
-/* =====================================
+/* =========================
    LOGOUT
-===================================== */
+========================= */
 
 async function logout(){
 
-  const confirmLogout =
-    confirm(
-      "क्या आप Seller account से logout करना चाहते हैं?"
+  const {error} =
+    await db.auth.signOut();
+
+
+  if(error){
+
+    alert(
+      "Logout failed: " +
+      error.message
     );
-
-
-  if(!confirmLogout){
 
     return;
 
   }
 
 
-  await db.auth.signOut();
-
-
   window.location.href =
     "seller-login.html";
 
 }
+
+
+/* =========================
+   START
+========================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function(){
+
+    checkSeller();
+
+  }
+);
 
 </script>
 
