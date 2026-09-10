@@ -1,15 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Add Product - BR Digital Marketplace</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-*{box-sizing:border-box}
+*{
+  box-sizing:border-box;
+}
 
 body{
   margin:0;
@@ -61,7 +63,7 @@ body{
 .step{
   display:inline-block;
   background:#1677ed;
-  color:white;
+  color:#fff;
   padding:8px 15px;
   border-radius:20px;
   font-weight:bold;
@@ -126,15 +128,12 @@ textarea{
 }
 
 .preview{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
   margin-top:12px;
 }
 
 .preview img{
-  width:85px;
-  height:85px;
+  width:110px;
+  height:110px;
   object-fit:cover;
   border-radius:10px;
   border:1px solid #ddd;
@@ -240,14 +239,11 @@ textarea{
     🏪 BR <span>Digital Marketplace</span>
   </div>
 
-  <a
-    href="seller-dashboard.html"
-    class="back">
+  <a href="seller-dashboard.html" class="back">
     ← Dashboard
   </a>
 
 </header>
-
 
 <div class="container">
 
@@ -262,7 +258,7 @@ textarea{
   </h1>
 
   <div class="subtitle">
-    अपने असली product की जानकारी और invoice/bill upload करें।
+    अपने असली product की जानकारी और original purchase invoice/bill upload करें।
     Product submit होने के बाद Admin verification करेगा।
   </div>
 
@@ -276,7 +272,7 @@ textarea{
   <input
     type="text"
     id="productName"
-    placeholder="जैसे Redmi Note 13"
+    placeholder="Product का असली नाम"
     required>
 
 
@@ -293,11 +289,10 @@ textarea{
       <input
         type="text"
         id="brand"
-        placeholder="जैसे Xiaomi"
+        placeholder="Brand Name"
         required>
 
     </div>
-
 
     <div>
 
@@ -305,7 +300,7 @@ textarea{
         Category <span class="required">*</span>
       </label>
 
-      <select id="category">
+      <select id="category" required>
 
         <option value="">
           Select Category
@@ -339,6 +334,14 @@ textarea{
           Grocery
         </option>
 
+        <option value="Sports">
+          Sports
+        </option>
+
+        <option value="Toys">
+          Toys
+        </option>
+
         <option value="Other">
           Other
         </option>
@@ -348,6 +351,19 @@ textarea{
     </div>
 
   </div>
+
+
+  <!-- PRODUCT TYPE -->
+
+  <label>
+    Product Type <span class="required">*</span>
+  </label>
+
+  <input
+    type="text"
+    id="productType"
+    placeholder="जैसे Mobile Phone, Shoes, Chess Board"
+    required>
 
 
   <!-- PRICE + STOCK -->
@@ -364,11 +380,11 @@ textarea{
         type="number"
         id="price"
         min="1"
-        placeholder="12999"
+        step="0.01"
+        placeholder="Product selling price"
         required>
 
     </div>
-
 
     <div>
 
@@ -380,7 +396,8 @@ textarea{
         type="number"
         id="stock"
         min="0"
-        placeholder="10"
+        step="1"
+        placeholder="Available quantity"
         required>
 
     </div>
@@ -396,40 +413,36 @@ textarea{
 
   <textarea
     id="description"
-    placeholder="Product की पूरी जानकारी लिखें..."
+    placeholder="Product की पूरी और सही जानकारी लिखें..."
     required></textarea>
 
 
-  <!-- PRODUCT IMAGES -->
+  <!-- PRODUCT IMAGE -->
 
   <label>
-    Product Images
-    <span class="required">*</span>
+    Primary Product Image <span class="required">*</span>
   </label>
 
   <div class="upload-box">
 
-    📷 <b>Product Photos Upload करें</b>
+    📷 <b>Original Product Photo Upload करें</b>
 
     <br><br>
 
     <input
       type="file"
-      id="productImages"
+      id="productImage"
       accept="image/jpeg,image/png,image/webp"
-      multiple
-      onchange="previewImages()">
+      onchange="previewImage()"
+      required>
 
     <div>
-      Maximum 5 images
+      JPG, PNG या WEBP • Maximum 5 MB
     </div>
 
   </div>
 
-  <div
-    id="imagePreview"
-    class="preview">
-  </div>
+  <div id="imagePreview" class="preview"></div>
 
 
   <!-- SERIAL / IMEI -->
@@ -437,7 +450,7 @@ textarea{
   <label>
     Product Serial / IMEI
     <span style="color:#777;font-size:13px;">
-      (If Applicable)
+      (यदि लागू हो)
     </span>
   </label>
 
@@ -450,8 +463,7 @@ textarea{
   <!-- INVOICE -->
 
   <label>
-    Purchase Invoice / Bill
-    <span class="required">*</span>
+    Purchase Invoice / Bill <span class="required">*</span>
   </label>
 
   <div class="upload-box">
@@ -464,7 +476,8 @@ textarea{
       type="file"
       id="invoice"
       accept=".jpg,.jpeg,.png,.pdf"
-      onchange="showInvoice()">
+      onchange="showInvoice()"
+      required>
 
     <div>
       JPG, PNG या PDF • Maximum 5 MB
@@ -472,10 +485,7 @@ textarea{
 
   </div>
 
-  <div
-    id="invoiceName"
-    class="file-name">
-  </div>
+  <div id="invoiceName" class="file-name"></div>
 
 
   <div class="info">
@@ -484,12 +494,17 @@ textarea{
 
     <br><br>
 
-    आपका product पहले <b>Pending Approval</b> में जाएगा।
-    Admin product photo, invoice और अन्य जानकारी verify करेगा।
+    आपका product पहले
+    <b>Pending Approval</b>
+    में जाएगा।
 
     <br><br>
 
-    ✅ Approved होने के बाद ही product marketplace पर दिखाई देगा।
+    Admin product की जानकारी, photo और purchase invoice verify करेगा।
+
+    <br><br>
+
+    ✅ Admin approval के बाद ही product marketplace में दिखाई देगा।
 
   </div>
 
@@ -504,10 +519,7 @@ textarea{
   </button>
 
 
-  <div
-    id="message"
-    class="message">
-  </div>
+  <div id="message" class="message"></div>
 
 </div>
 
@@ -516,9 +528,9 @@ textarea{
 
 <script>
 
-/* =========================
+/* =====================================
    SUPABASE
-========================= */
+===================================== */
 
 const SUPABASE_URL =
 "https://uryjmibcdfjfxoljrigt.supabase.co";
@@ -526,16 +538,15 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
 "sb_publishable_uYbJw0ARCCkCpQ9QB6FxaQ_JrIxtOOp";
 
-const db =
-supabase.createClient(
+const db = supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
 
 
-/* =========================
+/* =====================================
    MESSAGE
-========================= */
+===================================== */
 
 function showMessage(text,type){
 
@@ -549,56 +560,63 @@ function showMessage(text,type){
 }
 
 
-/* =========================
+/* =====================================
    IMAGE PREVIEW
-========================= */
+===================================== */
 
-function previewImages(){
+function previewImage(){
 
   const input =
-    document.getElementById("productImages");
+    document.getElementById("productImage");
 
   const preview =
     document.getElementById("imagePreview");
 
   preview.innerHTML = "";
 
+  const file = input.files[0];
 
-  if(input.files.length > 5){
+  if(!file){
+    return;
+  }
 
-    showMessage(
-      "❌ Maximum 5 product images allowed.",
-      "error"
-    );
+  if(!file.type.startsWith("image/")){
 
     input.value = "";
+
+    showMessage(
+      "❌ केवल image file upload करें।",
+      "error"
+    );
 
     return;
   }
 
+  if(file.size > 5 * 1024 * 1024){
 
-  Array.from(input.files).forEach(file => {
+    input.value = "";
 
-    if(!file.type.startsWith("image/")){
-      return;
-    }
+    showMessage(
+      "❌ Product image maximum 5 MB की होनी चाहिए।",
+      "error"
+    );
 
-    const img =
-      document.createElement("img");
+    return;
+  }
 
-    img.src =
-      URL.createObjectURL(file);
+  const img =
+    document.createElement("img");
 
-    preview.appendChild(img);
+  img.src =
+    URL.createObjectURL(file);
 
-  });
-
+  preview.appendChild(img);
 }
 
 
-/* =========================
+/* =====================================
    INVOICE NAME
-========================= */
+===================================== */
 
 function showInvoice(){
 
@@ -608,35 +626,34 @@ function showInvoice(){
   const output =
     document.getElementById("invoiceName");
 
+  const file = input.files[0];
 
-  if(input.files.length){
+  if(file){
 
     output.innerHTML =
-      "✅ " + input.files[0].name;
+      "✅ " + file.name;
 
   }else{
 
     output.innerHTML = "";
 
   }
-
 }
 
 
-/* =========================
-   FILE VALIDATION
-========================= */
+/* =====================================
+   INVOICE VALIDATION
+===================================== */
 
 function validateInvoice(file){
 
   if(!file){
 
     throw new Error(
-      "Purchase Invoice / Bill upload करें।"
+      "Original Purchase Invoice / Bill upload करें।"
     );
 
   }
-
 
   if(file.size > 5 * 1024 * 1024){
 
@@ -646,13 +663,11 @@ function validateInvoice(file){
 
   }
 
-
   const allowed = [
     "image/jpeg",
     "image/png",
     "application/pdf"
   ];
-
 
   if(!allowed.includes(file.type)){
 
@@ -661,28 +676,33 @@ function validateInvoice(file){
     );
 
   }
-
 }
 
 
-/* =========================
-   UPLOAD PRODUCT IMAGE
-========================= */
+/* =====================================
+   PRODUCT IMAGE UPLOAD
+===================================== */
 
 async function uploadProductImage(
   file,
-  userId,
-  index
+  userId
 ){
 
-  if(file.size > 5 * 1024 * 1024){
+  if(!file){
 
     throw new Error(
-      "Product image 5 MB से छोटी होनी चाहिए।"
+      "Product image upload करें।"
     );
 
   }
 
+  if(file.size > 5 * 1024 * 1024){
+
+    throw new Error(
+      "Product image maximum 5 MB की होनी चाहिए।"
+    );
+
+  }
 
   const extension =
     file.name
@@ -690,29 +710,26 @@ async function uploadProductImage(
       .pop()
       .toLowerCase();
 
-
   const path =
     userId +
     "/products/" +
-    Date.now() +
-    "_" +
-    index +
+    crypto.randomUUID() +
     "." +
     extension;
 
-
-  const {error} =
-    await db.storage
-      .from("product-images")
-      .upload(
-        path,
-        file,
-        {
-          cacheControl:"3600",
-          upsert:false
-        }
-      );
-
+  const {
+    error
+  } =
+  await db.storage
+    .from("product-images")
+    .upload(
+      path,
+      file,
+      {
+        cacheControl:"3600",
+        upsert:false
+      }
+    );
 
   if(error){
 
@@ -723,12 +740,6 @@ async function uploadProductImage(
 
   }
 
-
-  /*
-    Product images bucket public होना चाहिए
-    ताकि marketplace में image दिखाई दे।
-  */
-
   const {
     data
   } =
@@ -736,15 +747,14 @@ async function uploadProductImage(
     .from("product-images")
     .getPublicUrl(path);
 
-
   return data.publicUrl;
-
 }
 
 
-/* =========================
-   UPLOAD INVOICE
-========================= */
+/* =====================================
+   INVOICE UPLOAD
+   seller-kyc PRIVATE BUCKET
+===================================== */
 
 async function uploadInvoice(
   file,
@@ -753,34 +763,32 @@ async function uploadInvoice(
 
   validateInvoice(file);
 
-
   const extension =
     file.name
       .split(".")
       .pop()
       .toLowerCase();
 
-
   const path =
     userId +
     "/products/invoice_" +
-    Date.now() +
+    crypto.randomUUID() +
     "." +
     extension;
 
-
-  const {error} =
-    await db.storage
-      .from("seller-kyc")
-      .upload(
-        path,
-        file,
-        {
-          cacheControl:"3600",
-          upsert:false
-        }
-      );
-
+  const {
+    error
+  } =
+  await db.storage
+    .from("seller-kyc")
+    .upload(
+      path,
+      file,
+      {
+        cacheControl:"3600",
+        upsert:false
+      }
+    );
 
   if(error){
 
@@ -791,50 +799,52 @@ async function uploadInvoice(
 
   }
 
-
   /*
-    seller-kyc PRIVATE bucket है।
-    Database में केवल storage path save होगा।
+    seller-kyc PRIVATE है।
+    Database में सिर्फ storage path रखा जाएगा।
   */
 
   return path;
-
 }
 
 
-/* =========================
+/* =====================================
    SUBMIT PRODUCT
-========================= */
+===================================== */
 
 async function submitProduct(){
 
   const button =
     document.getElementById("submitBtn");
 
-
   try{
 
-    /* =========================
+    /* ================================
        FORM VALUES
-    ========================= */
+    ================================= */
 
     const productName =
       document
         .getElementById("productName")
-        .value.trim();
-
+        .value
+        .trim();
 
     const brand =
       document
         .getElementById("brand")
-        .value.trim();
-
+        .value
+        .trim();
 
     const category =
       document
         .getElementById("category")
         .value;
 
+    const productType =
+      document
+        .getElementById("productType")
+        .value
+        .trim();
 
     const price =
       Number(
@@ -843,7 +853,6 @@ async function submitProduct(){
           .value
       );
 
-
     const stock =
       Number(
         document
@@ -851,33 +860,32 @@ async function submitProduct(){
           .value
       );
 
-
     const description =
       document
         .getElementById("description")
-        .value.trim();
-
+        .value
+        .trim();
 
     const serial =
       document
         .getElementById("serial")
-        .value.trim();
+        .value
+        .trim();
 
-
-    const imageInput =
+    const imageFile =
       document
-        .getElementById("productImages");
+        .getElementById("productImage")
+        .files[0];
 
-
-    const invoice =
+    const invoiceFile =
       document
         .getElementById("invoice")
         .files[0];
 
 
-    /* =========================
+    /* ================================
        VALIDATION
-    ========================= */
+    ================================= */
 
     if(!productName){
 
@@ -887,15 +895,13 @@ async function submitProduct(){
 
     }
 
-
     if(!brand){
 
       throw new Error(
-        "Brand भरें।"
+        "Brand Name भरें।"
       );
 
     }
-
 
     if(!category){
 
@@ -905,6 +911,13 @@ async function submitProduct(){
 
     }
 
+    if(!productType){
+
+      throw new Error(
+        "Product Type भरें।"
+      );
+
+    }
 
     if(!price || price <= 0){
 
@@ -914,61 +927,46 @@ async function submitProduct(){
 
     }
 
-
-    if(stock < 0){
+    if(!Number.isInteger(stock) || stock < 0){
 
       throw new Error(
-        "Stock सही डालें।"
+        "Valid stock quantity डालें।"
       );
 
     }
-
 
     if(!description){
 
       throw new Error(
-        "Product description भरें।"
+        "Product Description भरें।"
       );
 
     }
 
-
-    if(!imageInput.files.length){
+    if(!imageFile){
 
       throw new Error(
-        "कम से कम 1 product image upload करें।"
+        "Product image upload करें।"
       );
 
     }
 
-
-    if(imageInput.files.length > 5){
-
-      throw new Error(
-        "Maximum 5 images allowed."
-      );
-
-    }
+    validateInvoice(invoiceFile);
 
 
-    validateInvoice(invoice);
-
-
-    /* =========================
-       LOGIN
-    ========================= */
+    /* ================================
+       LOGIN CHECK
+    ================================= */
 
     button.disabled = true;
 
     button.innerText =
-      "⏳ Submitting...";
-
+      "⏳ Checking Seller...";
 
     showMessage(
-      "⏳ Product submit हो रहा है... कृपया page बंद न करें।",
+      "⏳ Seller account verify हो रहा है...",
       "loading"
     );
-
 
     const {
       data:{
@@ -978,8 +976,16 @@ async function submitProduct(){
     } =
     await db.auth.getUser();
 
+    if(userError){
 
-    if(userError || !user){
+      throw new Error(
+        "Login check failed: " +
+        userError.message
+      );
+
+    }
+
+    if(!user){
 
       throw new Error(
         "Seller login नहीं है। पहले Seller Login करें।"
@@ -988,9 +994,9 @@ async function submitProduct(){
     }
 
 
-    /* =========================
-       SELLER CHECK
-    ========================= */
+    /* ================================
+       SELLER APPROVAL CHECK
+    ================================= */
 
     const {
       data:seller,
@@ -999,11 +1005,10 @@ async function submitProduct(){
     await db
       .from("sellers")
       .select(
-        "id,user_id,status,is_active"
+        "id,user_id,business_name,owner_name,status,is_active"
       )
       .eq("user_id",user.id)
       .maybeSingle();
-
 
     if(sellerError){
 
@@ -1014,7 +1019,6 @@ async function submitProduct(){
 
     }
 
-
     if(!seller){
 
       throw new Error(
@@ -1023,79 +1027,67 @@ async function submitProduct(){
 
     }
 
-
     if(
       seller.status !== "approved" ||
       seller.is_active !== true
     ){
 
       throw new Error(
-        "आपका seller account अभी approved नहीं है।"
+        "आपका Seller account अभी Admin द्वारा approved नहीं है।"
       );
 
     }
 
 
-    /* =========================
-       UPLOAD IMAGES
-    ========================= */
+    /* ================================
+       PRODUCT IMAGE
+    ================================= */
 
-    const imageUrls = [];
-
-
-    for(
-      let i = 0;
-      i < imageInput.files.length;
-      i++
-    ){
-
-      showMessage(
-        "⏳ Product image " +
-        (i + 1) +
-        " upload हो रही है...",
-        "loading"
-      );
-
-
-      const url =
-        await uploadProductImage(
-          imageInput.files[i],
-          user.id,
-          i
-        );
-
-
-      imageUrls.push(url);
-
-    }
-
-
-    /* =========================
-       UPLOAD INVOICE
-    ========================= */
+    button.innerText =
+      "⏳ Uploading Image...";
 
     showMessage(
-      "⏳ Purchase invoice securely upload हो रहा है...",
+      "⏳ Product image upload हो रही है...",
       "loading"
     );
 
-
-    const invoicePath =
-      await uploadInvoice(
-        invoice,
+    const imageUrl =
+      await uploadProductImage(
+        imageFile,
         user.id
       );
 
 
-    /* =========================
-       PRODUCT DATABASE
-    ========================= */
+    /* ================================
+       INVOICE
+    ================================= */
+
+    button.innerText =
+      "⏳ Uploading Invoice...";
+
+    showMessage(
+      "⏳ Original invoice securely upload हो रहा है...",
+      "loading"
+    );
+
+    const invoicePath =
+      await uploadInvoice(
+        invoiceFile,
+        user.id
+      );
+
+
+    /* ================================
+       DATABASE DATA
+    ================================= */
+
+    button.innerText =
+      "⏳ Saving Product...";
 
     showMessage(
       "⏳ Product database में save हो रहा है...",
       "loading"
     );
-
 
     const productData = {
 
@@ -1111,32 +1103,36 @@ async function submitProduct(){
       category:
         category,
 
+      product_type:
+        productType,
+
+      description:
+        description,
+
       price:
         price,
 
       stock:
         stock,
 
-      description:
-        description,
-
       image_url:
-        imageUrls[0],
+        imageUrl,
+
+      seller_name:
+        seller.business_name ||
+        seller.owner_name ||
+        "",
 
       status:
         "pending",
 
       invoice_document_url:
         invoicePath
-
     };
 
 
-    /*
-      Optional serial field.
-      अगर products table में serial_number
-      मौजूद है तो इसे भेजा जाएगा।
-    */
+    /* Serial/IMEI केवल तभी save होगा
+       जब seller ने value दी हो */
 
     if(serial){
 
@@ -1145,6 +1141,10 @@ async function submitProduct(){
 
     }
 
+
+    /* ================================
+       INSERT PRODUCT
+    ================================= */
 
     const {
       data:product,
@@ -1156,7 +1156,6 @@ async function submitProduct(){
       .select()
       .single();
 
-
     if(productError){
 
       throw new Error(
@@ -1167,46 +1166,47 @@ async function submitProduct(){
     }
 
 
-    /* =========================
+    /* ================================
        SUCCESS
-    ========================= */
+    ================================= */
 
     showMessage(
       "✅ Product successfully submitted!<br><br>" +
       "⏳ Status: Pending Approval<br><br>" +
-      "Admin verification के बाद approved product marketplace पर दिखाई देगा।",
+      "Admin verification के बाद approved product Marketplace पर दिखाई देगा।",
       "success"
     );
-
 
     button.innerText =
       "✅ Submitted for Review";
 
 
-    setTimeout(() => {
+    setTimeout(function(){
 
       window.location.href =
         "seller-dashboard.html";
 
-    },2000);
+    },2500);
 
 
   }catch(error){
 
-    console.error(error);
-
-
-    showMessage(
-      "❌ " + error.message,
-      "error"
+    console.error(
+      "PRODUCT SUBMISSION ERROR:",
+      error
     );
 
+    showMessage(
+      "❌ " +
+      (error.message ||
+      "Product submit नहीं हो सका।"),
+      "error"
+    );
 
     button.disabled = false;
 
     button.innerText =
       "🚀 Submit for Review";
-
   }
 
 }
@@ -1214,4 +1214,4 @@ async function submitProduct(){
 </script>
 
 </body>
-        </html>
+</html>
