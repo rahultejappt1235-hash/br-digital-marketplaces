@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>KYC Verification - BR Digital Marketplace</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  background:#f5f7fa;
+  font-family:Arial,sans-serif;
+  color:#17212b;
+}
+
+.header{
+  background:#fff;
+  padding:18px 15px;
+  text-align:center;
+  box-shadow:0 2px 10px rgba(0,0,0,.08);
+}
+
+.logo{
+  font-size:25px;
+  font-weight:800;
+}
+
+.logo span{
+  color:#f47700;
+}
+
+.container{
+  max-width:650px;
+  margin:30px auto;
+  padding:0 15px;
+}
+
+.card{
+  background:#fff;
+  border-radius:24px;
+  padding:28px 22px;
+  box-shadow:0 8px 30px rgba(0,0,0,.10);
+}
+
+.step{
+  display:inline-block;
+  background:#1677ed;
+  color:white;
+  padding:8px 15px;
+  border-radius:20px;
+  font-weight:bold;
+}
+
+h1{
+  color:#f47700;
+  font-size:30px;
+  margin:15px 0 8px;
+}
+
+.subtitle{
+  color:#666;
+  line-height:1.5;
+  margin-bottom:25px;
+}
+
+.upload-card{
+  border:1px solid #dce2e8;
+  border-radius:16px;
+  padding:18px;
+  margin-bottom:18px;
+}
+
+.upload-title{
+  font-size:17px;
+  font-weight:800;
+  margin-bottom:7px;
+}
+
+.required{
+  color:red;
+}
+
+.help{
+  color:#777;
+  font-size:13px;
+  margin-bottom:13px;
+}
+
+input[type=file]{
+  width:100%;
+  padding:13px;
+  border:1px dashed #1677ed;
+  border-radius:12px;
+  background:#f7fbff;
+}
+
+.file-name{
+  margin-top:9px;
+  color:#16834a;
+  font-size:13px;
+  word-break:break-word;
+}
+
+.continue{
+  width:100%;
+  border:0;
+  border-radius:14px;
+  padding:17px;
+  margin-top:10px;
+  background:#1677ed;
+  color:white;
+  font-size:18px;
+  font-weight:800;
+}
+
+.message{
+  display:none;
+  margin-top:18px;
+  padding:14px;
+  border-radius:12px;
+  text-align:center;
+  line-height:1.5;
+}
+
+.success{
+  display:block;
+  background:#dcfce7;
+  color:#166534;
+}
+
+.error{
+  display:block;
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+.loading{
+  display:block;
+  background:#dbeafe;
+  color:#1e40af;
+}
+
+.note{
+  margin-top:20px;
+  padding:15px;
+  border-radius:12px;
+  background:#fff7df;
+  color:#765500;
+  font-size:13px;
+  line-height:1.5;
+}
+
+.back{
+  display:block;
+  text-align:center;
+  margin-top:20px;
+  color:#f47700;
+  font-weight:bold;
+  text-decoration:none;
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+  <div class="logo">
+    🏪 BR <span>Digital Marketplace</span>
+  </div>
+</header>
+
+<div class="container">
+
+<div class="card">
+
+  <div class="step">5️⃣ Step 5</div>
+
+  <h1>KYC / Business Verification 🪪</h1>
+
+  <div class="subtitle">
+    Upload the required documents for seller verification.
+  </div>
+
+
+  <!-- AADHAAR -->
+
+  <div class="upload-card">
+
+    <div class="upload-title">
+      🪪 Aadhaar Card <span class="required">*</span>
+    </div>
+
+    <div class="help">
+      Upload JPG, PNG or PDF
+    </div>
+
+    <input
+      type="file"
+      id="aadhaar"
+      accept=".jpg,.jpeg,.png,.pdf"
+      onchange="showFile('aadhaar','aadhaarName')"
+    >
+
+    <div id="aadhaarName" class="file-name"></div>
+
+  </div>
+
+
+  <!-- PAN -->
+
+  <div class="upload-card">
+
+    <div class="upload-title">
+      🪪 PAN Card <span class="required">*</span>
+    </div>
+
+    <div class="help">
+      Upload JPG, PNG or PDF
+    </div>
+
+    <input
+      type="file"
+      id="pan"
+      accept=".jpg,.jpeg,.png,.pdf"
+      onchange="showFile('pan','panName')"
+    >
+
+    <div id="panName" class="file-name"></div>
+
+  </div>
+
+
+  <!-- BUSINESS PROOF -->
+
+  <div class="upload-card">
+
+    <div class="upload-title">
+      🏪 Business Proof
+    </div>
+
+    <div class="help">
+      Shop License / Udyam / GST Certificate / Other
+    </div>
+
+    <input
+      type="file"
+      id="businessProof"
+      accept=".jpg,.jpeg,.png,.pdf"
+      onchange="showFile('businessProof','businessProofName')"
+    >
+
+    <div
+      id="businessProofName"
+      class="file-name"
+    ></div>
+
+  </div>
+
+
+  <!-- SHOP PHOTO -->
+
+  <div class="upload-card">
+
+    <div class="upload-title">
+      📸 Shop Photo <span class="required">*</span>
+    </div>
+
+    <div class="help">
+      Upload a clear outside photo of your shop/business.
+    </div>
+
+    <input
+      type="file"
+      id="shopPhoto"
+      accept=".jpg,.jpeg,.png"
+      onchange="showFile('shopPhoto','shopPhotoName')"
+    >
+
+    <div id="shopPhotoName" class="file-name"></div>
+
+  </div>
+
+
+  <div class="note">
+    🔐 Your documents will be submitted for seller verification.
+    Admin approval is required before the seller account becomes
+    fully approved.
+  </div>
+
+
+  <button
+    class="continue"
+    onclick="submitKYC()"
+  >
+    Continue →
+  </button>
+
+
+  <div id="message" class="message"></div>
+
+
+  <a
+    href="seller-gst.html"
+    class="back"
+  >
+    ← Back to GST Details
+  </a>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =========================
+   SUPABASE
+========================= */
+
+const SUPABASE_URL =
+"https://uryjmibcdfjfxoljrigt.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_uYbJw0ARCCkCpQ9QB6FxaQ_JrIxtOOp";
+
+const db =
+supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+/* =========================
+   MESSAGE
+========================= */
+
+function showMessage(text,type){
+
+  const box =
+    document.getElementById("message");
+
+  box.className =
+    "message " + type;
+
+  box.innerHTML = text;
+}
+
+
+/* =========================
+   SHOW FILE
+========================= */
+
+function showFile(inputId,nameId){
+
+  const input =
+    document.getElementById(inputId);
+
+  const output =
+    document.getElementById(nameId);
+
+  if(input.files.length){
+
+    output.innerHTML =
+      "✅ " + input.files[0].name;
+
+  }else{
+
+    output.innerHTML = "";
+
+  }
+}
+
+
+/* =========================
+   UPLOAD FILE
+========================= */
+
+async function uploadFile(file,userId,type){
+
+  const extension =
+    file.name
+      .split(".")
+      .pop()
+      .toLowerCase();
+
+  const filePath =
+    userId +
+    "/" +
+    type +
+    "_" +
+    Date.now() +
+    "." +
+    extension;
+
+
+  const {
+    error
+  } =
+    await db.storage
+      .from("seller-kyc")
+      .upload(
+        filePath,
+        file,
+        {
+          upsert:true
+        }
+      );
+
+
+  if(error){
+
+    throw new Error(
+      "Upload failed (" +
+      type +
+      "): " +
+      error.message
+    );
+
+  }
+
+
+  const {
+    data
+  } =
+    db.storage
+      .from("seller-kyc")
+      .getPublicUrl(filePath);
+
+
+  return data.publicUrl;
+}
+
+
+/* =========================
+   SUBMIT KYC
+========================= */
+
+async function submitKYC(){
+
+  const aadhaar =
+    document.getElementById("aadhaar").files[0];
+
+  const pan =
+    document.getElementById("pan").files[0];
+
+  const businessProof =
+    document.getElementById("businessProof").files[0];
+
+  const shopPhoto =
+    document.getElementById("shopPhoto").files[0];
+
+
+  /* REQUIRED */
+
+  if(!aadhaar){
+
+    showMessage(
+      "❌ Aadhaar Card upload करें।",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if(!pan){
+
+    showMessage(
+      "❌ PAN Card upload करें।",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if(!shopPhoto){
+
+    showMessage(
+      "❌ Shop Photo upload करें।",
+      "error"
+    );
+
+    return;
+  }
+
+
+  try{
+
+    showMessage(
+      "⏳ Documents upload हो रहे हैं... कृपया page बंद न करें।",
+      "loading"
+    );
+
+
+    /* LOGIN */
+
+    const {
+      data:{
+        user
+      },
+      error:userError
+    } =
+      await db.auth.getUser();
+
+
+    if(userError || !user){
+
+      showMessage(
+        "❌ Seller login नहीं है। पहले login करें।",
+        "error"
+      );
+
+      return;
+    }
+
+
+    /* UPLOAD */
+
+    const aadhaarURL =
+      await uploadFile(
+        aadhaar,
+        user.id,
+        "aadhaar"
+      );
+
+
+    const panURL =
+      await uploadFile(
+        pan,
+        user.id,
+        "pan"
+      );
+
+
+    const shopPhotoURL =
+      await uploadFile(
+        shopPhoto,
+        user.id,
+        "shop_photo"
+      );
+
+
+    let businessProofURL = null;
+
+
+    if(businessProof){
+
+      businessProofURL =
+        await uploadFile(
+          businessProof,
+          user.id,
+          "business_proof"
+        );
+
+    }
+
+
+    /* SAVE DATABASE */
+
+    const updateData = {
+
+      aadhaar_document_url:
+        aadhaarURL,
+
+      pan_document_url:
+        panURL,
+
+      shop_photo_url:
+        shopPhotoURL,
+
+      kyc_status:
+        "submitted",
+
+      updated_at:
+        new Date().toISOString()
+
+    };
+
+
+    if(businessProofURL){
+
+      updateData.business_proof_url =
+        businessProofURL;
+
+    }
+
+
+    const {
+      error
+    } =
+      await db
+        .from("sellers")
+        .update(updateData)
+        .eq("user_id",user.id);
+
+
+    if(error){
+
+      console.error(error);
+
+      showMessage(
+        "❌ Database Error: " +
+        error.message,
+        "error"
+      );
+
+      return;
+    }
+
+
+    showMessage(
+      "✅ KYC Documents successfully submitted!<br><br>" +
+      "⏭️ अब Step 6 — Product Invoice / Proof खुलेगा...",
+      "success"
+    );
+
+
+    setTimeout(function(){
+
+      window.location.href =
+        "seller-invoice.html";
+
+    },1500);
+
+
+  }catch(error){
+
+    console.error(error);
+
+    showMessage(
+      "❌ " + error.message,
+      "error"
+    );
+
+  }
+
+}
+
+</script>
+
+</body>
+</html>
