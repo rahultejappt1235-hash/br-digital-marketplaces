@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>GST Details - BR Digital Marketplace</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  background:#f5f7fa;
+  font-family:Arial,sans-serif;
+  color:#17212b;
+}
+
+.header{
+  background:#fff;
+  padding:18px 15px;
+  text-align:center;
+  box-shadow:0 2px 10px rgba(0,0,0,.08);
+}
+
+.logo{
+  font-size:25px;
+  font-weight:800;
+}
+
+.logo span{
+  color:#f47700;
+}
+
+.container{
+  max-width:620px;
+  margin:30px auto;
+  padding:0 15px;
+}
+
+.card{
+  background:#fff;
+  border-radius:24px;
+  padding:28px 22px;
+  box-shadow:0 8px 30px rgba(0,0,0,.10);
+}
+
+.step{
+  display:inline-block;
+  background:#1677ed;
+  color:#fff;
+  padding:8px 15px;
+  border-radius:20px;
+  font-weight:bold;
+}
+
+h1{
+  color:#f47700;
+  font-size:30px;
+  margin:15px 0 8px;
+}
+
+.subtitle{
+  color:#666;
+  font-size:16px;
+  margin-bottom:24px;
+  line-height:1.5;
+}
+
+/* GST OPTION */
+
+.option{
+  border:2px solid #d9e0e8;
+  border-radius:16px;
+  padding:18px;
+  margin-bottom:16px;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.option.active{
+  border-color:#1590df;
+  background:#f2faff;
+}
+
+.option-head{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  font-size:18px;
+  font-weight:800;
+}
+
+.radio{
+  width:21px;
+  height:21px;
+  accent-color:#1677ed;
+}
+
+.option-text{
+  margin:10px 0 0 34px;
+  color:#666;
+  font-size:14px;
+  line-height:1.5;
+}
+
+/* GST BOX */
+
+.gst-box{
+  margin-top:16px;
+  padding:18px;
+  background:#fff;
+  border:1px solid #d9e0e8;
+  border-radius:15px;
+}
+
+label{
+  display:block;
+  font-weight:700;
+  margin-bottom:8px;
+}
+
+input{
+  width:100%;
+  padding:16px;
+  border:1px solid #d2d7dd;
+  border-radius:12px;
+  font-size:17px;
+  text-transform:uppercase;
+  outline:none;
+}
+
+input:focus{
+  border-color:#1677ed;
+}
+
+.verify-btn{
+  width:100%;
+  margin-top:12px;
+  padding:13px;
+  border:0;
+  border-radius:12px;
+  background:#16834a;
+  color:#fff;
+  font-size:15px;
+  font-weight:700;
+}
+
+.verify-result{
+  display:none;
+  margin-top:12px;
+  padding:12px;
+  border-radius:10px;
+  font-size:14px;
+  line-height:1.5;
+}
+
+.valid{
+  display:block;
+  background:#dcfce7;
+  color:#166534;
+}
+
+.invalid{
+  display:block;
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+.info{
+  margin-top:15px;
+  padding:15px;
+  background:#eaf5ff;
+  border-radius:12px;
+  color:#18558a;
+  font-size:14px;
+  line-height:1.5;
+}
+
+.continue{
+  width:100%;
+  border:0;
+  border-radius:14px;
+  padding:17px;
+  margin-top:25px;
+  background:#1677ed;
+  color:#fff;
+  font-size:18px;
+  font-weight:800;
+}
+
+.back{
+  display:block;
+  text-align:center;
+  margin-top:20px;
+  color:#f47700;
+  font-weight:bold;
+  text-decoration:none;
+}
+
+.message{
+  display:none;
+  margin-top:18px;
+  padding:14px;
+  border-radius:12px;
+  text-align:center;
+  line-height:1.5;
+}
+
+.success{
+  display:block;
+  background:#dcfce7;
+  color:#166534;
+}
+
+.error{
+  display:block;
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+.loading{
+  display:block;
+  background:#dbeafe;
+  color:#1e40af;
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+  <div class="logo">
+    🏪 BR <span>Digital Marketplace</span>
+  </div>
+</header>
+
+<div class="container">
+
+<div class="card">
+
+  <div class="step">4️⃣ Step 4</div>
+
+  <h1>GST Details 🧾</h1>
+
+  <div class="subtitle">
+    Add your GST information. You can continue without GSTIN if you don't have one.
+  </div>
+
+
+  <!-- OPTION 1 -->
+
+  <div
+    class="option active"
+    id="gstOption"
+    onclick="selectGST(true)"
+  >
+
+    <div class="option-head">
+
+      <input
+        type="radio"
+        name="gstOption"
+        class="radio"
+        id="hasGST"
+        checked
+      >
+
+      <span>🔵 I have GSTIN</span>
+
+    </div>
+
+    <div class="option-text">
+      Enter your GSTIN number and verify its format.
+    </div>
+
+    <div
+      class="gst-box"
+      id="gstBox"
+      onclick="event.stopPropagation()"
+    >
+
+      <label>
+        GSTIN Number <span style="color:red">*</span>
+      </label>
+
+      <input
+        id="gstin"
+        type="text"
+        maxlength="15"
+        placeholder="Example: 10ABCDE1234F1Z5"
+        oninput="formatGSTIN()"
+      >
+
+      <button
+        type="button"
+        class="verify-btn"
+        onclick="verifyGSTIN()"
+      >
+        🔍 Check GSTIN
+      </button>
+
+      <div
+        id="verifyResult"
+        class="verify-result"
+      ></div>
+
+    </div>
+
+  </div>
+
+
+  <!-- OPTION 2 -->
+
+  <div
+    class="option"
+    id="noGSTOption"
+    onclick="selectGST(false)"
+  >
+
+    <div class="option-head">
+
+      <input
+        type="radio"
+        name="gstOption"
+        class="radio"
+        id="noGST"
+      >
+
+      <span>⭕ I don't have GSTIN</span>
+
+    </div>
+
+    <div class="option-text">
+      You can still register and start selling.
+      GSTIN can be added later where applicable.
+    </div>
+
+  </div>
+
+
+  <div class="info">
+    💡 <b>GST Information</b><br>
+    GSTIN requirements can depend on your business and applicable
+    tax rules. BR Digital Marketplace can keep your GST status
+    for verification and seller records.
+  </div>
+
+
+  <button
+    class="continue"
+    onclick="saveGST()"
+  >
+    Continue →
+  </button>
+
+
+  <div
+    id="message"
+    class="message"
+  ></div>
+
+
+  <a
+    href="seller-address.html"
+    class="back"
+  >
+    ← Back to Address Details
+  </a>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =========================
+   SUPABASE
+========================= */
+
+const SUPABASE_URL =
+"https://uryjmibcdfjfxoljrigt.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_uYbJw0ARCCkCpQ9QB6FxaQ_JrIxtOOp";
+
+const db =
+supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+/* =========================
+   STATE
+========================= */
+
+let hasGST = true;
+let gstVerified = false;
+
+
+/* =========================
+   MESSAGE
+========================= */
+
+function showMessage(text,type){
+
+  const box =
+    document.getElementById("message");
+
+  box.className =
+    "message " + type;
+
+  box.innerHTML = text;
+}
+
+
+/* =========================
+   GST OPTION
+========================= */
+
+function selectGST(value){
+
+  hasGST = value;
+
+  const gstOption =
+    document.getElementById("gstOption");
+
+  const noGSTOption =
+    document.getElementById("noGSTOption");
+
+  const gstBox =
+    document.getElementById("gstBox");
+
+  document.getElementById("hasGST").checked =
+    value;
+
+  document.getElementById("noGST").checked =
+    !value;
+
+
+  if(value){
+
+    gstOption.classList.add("active");
+
+    noGSTOption.classList.remove("active");
+
+    gstBox.style.display = "block";
+
+  }else{
+
+    noGSTOption.classList.add("active");
+
+    gstOption.classList.remove("active");
+
+    gstBox.style.display = "none";
+
+    gstVerified = false;
+
+  }
+
+  document.getElementById("message").style.display =
+    "none";
+}
+
+
+/* =========================
+   FORMAT GSTIN
+========================= */
+
+function formatGSTIN(){
+
+  const input =
+    document.getElementById("gstin");
+
+  input.value =
+    input.value
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g,"")
+      .slice(0,15);
+
+  gstVerified = false;
+
+  document.getElementById(
+    "verifyResult"
+  ).style.display = "none";
+}
+
+
+/* =========================
+   GSTIN FORMAT CHECK
+========================= */
+
+function verifyGSTIN(){
+
+  const gstin =
+    document
+      .getElementById("gstin")
+      .value
+      .trim()
+      .toUpperCase();
+
+
+  /*
+    Standard GSTIN format check.
+    This checks the structure only.
+    It does NOT contact the government GST portal.
+  */
+
+  const pattern =
+    /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/;
+
+
+  const result =
+    document.getElementById(
+      "verifyResult"
+    );
+
+
+  if(pattern.test(gstin)){
+
+    gstVerified = true;
+
+    result.className =
+      "verify-result valid";
+
+    result.innerHTML =
+      "✅ GSTIN format looks valid.<br>" +
+      "GSTIN: <b>" + gstin + "</b><br>" +
+      "<small>Note: This is a format check only.</small>";
+
+  }else{
+
+    gstVerified = false;
+
+    result.className =
+      "verify-result invalid";
+
+    result.innerHTML =
+      "❌ GSTIN format सही नहीं है।<br>" +
+      "15 characters वाला सही GSTIN डालें.";
+
+  }
+
+}
+
+
+/* =========================
+   SAVE GST
+========================= */
+
+async function saveGST(){
+
+  try{
+
+    showMessage(
+      "⏳ GST Details save हो रही हैं...",
+      "loading"
+    );
+
+
+    /* CHECK LOGIN */
+
+    const {
+      data:{
+        user
+      },
+      error:userError
+    } =
+      await db.auth.getUser();
+
+
+    if(userError || !user){
+
+      showMessage(
+        "❌ Seller login नहीं है। पहले Seller Account में login करें।",
+        "error"
+      );
+
+      return;
+    }
+
+
+    let gstin = null;
+    let verificationStatus =
+      "not_required";
+
+
+    /* GSTIN OPTION */
+
+    if(hasGST){
+
+      gstin =
+        document
+          .getElementById("gstin")
+          .value
+          .trim()
+          .toUpperCase();
+
+
+      if(!gstin){
+
+        showMessage(
+          "❌ GSTIN Number डालें।",
+          "error"
+        );
+
+        return;
+      }
+
+
+      if(!gstVerified){
+
+        showMessage(
+          "❌ पहले Check GSTIN दबाकर GSTIN format verify करें।",
+          "error"
+        );
+
+        return;
+      }
+
+
+      verificationStatus =
+        "format_checked";
+
+    }
+
+
+    /* SAVE */
+
+    const {
+      error
+    } =
+      await db
+        .from("sellers")
+        .update({
+
+          has_gstin:
+            hasGST,
+
+          gstin:
+            gstin,
+
+          gstin_verification_status:
+            verificationStatus,
+
+          updated_at:
+            new Date().toISOString()
+
+        })
+        .eq("user_id",user.id);
+
+
+    if(error){
+
+      console.error(error);
+
+      showMessage(
+        "❌ Database Error: " +
+        error.message,
+        "error"
+      );
+
+      return;
+    }
+
+
+    showMessage(
+      "✅ GST Details successfully save हो गईं!<br><br>" +
+      "⏭️ अब Step 5: KYC / Business Verification खुलेगा...",
+      "success"
+    );
+
+
+    setTimeout(function(){
+
+      window.location.href =
+        "seller-kyc.html";
+
+    },1200);
+
+  }catch(error){
+
+    console.error(error);
+
+    showMessage(
+      "❌ Error: " +
+      error.message,
+      "error"
+    );
+
+  }
+
+}
+
+
+/* =========================
+   DEFAULT
+========================= */
+
+selectGST(true);
+
+</script>
+
+</body>
+</html>
