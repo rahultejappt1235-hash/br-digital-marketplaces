@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>Product Invoice - BR Digital Marketplace</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  background:#f5f7fa;
+  font-family:Arial,sans-serif;
+  color:#17212b;
+}
+
+.header{
+  background:#fff;
+  padding:18px 15px;
+  text-align:center;
+  box-shadow:0 2px 10px rgba(0,0,0,.08);
+}
+
+.logo{
+  font-size:25px;
+  font-weight:800;
+}
+
+.logo span{
+  color:#f47700;
+}
+
+.container{
+  max-width:650px;
+  margin:30px auto;
+  padding:0 15px;
+}
+
+.card{
+  background:#fff;
+  border-radius:24px;
+  padding:28px 22px;
+  box-shadow:0 8px 30px rgba(0,0,0,.10);
+}
+
+.step{
+  display:inline-block;
+  background:#1677ed;
+  color:#fff;
+  padding:8px 15px;
+  border-radius:20px;
+  font-weight:bold;
+}
+
+h1{
+  color:#f47700;
+  font-size:30px;
+  margin:15px 0 8px;
+}
+
+.subtitle{
+  color:#666;
+  line-height:1.5;
+  margin-bottom:22px;
+}
+
+.info{
+  background:#fff7df;
+  color:#765500;
+  padding:15px;
+  border-radius:14px;
+  margin-bottom:22px;
+  line-height:1.5;
+  font-size:14px;
+}
+
+.upload-card{
+  border:1px solid #dce2e8;
+  border-radius:16px;
+  padding:18px;
+  margin-bottom:18px;
+}
+
+.upload-title{
+  font-size:17px;
+  font-weight:800;
+  margin-bottom:8px;
+}
+
+.required{
+  color:red;
+}
+
+.help{
+  color:#777;
+  font-size:13px;
+  line-height:1.5;
+  margin-bottom:13px;
+}
+
+input[type=file]{
+  width:100%;
+  padding:13px;
+  border:1px dashed #1677ed;
+  border-radius:12px;
+  background:#f7fbff;
+}
+
+.file-name{
+  margin-top:9px;
+  color:#16834a;
+  font-size:13px;
+  word-break:break-word;
+}
+
+.continue{
+  width:100%;
+  border:0;
+  border-radius:14px;
+  padding:17px;
+  margin-top:8px;
+  background:#1677ed;
+  color:white;
+  font-size:18px;
+  font-weight:800;
+}
+
+.continue:disabled{
+  opacity:.6;
+}
+
+.message{
+  display:none;
+  margin-top:18px;
+  padding:14px;
+  border-radius:12px;
+  text-align:center;
+  line-height:1.5;
+}
+
+.success{
+  display:block;
+  background:#dcfce7;
+  color:#166534;
+}
+
+.error{
+  display:block;
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+.loading{
+  display:block;
+  background:#dbeafe;
+  color:#1e40af;
+}
+
+.back{
+  display:block;
+  text-align:center;
+  margin-top:20px;
+  color:#f47700;
+  font-weight:bold;
+  text-decoration:none;
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+  <div class="logo">
+    🏪 BR <span>Digital Marketplace</span>
+  </div>
+</header>
+
+
+<div class="container">
+
+<div class="card">
+
+  <div class="step">6️⃣ Step 6</div>
+
+  <h1>Product Invoice / Proof 🧾</h1>
+
+  <div class="subtitle">
+    Upload proof that your products are sourced from a genuine
+    supplier, distributor or manufacturer.
+  </div>
+
+
+  <div class="info">
+    💡 <b>Why is this required?</b><br><br>
+    This helps BR Digital Marketplace verify that products
+    listed by sellers are genuine and properly sourced.
+  </div>
+
+
+  <!-- PURCHASE INVOICE -->
+
+  <div class="upload-card">
+
+    <div class="upload-title">
+      🧾 Purchase Invoice / Proof
+      <span class="required">*</span>
+    </div>
+
+    <div class="help">
+      Upload an invoice from your distributor, supplier,
+      manufacturer or other valid purchase proof.
+      <br><br>
+      JPG, PNG or PDF • Maximum 5 MB
+    </div>
+
+    <input
+      type="file"
+      id="invoice"
+      accept=".jpg,.jpeg,.png,.pdf"
+      onchange="showFile('invoice','invoiceName')"
+    >
+
+    <div
+      id="invoiceName"
+      class="file-name">
+    </div>
+
+  </div>
+
+
+  <!-- OTHER DOCUMENT -->
+
+  <div class="upload-card">
+
+    <div class="upload-title">
+      📄 Other Documents
+      <span style="color:#777;font-size:13px;">
+        (Optional)
+      </span>
+    </div>
+
+    <div class="help">
+      Brand Authorization / Distributor Certificate /
+      Manufacturer Proof / Other supporting document.
+      <br><br>
+      JPG, PNG or PDF • Maximum 5 MB
+    </div>
+
+    <input
+      type="file"
+      id="otherDocument"
+      accept=".jpg,.jpeg,.png,.pdf"
+      onchange="showFile('otherDocument','otherDocumentName')"
+    >
+
+    <div
+      id="otherDocumentName"
+      class="file-name">
+    </div>
+
+  </div>
+
+
+  <button
+    class="continue"
+    id="continueBtn"
+    onclick="submitInvoice()">
+    Continue →
+  </button>
+
+
+  <div
+    id="message"
+    class="message">
+  </div>
+
+
+  <a
+    href="seller-kyc.html"
+    class="back">
+    ← Back to KYC Verification
+  </a>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =========================
+   SUPABASE
+========================= */
+
+const SUPABASE_URL =
+"https://uryjmibcdfjfxoljrigt.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_uYbJw0ARCCkCpQ9QB6FxaQ_JrIxtOOp";
+
+const db =
+supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+/* =========================
+   MESSAGE
+========================= */
+
+function showMessage(text,type){
+
+  const box =
+    document.getElementById("message");
+
+  box.className =
+    "message " + type;
+
+  box.innerHTML = text;
+}
+
+
+/* =========================
+   SHOW FILE
+========================= */
+
+function showFile(inputId,nameId){
+
+  const input =
+    document.getElementById(inputId);
+
+  const output =
+    document.getElementById(nameId);
+
+  if(input.files.length){
+
+    output.innerHTML =
+      "✅ " + input.files[0].name;
+
+  }else{
+
+    output.innerHTML = "";
+
+  }
+}
+
+
+/* =========================
+   VALIDATE FILE
+========================= */
+
+function validateFile(file,label){
+
+  if(!file){
+
+    throw new Error(
+      label + " upload करें।"
+    );
+
+  }
+
+  const maxSize =
+    5 * 1024 * 1024;
+
+  if(file.size > maxSize){
+
+    throw new Error(
+      label + " 5 MB से छोटा होना चाहिए।"
+    );
+
+  }
+
+  const allowedTypes = [
+    "image/jpeg",
+    "image/png",
+    "application/pdf"
+  ];
+
+  if(!allowedTypes.includes(file.type)){
+
+    throw new Error(
+      label +
+      " केवल JPG, PNG या PDF होना चाहिए।"
+    );
+
+  }
+
+}
+
+
+/* =========================
+   PRIVATE UPLOAD
+========================= */
+
+async function uploadFile(
+  file,
+  userId,
+  type
+){
+
+  validateFile(file,type);
+
+  const extension =
+    file.name
+      .split(".")
+      .pop()
+      .toLowerCase();
+
+  const filePath =
+    userId +
+    "/invoice/" +
+    type +
+    "_" +
+    Date.now() +
+    "." +
+    extension;
+
+
+  const {error} =
+    await db.storage
+      .from("seller-kyc")
+      .upload(
+        filePath,
+        file,
+        {
+          cacheControl:"3600",
+          upsert:true
+        }
+      );
+
+
+  if(error){
+
+    throw new Error(
+      "Upload failed: " +
+      error.message
+    );
+
+  }
+
+
+  /*
+    seller-kyc PRIVATE bucket है।
+    इसलिए public URL नहीं बनाया जा रहा।
+    केवल secure storage path database में save होगा।
+  */
+
+  return filePath;
+
+}
+
+
+/* =========================
+   SUBMIT INVOICE
+========================= */
+
+async function submitInvoice(){
+
+  const button =
+    document.getElementById("continueBtn");
+
+
+  const invoice =
+    document
+      .getElementById("invoice")
+      .files[0];
+
+
+  const otherDocument =
+    document
+      .getElementById("otherDocument")
+      .files[0];
+
+
+  /* REQUIRED */
+
+  if(!invoice){
+
+    showMessage(
+      "❌ Purchase Invoice / Proof upload करें।",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  try{
+
+    button.disabled = true;
+
+    button.innerText =
+      "⏳ Uploading...";
+
+
+    showMessage(
+      "⏳ Invoice documents securely upload हो रहे हैं... कृपया page बंद न करें।",
+      "loading"
+    );
+
+
+    /* =========================
+       LOGIN CHECK
+    ========================= */
+
+    const {
+      data:{
+        user
+      },
+      error:userError
+    } =
+      await db.auth.getUser();
+
+
+    if(userError || !user){
+
+      showMessage(
+        "❌ Seller login नहीं है। पहले seller login करें।",
+        "error"
+      );
+
+      button.disabled = false;
+
+      button.innerText =
+        "Continue →";
+
+      return;
+
+    }
+
+
+    /* =========================
+       SELLER CHECK
+    ========================= */
+
+    const {
+      data:seller,
+      error:sellerError
+    } =
+      await db
+        .from("sellers")
+        .select("id,user_id,status")
+        .eq("user_id",user.id)
+        .maybeSingle();
+
+
+    if(sellerError){
+
+      throw new Error(
+        "Seller account check failed: " +
+        sellerError.message
+      );
+
+    }
+
+
+    if(!seller){
+
+      showMessage(
+        "❌ Seller profile नहीं मिला।",
+        "error"
+      );
+
+      button.disabled = false;
+
+      button.innerText =
+        "Continue →";
+
+      return;
+
+    }
+
+
+    /* =========================
+       UPLOAD INVOICE
+    ========================= */
+
+    const invoicePath =
+      await uploadFile(
+        invoice,
+        user.id,
+        "purchase_invoice"
+      );
+
+
+    /* =========================
+       OPTIONAL DOCUMENT
+    ========================= */
+
+    let otherPath = null;
+
+
+    if(otherDocument){
+
+      otherPath =
+        await uploadFile(
+          otherDocument,
+          user.id,
+          "other_document"
+        );
+
+    }
+
+
+    /* =========================
+       DATABASE
+    ========================= */
+
+    const updateData = {
+
+      invoice_document_url:
+        invoicePath,
+
+      invoice_status:
+        "submitted",
+
+      status:
+        "pending",
+
+      updated_at:
+        new Date().toISOString()
+
+    };
+
+
+    if(otherPath){
+
+      updateData.other_documents_url =
+        otherPath;
+
+    }
+
+
+    const {
+      error:updateError
+    } =
+      await db
+        .from("sellers")
+        .update(updateData)
+        .eq("user_id",user.id);
+
+
+    if(updateError){
+
+      throw new Error(
+        "Database Error: " +
+        updateError.message
+      );
+
+    }
+
+
+    /* =========================
+       SUCCESS
+    ========================= */
+
+    showMessage(
+      "✅ Product Invoice successfully submitted!<br><br>" +
+      "⏭️ अब आपकी Seller Application verification के लिए submit होगी...",
+      "success"
+    );
+
+
+    button.innerText =
+      "✅ Submitted";
+
+
+    setTimeout(function(){
+
+      window.location.href =
+        "seller-submitted.html";
+
+    },1500);
+
+
+  }catch(error){
+
+    console.error(error);
+
+    showMessage(
+      "❌ " + error.message,
+      "error"
+    );
+
+
+    button.disabled = false;
+
+    button.innerText =
+      "Continue →";
+
+  }
+
+}
+
+</script>
+
+</body>
+</html>
