@@ -417,27 +417,13 @@ async function createSellerAccount(){
 
   if(!data || !data.user){
 
-    showMessage(
-      "❌ Account create नहीं हुआ। कृपया फिर कोशिश करें।",
-      "error"
-    );
+  showMessage(
+    "❌ Account create नहीं हुआ। कृपया फिर कोशिश करें।",
+    "error"
+  );
 
-    return;
-  }
-
-
-  </script>
-
-</body>
-</html>
-
-
-  /*
-    अभी हम Step 1 test कर रहे हैं।
-    Step 2 को अगली screen में जोड़ेंगे।
-  */
-
-}
+  return;
+}  // ← पहले IF बंद
 
 showMessage(
   "✅ Seller Account successfully create हो गया!<br><br>" +
@@ -448,11 +434,15 @@ showMessage(
 setTimeout(function(){
   window.location.href = "seller-business.html";
 }, 1200);
-  
-setTimeout(function(){
-  window.location.href = "seller
 
-</script>
+}  // ← createSellerAccount function बंद
+  
+
+
+  </script>
 
 </body>
 </html>
+
+
+  
