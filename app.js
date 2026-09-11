@@ -290,11 +290,190 @@ function badges(){
  });
 }
 
+/* =========================
+   CART SYSTEM
+========================= */
+
 function openCart(){
- alert("Cart open ho gaya.");
+
+  const modal = document.getElementById("cartModal");
+
+  if(!modal) return;
+
+  modal.classList.remove("hidden");
+
+  renderCart();
+
 }
 
-function closeCart(){}
+
+function closeCart(){
+
+  const modal = document.getElementById("cartModal");
+
+  if(!modal) return;
+
+  modal.classList.add("hidden");
+
+}
+
+
+function renderCart(){
+
+  const box = document.getElementById("cartItems");
+  const totalBox = document.getElementById("cartTotal");
+
+  if(!box || !totalBox) return;
+
+
+  if(!cart.length){
+
+    box.innerHTML = `
+      <div style="
+        text-align:center;
+        padding:30px 10px;
+        color:#667085;
+      ">
+        <div style="font-size:45px;">🛒</div>
+        <h3>Cart khali hai</h3>
+        <p>Product add karke yahan dekhiye.</p>
+      </div>
+    `;
+
+    totalBox.textContent = "0";
+
+    return;
+  }
+
+
+  box.innerHTML = cart.map((item,index)=>`
+
+    <div class="cart-row">
+
+      <div style="
+        display:flex;
+        align-items:center;
+        gap:10px;
+        flex:1;
+      ">
+
+        ${
+          item.image
+          ?
+          `<img
+             src="${esc(item.image)}"
+             style="
+               width:55px;
+               height:55px;
+               object-fit:cover;
+               border-radius:10px;
+               border:1px solid #e1eaf5;
+             "
+           >`
+          :
+          `<div style="font-size:35px;">📦</div>`
+        }
+
+        <div>
+
+          <strong>
+            ${esc(item.name)}
+          </strong>
+
+          <div style="
+            color:#667085;
+            font-size:13px;
+            margin-top:4px;
+          ">
+            ₹${Number(item.price).toLocaleString("en-IN")}
+            × ${item.qty}
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div style="text-align:right;">
+
+        <strong>
+          ₹${(
+            Number(item.price) *
+            Number(item.qty)
+          ).toLocaleString("en-IN")}
+        </strong>
+
+        <br>
+
+        <button
+          onclick="removeFromCart(${index})"
+          style="
+            border:0;
+            background:#ffe9e7;
+            color:#d92d20;
+            border-radius:8px;
+            padding:5px 9px;
+            margin-top:5px;
+            cursor:pointer;
+          "
+        >
+          Remove
+        </button>
+
+      </div>
+
+    </div>
+
+  `).join("");
+
+
+  const total = cart.reduce(
+    (sum,item)=>
+      sum +
+      Number(item.price || 0) *
+      Number(item.qty || 0),
+    0
+  );
+
+
+  totalBox.textContent =
+    total.toLocaleString("en-IN");
+
+}
+
+
+function removeFromCart(index){
+
+  if(index < 0 || index >= cart.length) return;
+
+  cart.splice(index,1);
+
+  localStorage.setItem(
+    "br_cart",
+    JSON.stringify(cart)
+  );
+
+  badges();
+
+  renderCart();
+
+}
+
+
+function clearCart(){
+
+  cart=[];
+
+  localStorage.setItem(
+    "br_cart",
+    "[]"
+  );
+
+  badges();
+
+  renderCart();
+
+}
 
 function goAccount(){
  alert("Account login system agle step mein connect hoga.");
