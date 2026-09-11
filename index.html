@@ -93,10 +93,24 @@
 <div class="modal" id="cartModal">
   <div class="cartCard">
     <button class="close" id="closeCart">×</button>
-    <h2>Your Cart</h2>
+
+    <h2>🛒 Your Cart</h2>
+
     <div id="cartItems"></div>
-    <div class="total"><span>Total</span><b>₹<span id="cartTotal">0</span></b></div>
-    <button class="checkout" id="checkout">Order via WhatsApp →</button>
+
+    <div class="cartDeliveryInfo">
+      📦 <b>Delivery Information</b>
+      <p>Delivery address checkout के समय confirm किया जाएगा।</p>
+    </div>
+
+    <div class="total">
+      <span>Total</span>
+      <b>₹<span id="cartTotal">0</span></b>
+    </div>
+
+    <button class="checkout" id="checkout">
+      Proceed to Buy →
+    </button>
   </div>
 </div>
 
@@ -163,9 +177,165 @@ async function loadProducts(){
  if(error){console.error(error);document.getElementById("status").textContent="Products load nahi hue";return;}
  products=data||[];drawBrands();render();
 }
-function addCart(id){const p=products.find(x=>String(x.id)===String(id));if(!p)return;cart.push(p);saveCart();toast("Product cart mein add ho gaya ✓");}
-function saveCart(){localStorage.setItem("br_cart",JSON.stringify(cart));updateCart();}
+function addCart(id){
+  const p=products.find(x=>String(x.id)===String(id));
+  if(!p)return;
+
+  const productId=String(p.id);
+  const existing=cart.find(x=>String(x.id)===productId);
+
+  if(existing){
+    existing.quantity=Number(existing.quantity||1)+1;
+  }else{
+    cart.push({
+      ...p,
+      quantity:1
+    });
+  }
+
+  saveCart();
+  toast("Product cart mein add ho gaya ✓");
+}
+
+function saveCart(){
+  localStorage.setItem("br_cart",JSON.stringify(cart));
+  updateCart();
+}
+
 function updateCart(){
+
+  const totalItems=cart.reduce(
+    (sum,p)=>sum+Number(p.quantity||1),0
+  );
+
+  document.getElementById("cartCount").textContent=totalItems;
+  document.getElementById("bottomCartCount").textContent=totalItems;
+
+  document.getElementById("cartItems").innerHTML=cart.map((p,i)=>{
+
+    const name=v(p,"product_name","name");
+    const price=Number(v(p,"price","Price")||0);
+    const img=v(p,"image_url","Image_url")||"https://placehold.co/160x140?text=Product";
+    const qty=Number(p.quantity||1);
+
+    return `
+      <div class="cartItem">
+
+        <img
+          src="${esc(img)}"
+          alt="${esc(name)}"
+          onerror="this.src='https://placehold.co/160x140?text=Product'"
+        >
+
+        <div class="cartItemInfo">
+
+          <small>BR Digital Marketplace</small>
+
+          <h3>${esc(name)}</h3>
+
+          <b>₹${price.toLocaleString("en-IN")}</b>
+
+          <div class="cartDelivery">
+            📦 Delivery information available at checkout
+          </div>
+
+          <div class="cartActions">
+
+            <button onclick="changeQty(${i},-1)">−</button>
+
+            <span>${qty}</span>
+
+            <button onclick="changeQty(${i},1)">+</button>
+
+            <button
+              class="wishlistBtn"
+              onclick="moveToWishlist(${i})">
+              ❤️ Wishlist
+            </button>
+
+            <button
+              class="removeBtn"
+              onclick="removeCart(${i})">
+              🗑️ Remove
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+    `;
+  }).join("") || `
+    <div class="emptyCart">
+      <div>🛒</div>
+      <b>Your Cart is Empty</b>
+      <span>Products add करने के लिए Shop करें।</span>
+    </div>
+  `;
+
+  const total=cart.reduce(
+    (sum,p)=>
+      sum+
+      Number(v(p,"price","Price")||0)*
+      Number(p.quantity||1),
+    0
+  );
+
+  document.getElementById("cartTotal").textContent=
+    total.toLocaleString("en-IN");
+}
+
+function changeQty(index,change){
+
+  if(!cart[index])return;
+
+  const current=Number(cart[index].quantity||1);
+  const newQty=current+change;
+
+  if(newQty<=0){
+    removeCart(index);
+    return;
+  }
+
+  cart[index].quantity=newQty;
+  saveCart();
+}
+
+function removeCart(i){
+
+  if(!cart[i])return;
+
+  cart.splice(i,1);
+  saveCart();
+
+  toast("Product cart se remove ho gaya");
+}
+
+function moveToWishlist(i){
+
+  if(!cart[i])return;
+
+  let wishlist=
+    JSON.parse(localStorage.getItem("br_wishlist")||"[]");
+
+  const product=cart[i];
+
+  if(!wishlist.some(
+    x=>String(x.id)===String(product.id)
+  )){
+    wishlist.push(product);
+  }
+
+  localStorage.setItem(
+    "br_wishlist",
+    JSON.stringify(wishlist)
+  );
+
+  cart.splice(i,1);
+  saveCart();
+
+  toast("❤️ Wishlist mein save ho gaya");
+}
  document.getElementById("cartCount").textContent=cart.length;
  document.getElementById("bottomCartCount").textContent=cart.length;
  document.getElementById("cartItems").innerHTML=cart.map((p,i)=>`<div class="cartItem"><span>${esc(v(p,"product_name","name"))}</span><b>₹${Number(v(p,"price","Price")||0).toLocaleString("en-IN")}</b><button onclick="removeCart(${i})">×</button></div>`).join("")||"<p>Cart empty hai.</p>";
@@ -186,7 +356,13 @@ document.getElementById("cartBtn").onclick=openCart;
 document.getElementById("bottomCart").onclick=openCart;
 document.getElementById("closeCart").onclick=closeCart;
 document.getElementById("cartModal").onclick=e=>{if(e.target.id==="cartModal")closeCart()};
-document.getElementById("checkout").onclick=()=>{if(!cart.length)return toast("Cart empty hai");const items=cart.map(p=>v(p,"product_name","name")).join(", ");window.open("https://wa.me/917050207479?text="+encodeURIComponent("BR Digital Marketplace Order\nProducts: "+items+"\nPlease confirm my order."),"_blank")};
+document.getElementById("checkout").onclick=()=>{
+  if(!cart.length){
+    return toast("Cart empty hai");
+  }
+
+  window.location.href="account.html?checkout=1";
+};
 document.getElementById("brandAll").onclick=()=>{selectedBrand="";render()};
 drawCategories();drawFilters();updateCart();loadProducts();
 </script>
