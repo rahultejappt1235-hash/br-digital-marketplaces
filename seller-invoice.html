@@ -208,16 +208,23 @@ input[type=file]{
   <div class="upload-card">
 
     <div class="upload-title">
-      🧾 Purchase Invoice / Proof
-      <span class="required">*</span>
+  🧾 Purchase Invoice / Proof
+  <span style="color:#777;font-size:13px;">
+    (Optional - अभी उपलब्ध नहीं)
+  </span>
     </div>
 
-    <div class="help">
-      Upload an invoice from your distributor, supplier,
-      manufacturer or other valid purchase proof.
-      <br><br>
-      JPG, PNG or PDF • Maximum 5 MB
-    </div>
+    Upload an invoice from your distributor, supplier,
+manufacturer or other valid purchase proof.
+
+<br><br>
+
+अगर अभी Purchase Invoice उपलब्ध नहीं है,
+तो इसे खाली छोड़ सकते हैं।
+
+<br><br>
+
+JPG, PNG or PDF • Maximum 5 MB
 
     <input
       type="file"
@@ -479,18 +486,7 @@ async function submitInvoice(){
       .files[0];
 
 
-  /* REQUIRED */
-
-  if(!invoice){
-
-    showMessage(
-      "❌ Purchase Invoice / Proof upload करें।",
-      "error"
-    );
-
-    return;
-
-  }
+  
 
 
   try{
@@ -583,12 +579,18 @@ async function submitInvoice(){
        UPLOAD INVOICE
     ========================= */
 
-    const invoicePath =
-      await uploadFile(
-        invoice,
-        user.id,
-        "purchase_invoice"
-      );
+    let invoicePath = null;
+
+if(invoice){
+
+  invoicePath =
+    await uploadFile(
+      invoice,
+      user.id,
+      "purchase_invoice"
+    );
+
+}
 
 
     /* =========================
@@ -616,19 +618,23 @@ async function submitInvoice(){
 
     const updateData = {
 
-      invoice_document_url:
-        invoicePath,
+  status:
+    "pending",
 
-      invoice_status:
-        "submitted",
+  updated_at:
+    new Date().toISOString()
 
-      status:
-        "pending",
+};
 
-      updated_at:
-        new Date().toISOString()
+if(invoicePath){
 
-    };
+  updateData.invoice_document_url =
+    invoicePath;
+
+  updateData.invoice_status =
+    "submitted";
+
+}
 
 
     
@@ -663,8 +669,11 @@ if(otherPath){
     ========================= */
 
     showMessage(
-      "✅ Product Invoice successfully submitted!<br><br>" +
-      "⏭️ अब आपकी Seller Application verification के लिए submit होगी...",
+      "✅ Seller documents successfully saved!<br><br>" +
+"🧾 Purchase Invoice: " +
+(invoice ? "Submitted ✓" : "अभी उपलब्ध नहीं") +
+"<br><br>" +
+"⏭️ अब आपकी Seller Application verification के लिए submit होगी..."
       "success"
     );
 
