@@ -1126,7 +1126,7 @@ function showTabById(id){
 
   const tab =
     [...document.querySelectorAll('.tab')]
-      .find(x=>
+      .find(x =>
         x.getAttribute('onclick')?.includes(
           "'" + id + "'"
         )
@@ -1134,10 +1134,15 @@ function showTabById(id){
 
   showTab(id,tab);
 
+  // Mobile sidebar automatically close
+  const sidebar =
+    document.getElementById('sidebar');
+
+  if(sidebar){
+    sidebar.classList.remove('open');
+  }
+
 }
-
-
-function showDashboard(){
 
   showTabById('products');
 
