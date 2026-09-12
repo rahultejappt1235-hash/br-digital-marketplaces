@@ -2300,96 +2300,57 @@ async function openSellerVerification(sellerId){
    OPEN PRIVATE DOCUMENT
 ===================================================== */
 
-async function viewVerificationDocument(
-  path,
-  title
-){
+async function viewVerificationDocument(path, title){
 
   if(!path){
-
-    alert(
-      'Document available nahi hai.'
-    );
-
+    alert('Document available nahi hai.');
     return;
-
   }
-
 
   const {
     data,
     error
-  } =
-  await supabaseClient
+  } = await supabaseClient
     .storage
     .from('seller-kyc')
-    .createSignedUrl(
-      path,
-      300
-    );
-
+    .createSignedUrl(path, 300);
 
   if(error){
-
     alert(
-      '❌ Document open nahi hua: '+
-      error.message
+      '❌ Document open nahi hua:\n' +
+      error.message +
+      '\n\nPath: ' + path
     );
-
     return;
-
   }
 
-
-  if(!data?.signedUrl){
-
-    alert(
-      '❌ Signed URL nahi mila.'
-    );
-
+  if(!data || !data.signedUrl){
+    alert('❌ Signed URL nahi mila.');
     return;
-
   }
 
-
-  document.getElementById(
-    'modalTitle'
-  ).textContent =
+  document.getElementById('modalTitle').textContent =
     title || 'Document';
 
-
-  document.getElementById(
-    'modalBody'
-  ).innerHTML = `
-
+  document.getElementById('modalBody').innerHTML = `
     <img
       class="modal-image"
       src="${esc(data.signedUrl)}"
-      onerror="
-        this.style.display='none';
-        this.parentElement.innerHTML +=
-        '<p class=muted>यह file image नहीं है। नीचे Open Document button से खोलें.</p>';
-      "
+      onerror="this.style.display='none'"
     >
 
     <p style="text-align:center;margin-top:15px">
-
       <a
         href="${esc(data.signedUrl)}"
         target="_blank"
         class="map-link">
         📄 Open Document
       </a>
-
     </p>
-
   `;
 
-
-  document.getElementById(
-    'docModal'
-  ).classList.add('show');
-
+  document.getElementById('docModal')
+    .classList.add('show');
 }
 
 
