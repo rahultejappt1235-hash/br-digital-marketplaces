@@ -743,8 +743,12 @@ body{
 
 <header class="top">
 
-  <button class="mobile-menu"
-    onclick="toggleSidebar()">☰</button>
+  <button
+  class="mobile-menu"
+  id="adminMenuBtn"
+  type="button">
+  ☰
+  </button>
 
   <input
     class="search-top"
@@ -3264,6 +3268,21 @@ async function logout(){
 load();
 
 </script>
+<script>
+document.addEventListener("DOMContentLoaded", function(){
 
+  const btn = document.getElementById("adminMenuBtn");
+  const sidebar = document.getElementById("sidebar");
+
+  if(!btn || !sidebar) return;
+
+  btn.addEventListener("click", function(){
+
+    sidebar.classList.toggle("open");
+
+  });
+
+});
+</script>
 </body>
   </html>
