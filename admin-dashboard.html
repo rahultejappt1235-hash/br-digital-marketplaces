@@ -1138,7 +1138,7 @@ function showTabById(id){
 
   showTab(id,tab);
 
-  // Mobile sidebar automatically close
+  // Mobile menu automatically close
   const sidebar =
     document.getElementById('sidebar');
 
@@ -1148,12 +1148,17 @@ function showTabById(id){
 
 }
 
-  showTabById('products');
-
-}
-
 
 function toggleSidebar(){
+
+  const sidebar =
+    document.getElementById('sidebar');
+
+  if(sidebar){
+    sidebar.classList.toggle('open');
+  }
+
+}
 
   document
     .getElementById('sidebar')
