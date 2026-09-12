@@ -916,23 +916,23 @@ async function submitKYC(){
 
 
     /* =========================
-       SELLER CHECK
-    ========================= */
+   SELLER CHECK
+========================= */
 
-    const {
-      data:seller,
-      error:sellerError
-    } =
-      await db
-        .from("sellers")
-        .select(
-          "id,user_id,status"
-        )
-        .eq(
-          "user_id",
-          user.id
-        )
-        .maybeSingle();
+const {
+  data:seller,
+  error:sellerError
+} =
+  await db
+    .from("sellers")
+    .select(
+      "id,user_id,status,is_active"
+    )
+    .eq(
+      "id",
+      user.id
+    )
+    .maybeSingle();
 
 
     if(sellerError){
