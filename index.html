@@ -11,7 +11,7 @@
 <body>
 
 <header class="header">
-  <button class="menu" id="menuBtn" aria-label="Menu">☰</button>
+  <button class="menu" id="menuBtn" type="button" onclick="openDrawer()">☰</button>
   <a class="brand" href="index.html">
     <span class="brLogo">BR</span>
     <span><b>BR Digital Marketplace</b><small>Shop Local, Support Bihar 🇮🇳</small></span>
@@ -365,6 +365,32 @@ document.getElementById("checkout").onclick=()=>{
 };
 document.getElementById("brandAll").onclick=()=>{selectedBrand="";render()};
 drawCategories();drawFilters();updateCart();loadProducts();
+</script>
+  <script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const menuBtn = document.getElementById("menuBtn");
+  const drawer = document.getElementById("drawer");
+  const overlay = document.getElementById("drawerOverlay");
+  const closeBtn = document.getElementById("drawerClose");
+
+  function openMenu() {
+    if (drawer) drawer.classList.add("open");
+    if (overlay) overlay.classList.add("show");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeMenu() {
+    if (drawer) drawer.classList.remove("open");
+    if (overlay) overlay.classList.remove("show");
+    document.body.style.overflow = "";
+  }
+
+  if (menuBtn) menuBtn.addEventListener("click", openMenu);
+  if (closeBtn) closeBtn.addEventListener("click", closeMenu);
+  if (overlay) overlay.addEventListener("click", closeMenu);
+
+});
 </script>
 </body>
   </html>
