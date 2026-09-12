@@ -9,24 +9,41 @@
 
 <style>
   .auto-doc-preview{
-  min-height:140px;
+  min-height:110px;
   padding:8px;
   border-radius:10px;
   background:#f8fafc;
   display:flex;
   flex-wrap:wrap;
   gap:8px;
-  justify-content:center;
+  justify-content:flex-start;
   align-items:center;
 }
 
 .auto-doc-preview img{
-  width:110px;
-  height:85px;
+  width:90px;
+  height:70px;
   object-fit:cover;
-  border-radius:8px;
+  border-radius:7px;
   display:block;
   cursor:pointer;
+  border:1px solid #ddd;
+}
+
+.auto-doc-preview iframe{
+  width:90px;
+  height:70px;
+  border:1px solid #ddd;
+  border-radius:7px;
+  background:#fff;
+}
+
+.auto-doc-empty{
+  width:100%;
+  text-align:center;
+  color:#667085;
+  padding:20px 5px;
+  font-size:14px;
 }
 *{
   box-sizing:border-box;
@@ -1723,6 +1740,131 @@ function showVerificationList(){
 
 }
 
+ /* =====================================================
+   AUTOMATIC PRIVATE DOCUMENT PREVIEW
+===================================================== */
+
+async function getDocumentSignedUrl(path){
+
+  if(!path) return null;
+
+  const {
+    data,
+    error
+  } = await supabaseClient
+    .storage
+    .from('seller-kyc')
+    .createSignedUrl(path, 300);
+
+  if(error){
+    console.log(
+      'Document preview error:',
+      path,
+      error.message
+    );
+    return null;
+  }
+
+  return data?.signedUrl || null;
+}
+
+
+async function buildAutoDocumentPreview(paths){
+
+  if(!paths || !paths.length){
+
+    return `
+      <div class="auto-doc-preview">
+        <div class="auto-doc-empty">
+          Document submitted nahi hai.
+        </div>
+      </div>
+    `;
+
+  }
+
+
+  const items=[];
+
+
+  for(const path of paths){
+
+    const url =
+      await getDocumentSignedUrl(path);
+
+    if(!url) continue;
+
+
+    const lower =
+      String(path).toLowerCase();
+
+
+    /* IMAGE */
+
+    if(
+      lower.endsWith('.jpg') ||
+      lower.endsWith('.jpeg') ||
+      lower.endsWith('.png') ||
+      lower.endsWith('.webp')
+    ){
+
+      items.push(`
+
+        <img
+          src="${esc(url)}"
+          alt="Document"
+          onclick="viewVerificationDocument(
+            '${esc(path)}',
+            'Document'
+          )"
+        >
+
+      `);
+
+    }
+
+    /* PDF */
+
+    else if(lower.endsWith('.pdf')){
+
+      items.push(`
+
+        <iframe
+          src="${esc(url)}"
+          title="Document">
+        </iframe>
+
+      `);
+
+    }
+
+  }
+
+
+  if(!items.length){
+
+    return `
+      <div class="auto-doc-preview">
+        <div class="auto-doc-empty">
+          Document preview available nahi hai.
+        </div>
+      </div>
+    `;
+
+  }
+
+
+  return `
+
+    <div class="auto-doc-preview">
+
+      ${items.join('')}
+
+    </div>
+
+  `;
+
+  } 
 
 /* =====================================================
    OPEN SELLER VERIFICATION
@@ -1941,10 +2083,42 @@ async function openSellerVerification(sellerId){
     seller.longitude;
 
 
-  /* ---------- document cards ---------- */
+  /* ---------- automatic document previews ---------- */
 
-  const docHtml =
-    docs.map((d,i)=>{
+let docHtml = '';
+
+for(const d of docs){
+
+  let paths = [];
+
+  if(d.paths && d.paths.length){
+
+    paths = d.paths;
+
+  }else if(d.path){
+
+    paths = [d.path];
+
+  }
+
+  const preview =
+    await buildAutoDocumentPreview(paths);
+
+  docHtml += `
+
+    <div class="doc-card">
+
+      <h4>
+        ${esc(d.title)}
+      </h4>
+
+      ${preview}
+
+    </div>
+
+  `;
+
+}
 
       if(d.paths && d.paths.length){
 
