@@ -1149,16 +1149,16 @@ function showTabById(id){
 }
 
 
-function toggleSidebar(){
+function closeSidebar(){
 
   const sidebar =
     document.getElementById('sidebar');
 
   if(sidebar){
-    sidebar.classList.toggle('open');
+    sidebar.classList.remove('open');
   }
 
-}
+  }
 
   document
     .getElementById('sidebar')
