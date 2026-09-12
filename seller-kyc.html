@@ -915,24 +915,63 @@ async function submitKYC(){
     }
 
 
-    /* =========================
+  /* =========================
    SELLER CHECK
 ========================= */
 
 const {
-  data:seller,
-  error:sellerError
-} =
-  await db
-    .from("sellers")
-    .select(
-      "id,user_id,status,is_active"
-    )
-    .eq(
-      "id",
-      user.id
-    )
-    .maybeSingle();
+  data: seller,
+  error: sellerError
+} = await db
+  .from("sellers")
+  .select("id,user_id,status,is_active")
+  .or(
+    "id.eq." + user.id +
+    ",user_id.eq." + user.id
+  )
+  .maybeSingle();
+
+
+if(sellerError){
+
+  console.error(
+    "SELLER CHECK ERROR:",
+    sellerError
+  );
+
+  throw new Error(
+    "Seller profile check failed: " +
+    sellerError.message
+  );
+
+}
+
+
+if(!seller){
+
+  console.error(
+    "SELLER NOT FOUND FOR USER:",
+    user.id
+  );
+
+  showMessage(
+    "❌ Seller profile नहीं मिला।<br><br>" +
+    "User ID: " + user.id,
+    "error"
+  );
+
+  button.disabled = false;
+
+  button.innerText =
+    "Continue →";
+
+  return;
+}
+
+console.log(
+  "SELLER FOUND:",
+  seller
+);  
 
 
     if(sellerError){
