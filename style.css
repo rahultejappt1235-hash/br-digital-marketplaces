@@ -4316,3 +4316,33 @@ body{
 body{
   overflow-x:hidden;
 }
+.drawerOverlay{
+  position:fixed !important;
+  inset:0 !important;
+  background:rgba(0,0,0,.45) !important;
+  z-index:9998 !important;
+  display:none;
+}
+
+.drawerOverlay.show{
+  display:block !important;
+}
+
+.drawer{
+  position:fixed !important;
+  top:0 !important;
+  left:-320px !important;
+  width:300px !important;
+  max-width:85vw !important;
+  height:100vh !important;
+  background:#fff !important;
+  z-index:9999 !important;
+  padding:20px !important;
+  overflow-y:auto !important;
+  box-shadow:8px 0 30px rgba(0,0,0,.25) !important;
+  transition:left .25s ease !important;
+}
+
+.drawer.open{
+  left:0 !important;
+}
