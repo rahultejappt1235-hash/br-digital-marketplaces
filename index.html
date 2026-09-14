@@ -1473,7 +1473,9 @@ function renderProducts(
 
 
       const image =
-  product.public_image_url || "";
+  product.public_image_url ||
+  product.image_url ||
+  "";
 
 
       const stock =
