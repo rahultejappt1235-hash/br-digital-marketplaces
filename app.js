@@ -138,9 +138,15 @@ async function loadProducts(){
 
  try{
 
+  const url =
+   SUPABASE_URL +
+   "/rest/v1/products" +
+   "?select=id,product_name,description,image_url,category,price,stock,status" +
+   "&status=eq.approved" +
+   "&order=id.desc";
+
   let r=await fetch(
-   SUPABASE_URL+
-   "/rest/v1/products?select=id,barcode,product_name,description,image_url,category,price,stock&order=id.desc",
+   url,
    {
     headers:{
      apikey:KEY,
@@ -150,20 +156,40 @@ async function loadProducts(){
    }
   );
 
-  if(!r.ok)throw Error("HTTP "+r.status);
+  if(!r.ok){
 
-  products=await r.json();
+   const errorText =
+    await r.text();
+
+   throw Error(
+    "HTTP " +
+    r.status +
+    ": " +
+    errorText
+   );
+
+  }
+
+  products =
+   await r.json();
 
   render();
 
  }catch(e){
 
-  console.error(e);
+  console.error(
+   "Products load error:",
+   e
+  );
 
   if(s){
-   s.textContent=
-    "Products load nahi ho pa rahe. Supabase Products ki Read Policy check karein.";
+
+   s.textContent =
+    "❌ Products load nahi ho pa rahe: " +
+    e.message;
+
    s.classList.add("show");
+
   }
 
  }
