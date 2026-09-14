@@ -4364,3 +4364,700 @@ body{
 .drawer a::first-letter{
   font-size:22px;
 }
+/* =========================================================
+   BR DIGITAL MARKETPLACE
+   ANDROID RESPONSIVE FINAL FIX
+   DESIGN / LAYOUT ONLY
+   NO JAVASCRIPT / DATABASE CHANGES
+========================================================= */
+
+html,
+body{
+  width:100%;
+  max-width:100%;
+  overflow-x:hidden;
+}
+
+body{
+  -webkit-text-size-adjust:100%;
+}
+
+
+/* =========================
+   ANDROID HEADER
+========================= */
+
+@media(max-width:700px){
+
+  .header{
+    width:100%;
+    min-height:62px;
+    height:auto;
+    padding:8px 10px;
+    gap:7px;
+  }
+
+  .header .menu{
+    flex:0 0 42px;
+    width:42px;
+    height:42px;
+    padding:0;
+    font-size:23px;
+  }
+
+  .header .brand{
+    min-width:0;
+    flex:1;
+    margin-left:2px;
+    gap:7px;
+    overflow:hidden;
+  }
+
+  .header .brand .brLogo{
+    flex:0 0 40px;
+    width:40px;
+    height:40px;
+    font-size:17px;
+  }
+
+  .header .brand > span:last-child{
+    min-width:0;
+    overflow:hidden;
+  }
+
+  .header .brand b{
+    display:block;
+    max-width:100%;
+    font-size:15px;
+    line-height:1.15;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .header .brand small{
+    font-size:9px;
+    line-height:1.2;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .cartTop{
+    flex:0 0 43px;
+    width:43px;
+    height:40px;
+    padding:0;
+    font-size:20px;
+  }
+
+
+  /* =========================
+     SEARCH
+  ========================= */
+
+  .searchBar{
+    width:calc(100% - 20px);
+    margin:10px auto;
+    height:48px;
+    padding:0 11px;
+  }
+
+  .searchBar span{
+    flex:0 0 auto;
+    font-size:23px;
+  }
+
+  .searchBar input{
+    min-width:0;
+    width:100%;
+    font-size:14px;
+  }
+
+  .searchBar button{
+    flex:0 0 25px;
+    padding:0;
+  }
+
+
+  /* =========================
+     CATEGORY RAIL
+  ========================= */
+
+  .categoryRail{
+    width:100%;
+    padding:3px 10px 12px;
+    gap:8px;
+    overflow-x:auto;
+    overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  .catTab{
+    flex:0 0 auto;
+    min-height:42px;
+    padding:9px 12px;
+    font-size:13px;
+    white-space:nowrap;
+  }
+
+
+  /* =========================
+     HERO
+  ========================= */
+
+  .heroBanner{
+    width:calc(100% - 20px);
+    margin:7px auto 22px;
+    padding:22px 17px;
+    min-height:0;
+    border-radius:18px;
+  }
+
+  .heroText{
+    width:100%;
+    min-width:0;
+  }
+
+  .heroText small{
+    font-size:11px;
+  }
+
+  .heroText h1{
+    margin:9px 0;
+    font-size:30px;
+    line-height:1.12;
+    letter-spacing:-.4px;
+    overflow-wrap:anywhere;
+  }
+
+  .heroText p{
+    margin:8px 0;
+    font-size:13px;
+    line-height:1.5;
+  }
+
+  .heroText a{
+    margin-top:9px;
+    padding:11px 16px;
+    font-size:13px;
+  }
+
+  .heroVisual{
+    width:100%;
+    margin-top:18px;
+    display:flex;
+    justify-content:center;
+    gap:9px;
+  }
+
+  .heroPhone,
+  .heroBag{
+    width:calc(50% - 5px);
+    min-width:0;
+    padding:13px 8px;
+    border-radius:15px;
+  }
+
+  .heroPhone div{
+    font-size:27px;
+  }
+
+  .heroPhone b{
+    font-size:12px;
+  }
+
+  .heroPhone small{
+    font-size:9px;
+  }
+
+  .heroBag{
+    font-size:25px;
+  }
+
+  .heroBag b{
+    font-size:11px;
+    line-height:1.3;
+  }
+
+
+  /* =========================
+     SECTIONS
+  ========================= */
+
+  .section{
+    width:100%;
+    max-width:100%;
+    padding:0 10px;
+    margin-bottom:24px;
+  }
+
+  .headingRow{
+    gap:8px;
+    margin-bottom:11px;
+  }
+
+  .headingRow h2{
+    min-width:0;
+    font-size:20px;
+    line-height:1.25;
+  }
+
+  .viewAll{
+    flex:0 0 auto;
+    font-size:12px;
+    white-space:nowrap;
+  }
+
+
+  /* =========================
+     WHY SHOP
+  ========================= */
+
+  .whyGrid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:9px;
+  }
+
+  .why{
+    min-width:0;
+    padding:14px 11px;
+    border-radius:14px;
+  }
+
+  .whyIcon{
+    font-size:25px;
+    margin-bottom:7px;
+  }
+
+  .why b{
+    font-size:13px;
+    line-height:1.3;
+  }
+
+  .why span{
+    font-size:10px;
+    line-height:1.3;
+  }
+
+
+  /* =========================
+     BRANDS
+  ========================= */
+
+  .brandRail{
+    width:100%;
+    overflow-x:auto;
+    padding-bottom:6px;
+    gap:9px;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  .brandCard{
+    min-width:100px;
+    padding:13px 9px;
+    border-radius:13px;
+  }
+
+  .brandCard span{
+    font-size:20px;
+  }
+
+  .brandCard b{
+    font-size:12px;
+  }
+
+
+  /* =========================
+     DEALS
+  ========================= */
+
+  .dealGrid{
+    grid-template-columns:1fr;
+    gap:10px;
+  }
+
+  .deal{
+    min-height:130px;
+    padding:17px;
+    border-radius:15px;
+  }
+
+  .deal b{
+    font-size:12px;
+  }
+
+  .deal strong{
+    font-size:20px;
+    line-height:1.2;
+  }
+
+  .deal button{
+    padding:8px 11px;
+    font-size:12px;
+  }
+
+  .dealEmoji{
+    font-size:34px;
+  }
+
+
+  /* =========================
+     PRODUCT FILTERS
+  ========================= */
+
+  .filterRail{
+    width:100%;
+    overflow-x:auto;
+    overflow-y:hidden;
+    gap:7px;
+    padding-bottom:5px;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  .filterRail button{
+    flex:0 0 auto;
+    padding:8px 11px;
+    font-size:12px;
+    white-space:nowrap;
+  }
+
+
+  /* =========================
+     PRODUCT GRID
+  ========================= */
+
+  .productGrid{
+    width:100%;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:9px;
+  }
+
+  .product{
+    min-width:0;
+    border-radius:14px;
+  }
+
+  .pImage{
+    width:100%;
+    height:155px;
+  }
+
+  .pImage img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+  }
+
+  .pImage span{
+    top:7px;
+    left:7px;
+    padding:3px 6px;
+    font-size:9px;
+  }
+
+  .pInfo{
+    min-width:0;
+    padding:9px;
+  }
+
+  .pInfo small{
+    display:block;
+    font-size:10px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .pInfo h3{
+    margin:5px 0;
+    font-size:13px;
+    line-height:1.3;
+
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+
+  .price{
+    margin:8px 0;
+    gap:5px;
+  }
+
+  .price b{
+    font-size:16px;
+  }
+
+  .price em{
+    font-size:10px;
+  }
+
+  .pInfo > button{
+    padding:9px 5px;
+    font-size:11px;
+  }
+
+
+  /* =========================
+     DRAWER
+  ========================= */
+
+  .drawer{
+    width:290px !important;
+    max-width:82vw !important;
+    padding:17px !important;
+  }
+
+  .drawerBrand{
+    padding:45px 3px 16px !important;
+    font-size:15px;
+  }
+
+  .drawer a{
+    padding:14px 8px !important;
+    font-size:15px !important;
+  }
+
+
+  /* =========================
+     CART MODAL
+  ========================= */
+
+  .modal{
+    padding:8px !important;
+  }
+
+  .cartCard{
+    width:100%;
+    max-width:500px;
+    max-height:90vh;
+    overflow-y:auto;
+    padding:18px 13px;
+    border-radius:17px;
+  }
+
+  .cartCard h2{
+    margin-top:4px;
+    font-size:21px;
+  }
+
+  .cartItem{
+    align-items:flex-start;
+    gap:9px;
+    padding:12px 0;
+  }
+
+  .cartItem img{
+    flex:0 0 68px;
+    width:68px;
+    height:68px;
+    border-radius:9px;
+  }
+
+  .cartItemInfo{
+    min-width:0;
+  }
+
+  .cartItemInfo h3{
+    font-size:13px;
+    line-height:1.3;
+    word-break:break-word;
+  }
+
+  .cartItemInfo b{
+    font-size:14px;
+  }
+
+  .cartDelivery{
+    font-size:10px;
+    line-height:1.35;
+  }
+
+  .cartActions{
+    gap:5px;
+  }
+
+  .cartActions button{
+    padding:6px 8px;
+    font-size:11px;
+  }
+
+  .cartActions span{
+    min-width:22px;
+    font-size:12px;
+  }
+
+  .wishlistBtn,
+  .removeBtn{
+    font-size:10px !important;
+  }
+
+  .cartDeliveryInfo{
+    margin:11px 0;
+    padding:10px;
+    font-size:11px;
+  }
+
+  .cartDeliveryInfo p{
+    font-size:10px;
+  }
+
+  .total{
+    padding:14px 0;
+    font-size:20px;
+  }
+
+  .checkout{
+    padding:12px;
+    font-size:14px;
+  }
+
+
+  /* =========================
+     BOTTOM NAV
+  ========================= */
+
+  .bottomNav{
+    width:100%;
+    height:61px;
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+
+  .bottomNav a,
+  .bottomNav button{
+    min-width:52px;
+    padding:3px 4px;
+  }
+
+  .bottomNav span{
+    font-size:19px;
+    line-height:22px;
+  }
+
+  .bottomNav a,
+  .bottomNav button{
+    font-size:10px;
+  }
+
+  body{
+    padding-bottom:68px;
+  }
+}
+
+
+/* =========================================================
+   360px - VERY SMALL ANDROID
+========================================================= */
+
+@media(max-width:360px){
+
+  .header .brand b{
+    font-size:13px;
+  }
+
+  .header .brand small{
+    font-size:8px;
+  }
+
+  .header .brand .brLogo{
+    width:37px;
+    height:37px;
+    flex-basis:37px;
+    font-size:15px;
+  }
+
+  .header .menu{
+    width:39px;
+    height:39px;
+    flex-basis:39px;
+  }
+
+  .cartTop{
+    width:40px;
+    height:38px;
+    flex-basis:40px;
+  }
+
+  .heroText h1{
+    font-size:27px;
+  }
+
+  .heroVisual{
+    gap:6px;
+  }
+
+  .heroPhone,
+  .heroBag{
+    padding:11px 5px;
+  }
+
+  .heroBag{
+    font-size:22px;
+  }
+
+  .headingRow h2{
+    font-size:18px;
+  }
+
+  .why{
+    padding:12px 8px;
+  }
+
+  .pImage{
+    height:140px;
+  }
+
+  .pInfo{
+    padding:8px;
+  }
+
+  .pInfo h3{
+    font-size:12px;
+  }
+
+  .price b{
+    font-size:15px;
+  }
+
+  .pInfo > button{
+    padding:8px 3px;
+    font-size:10px;
+  }
+}
+
+
+/* =========================================================
+   412px / 430px ANDROID - PREVENT OVERFLOW
+========================================================= */
+
+@media(min-width:701px) and (max-width:900px){
+
+  .heroBanner{
+    width:calc(100% - 28px);
+  }
+
+  .section{
+    padding-left:14px;
+    padding-right:14px;
+  }
+
+  .productGrid{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+}
+
+
+/* =========================
+   SAFE AREA
+========================= */
+
+@supports(padding:max(0px)){
+
+  .bottomNav{
+    padding-bottom:max(
+      0px,
+      env(safe-area-inset-bottom)
+    );
+  }
+}
