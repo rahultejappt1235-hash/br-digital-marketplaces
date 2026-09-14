@@ -1,0 +1,1891 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+<title>BR Digital Marketplace</title>
+<meta name="description" content="BR Digital Marketplace - Bihar ka Apna Online Marketplace">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+:root{
+  --green:#087f3f;
+  --green2:#0a9b50;
+  --orange:#ff6500;
+  --dark:#111827;
+  --muted:#667085;
+  --bg:#f7f8fa;
+  --white:#fff;
+  --border:#e8ebef;
+}
+
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  background:var(--bg);
+  color:var(--dark);
+  padding-bottom:78px;
+}
+
+button,
+input{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+  border:0;
+}
+
+a{
+  text-decoration:none;
+  color:inherit;
+}
+
+/* HEADER */
+.header{
+  background:#fff;
+  position:sticky;
+  top:0;
+  z-index:1000;
+  border-bottom:1px solid #eee;
+}
+
+.headerTop{
+  height:70px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:8px 18px;
+  max-width:1200px;
+  margin:auto;
+}
+
+.menuBtn{
+  width:42px;
+  height:42px;
+  background:#f5f7f8;
+  border-radius:12px;
+  font-size:25px;
+  color:#222;
+}
+
+.logo{
+  flex:1;
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+
+.logoCircle{
+  width:43px;
+  height:43px;
+  border:4px solid var(--green);
+  border-right-color:var(--orange);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:900;
+  font-size:19px;
+}
+
+.logoText{
+  font-size:20px;
+  font-weight:900;
+  line-height:1.05;
+}
+
+.logoText span:nth-child(1){
+  color:#ff6500;
+}
+
+.logoText span:nth-child(2){
+  color:#087f3f;
+}
+
+.logoSub{
+  font-size:10px;
+  color:#687079;
+  margin-top:4px;
+  font-weight:600;
+}
+
+.headerIcon{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:#f5f7f8;
+  font-size:21px;
+  position:relative;
+}
+
+.badge{
+  position:absolute;
+  right:-3px;
+  top:-4px;
+  background:#ef233c;
+  color:#fff;
+  min-width:19px;
+  height:19px;
+  border-radius:20px;
+  font-size:11px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-weight:bold;
+}
+
+/* DELIVERY */
+.deliveryBar{
+  max-width:1160px;
+  margin:8px auto;
+  padding:10px 15px;
+  border-radius:14px;
+  background:linear-gradient(100deg,#fff4dd,#eff9f0);
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.deliveryLocation{
+  flex:1;
+}
+
+.deliveryLocation strong{
+  display:block;
+  font-size:15px;
+}
+
+.deliveryLocation small{
+  color:#667085;
+}
+
+.deliveryInfo{
+  display:flex;
+  gap:18px;
+  align-items:center;
+}
+
+.deliveryInfo div{
+  border-left:1px solid #ddd;
+  padding-left:18px;
+}
+
+.deliveryInfo strong{
+  color:var(--green);
+  font-size:14px;
+}
+
+.deliveryInfo small{
+  color:#667085;
+}
+
+/* SEARCH */
+.searchWrap{
+  max-width:1160px;
+  margin:10px auto;
+  padding:0 5px;
+}
+
+.searchBox{
+  height:52px;
+  background:#fff;
+  border:1px solid #cddcff;
+  border-radius:17px;
+  display:flex;
+  align-items:center;
+  padding:0 7px 0 15px;
+  box-shadow:0 3px 12px rgba(0,0,0,.04);
+}
+
+.searchIcon{
+  font-size:24px;
+  color:var(--green);
+}
+
+.searchBox input{
+  flex:1;
+  border:0;
+  outline:0;
+  padding:0 10px;
+  font-size:15px;
+  background:transparent;
+}
+
+.voiceBtn{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  background:#edf4ff;
+  font-size:21px;
+}
+
+/* MAIN */
+.container{
+  max-width:1160px;
+  margin:auto;
+  padding:0 14px;
+}
+
+/* SECTION */
+.section{
+  margin-top:18px;
+}
+
+.sectionHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:10px;
+}
+
+.sectionHeader h2{
+  font-size:21px;
+}
+
+.viewAll{
+  color:#06763a;
+  font-weight:bold;
+  font-size:14px;
+}
+
+/* CATEGORIES */
+.categoryRow{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+  padding:3px 1px 7px;
+  scrollbar-width:none;
+}
+
+.categoryRow::-webkit-scrollbar{
+  display:none;
+}
+
+.categoryCard{
+  min-width:88px;
+  height:88px;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:16px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  box-shadow:0 2px 7px rgba(0,0,0,.035);
+}
+
+.categoryCard .emoji{
+  font-size:31px;
+}
+
+.categoryCard span:last-child{
+  font-size:12px;
+  font-weight:bold;
+}
+
+/* BANNER */
+.hero{
+  margin-top:16px;
+  min-height:190px;
+  border-radius:20px;
+  overflow:hidden;
+  position:relative;
+  background:
+    linear-gradient(90deg,rgba(255,247,225,.98),rgba(255,231,194,.82)),
+    linear-gradient(120deg,#e7f6e8,#fff2df);
+  display:flex;
+  align-items:center;
+  padding:22px;
+}
+
+.heroContent{
+  max-width:55%;
+  position:relative;
+  z-index:2;
+}
+
+.hero h1{
+  font-size:29px;
+  line-height:1.08;
+  margin-bottom:9px;
+}
+
+.hero h1 span{
+  color:var(--orange);
+}
+
+.hero p{
+  color:#4b5563;
+  font-size:14px;
+  margin-bottom:15px;
+}
+
+.shopBtn{
+  background:var(--green);
+  color:white;
+  padding:11px 20px;
+  border-radius:25px;
+  font-weight:bold;
+}
+
+.heroArt{
+  position:absolute;
+  right:20px;
+  bottom:0;
+  font-size:110px;
+  opacity:.9;
+}
+
+.heroTag{
+  position:absolute;
+  right:25px;
+  top:20px;
+  font-weight:900;
+  font-size:15px;
+  color:#315c3c;
+}
+
+/* MARKET */
+.marketTitle{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.marketIcon{
+  font-size:27px;
+}
+
+.productScroller{
+  display:flex;
+  gap:12px;
+  overflow-x:auto;
+  padding:3px 2px 10px;
+  scrollbar-width:none;
+}
+
+.productScroller::-webkit-scrollbar{
+  display:none;
+}
+
+/* PRODUCT */
+.productCard{
+  min-width:205px;
+  width:205px;
+  background:#fff;
+  border-radius:17px;
+  border:1px solid var(--border);
+  padding:9px;
+  position:relative;
+  box-shadow:0 3px 10px rgba(0,0,0,.04);
+}
+
+.productImage{
+  width:100%;
+  height:160px;
+  border-radius:13px;
+  object-fit:contain;
+  background:#f7f8fa;
+}
+
+.productName{
+  font-size:14px;
+  font-weight:800;
+  margin-top:8px;
+  line-height:1.25;
+  min-height:35px;
+}
+
+.productDesc{
+  font-size:12px;
+  color:#667085;
+  margin-top:3px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.productPrice{
+  margin-top:7px;
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+
+.price{
+  font-size:18px;
+  font-weight:900;
+  color:#e93616;
+}
+
+.oldPrice{
+  font-size:12px;
+  color:#8b929b;
+  text-decoration:line-through;
+}
+
+.addBtn{
+  position:absolute;
+  right:10px;
+  bottom:11px;
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  background:var(--green);
+  color:#fff;
+  font-size:25px;
+  box-shadow:0 4px 9px rgba(8,127,63,.25);
+}
+
+.rating{
+  margin-top:6px;
+  font-size:12px;
+  color:#e59a00;
+  font-weight:bold;
+}
+
+.discount{
+  position:absolute;
+  top:14px;
+  left:14px;
+  background:#ef3340;
+  color:#fff;
+  padding:5px 8px;
+  border-radius:8px;
+  font-size:11px;
+  font-weight:bold;
+}
+
+/* DEALS */
+.dealScroller{
+  display:flex;
+  gap:12px;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+
+.dealScroller::-webkit-scrollbar{
+  display:none;
+}
+
+.deal{
+  min-width:270px;
+  height:120px;
+  border-radius:17px;
+  padding:15px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  overflow:hidden;
+}
+
+.deal:nth-child(1){
+  background:#ffe4eb;
+}
+
+.deal:nth-child(2){
+  background:#e1efff;
+}
+
+.deal:nth-child(3){
+  background:#e3f7df;
+}
+
+.dealText strong{
+  font-size:18px;
+  color:#e63320;
+}
+
+.dealText b{
+  display:block;
+  font-size:14px;
+  margin-top:4px;
+}
+
+.dealEmoji{
+  font-size:55px;
+}
+
+/* POPULAR CATEGORY */
+.popularRow{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+
+.popularRow::-webkit-scrollbar{
+  display:none;
+}
+
+.popular{
+  min-width:120px;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:15px;
+  padding:10px;
+  text-align:center;
+}
+
+.popularEmoji{
+  height:75px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:45px;
+}
+
+.popular p{
+  font-size:12px;
+  font-weight:bold;
+}
+
+/* LOADING */
+.loading{
+  text-align:center;
+  padding:35px 10px;
+  color:#667085;
+}
+
+.empty{
+  background:#fff;
+  border-radius:15px;
+  padding:30px 15px;
+  text-align:center;
+  color:#667085;
+}
+
+/* DRAWER */
+.overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.45);
+  z-index:2000;
+  display:none;
+}
+
+.overlay.show{
+  display:block;
+}
+
+.drawer{
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:min(310px,85vw);
+  background:#fff;
+  padding:20px;
+  overflow-y:auto;
+}
+
+.drawerHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+}
+
+.closeDrawer{
+  width:35px;
+  height:35px;
+  border-radius:50%;
+  background:#f1f3f5;
+}
+
+.drawerItem{
+  width:100%;
+  padding:14px;
+  margin:5px 0;
+  border-radius:12px;
+  background:#f7f8fa;
+  text-align:left;
+  font-weight:bold;
+}
+
+/* CART */
+.cartPanel{
+  position:fixed;
+  right:15px;
+  bottom:85px;
+  width:min(380px,calc(100vw - 30px));
+  max-height:70vh;
+  overflow:auto;
+  background:#fff;
+  border-radius:20px;
+  padding:17px;
+  z-index:1900;
+  box-shadow:0 10px 35px rgba(0,0,0,.2);
+  display:none;
+}
+
+.cartPanel.show{
+  display:block;
+}
+
+.cartHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+}
+
+.cartItem{
+  display:flex;
+  gap:10px;
+  padding:10px 0;
+  border-bottom:1px solid #eee;
+}
+
+.cartItem img{
+  width:55px;
+  height:55px;
+  object-fit:contain;
+  border-radius:9px;
+  background:#f5f5f5;
+}
+
+.cartInfo{
+  flex:1;
+}
+
+.cartInfo strong{
+  font-size:13px;
+}
+
+.qty{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-top:5px;
+}
+
+.qty button{
+  width:25px;
+  height:25px;
+  border-radius:7px;
+  background:#edf5ef;
+  color:var(--green);
+  font-weight:bold;
+}
+
+.checkoutBtn{
+  width:100%;
+  margin-top:13px;
+  padding:13px;
+  background:var(--orange);
+  color:#fff;
+  border-radius:12px;
+  font-weight:bold;
+}
+
+/* BOTTOM NAV */
+.bottomNav{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  height:72px;
+  background:rgba(255,255,255,.97);
+  border-top:1px solid #e5e7eb;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  z-index:1500;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+
+.bottomNav a,
+.bottomNav button{
+  background:none;
+  color:#687079;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:3px;
+  font-size:11px;
+  font-weight:bold;
+  min-width:60px;
+}
+
+.bottomNav .navIcon{
+  font-size:23px;
+}
+
+.bottomNav .active{
+  color:var(--green);
+}
+
+/* RESPONSIVE */
+@media(max-width:700px){
+
+  body{
+    padding-bottom:78px;
+  }
+
+  .headerTop{
+    height:64px;
+    padding:7px 10px;
+    gap:7px;
+  }
+
+  .menuBtn{
+    width:37px;
+    height:37px;
+    font-size:21px;
+  }
+
+  .logoCircle{
+    width:37px;
+    height:37px;
+    font-size:16px;
+    border-width:3px;
+  }
+
+  .logoText{
+    font-size:16px;
+  }
+
+  .logoSub{
+    font-size:8px;
+  }
+
+  .headerIcon{
+    width:35px;
+    height:35px;
+    font-size:18px;
+  }
+
+  .deliveryBar{
+    margin:7px 10px;
+    padding:9px 11px;
+  }
+
+  .deliveryInfo{
+    display:none;
+  }
+
+  .searchWrap{
+    padding:0 10px;
+  }
+
+  .searchBox{
+    height:48px;
+    border-radius:15px;
+  }
+
+  .container{
+    padding:0 10px;
+  }
+
+  .section{
+    margin-top:15px;
+  }
+
+  .sectionHeader h2{
+    font-size:19px;
+  }
+
+  .categoryCard{
+    min-width:76px;
+    height:78px;
+    border-radius:14px;
+  }
+
+  .categoryCard .emoji{
+    font-size:26px;
+  }
+
+  .categoryCard span:last-child{
+    font-size:10px;
+  }
+
+  .hero{
+    min-height:170px;
+    padding:17px;
+    border-radius:17px;
+  }
+
+  .heroContent{
+    max-width:67%;
+  }
+
+  .hero h1{
+    font-size:22px;
+  }
+
+  .hero p{
+    font-size:11px;
+  }
+
+  .heroArt{
+    font-size:75px;
+    right:-2px;
+  }
+
+  .heroTag{
+    display:none;
+  }
+
+  .productCard{
+    min-width:165px;
+    width:165px;
+  }
+
+  .productImage{
+    height:130px;
+  }
+
+  .productName{
+    font-size:13px;
+  }
+
+  .price{
+    font-size:16px;
+  }
+
+  .addBtn{
+    width:34px;
+    height:34px;
+    font-size:22px;
+  }
+
+  .deal{
+    min-width:245px;
+    height:105px;
+  }
+
+  .dealEmoji{
+    font-size:43px;
+  }
+
+  .popular{
+    min-width:100px;
+  }
+
+  .popularEmoji{
+    height:65px;
+    font-size:37px;
+  }
+}
+
+@media(max-width:380px){
+  .logoSub{
+    display:none;
+  }
+
+  .productCard{
+    min-width:155px;
+    width:155px;
+  }
+
+  .hero h1{
+    font-size:20px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<header class="header">
+
+  <div class="headerTop">
+
+    <button class="menuBtn" onclick="openDrawer()">☰</button>
+
+    <div class="logo">
+      <div class="logoCircle">BR</div>
+
+      <div>
+        <div class="logoText">
+          <span>BR</span> <span>Digital Marketplace</span>
+        </div>
+        <div class="logoSub">
+          Shop Local • Support Bihar • Grow Together ❤️
+        </div>
+      </div>
+    </div>
+
+    <button class="headerIcon" onclick="toggleCart()">
+      🛒
+      <span id="cartBadge" class="badge">0</span>
+    </button>
+
+  </div>
+
+</header>
+
+<!-- DELIVERY -->
+<div class="deliveryBar">
+
+  <div style="font-size:27px;">📍</div>
+
+  <div class="deliveryLocation">
+    <strong>Deliver to Bihar</strong>
+    <small id="deliveryPlace">Your delivery location</small>
+  </div>
+
+  <div class="deliveryInfo">
+
+    <div>
+      <strong>🚚 Fast Delivery</strong>
+      <small>2–4 Days</small>
+    </div>
+
+    <div>
+      <strong>📅 Estimated</strong>
+      <small>Delivery</small>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- SEARCH -->
+<div class="searchWrap">
+  <div class="searchBox">
+
+    <span class="searchIcon">⌕</span>
+
+    <input
+      id="searchInput"
+      type="search"
+      placeholder="Search for products, brands and more..."
+      oninput="searchProducts()"
+    >
+
+    <button class="voiceBtn" onclick="startVoiceSearch()">🎤</button>
+
+  </div>
+</div>
+
+<main class="container">
+
+  <!-- CATEGORIES -->
+  <section class="section">
+
+    <div class="sectionHeader">
+      <h2>Categories</h2>
+      <button class="viewAll" onclick="showAllProducts()">View All →</button>
+    </div>
+
+    <div class="categoryRow">
+
+      <button class="categoryCard" onclick="selectCategory('Grocery')">
+        <span class="emoji">🛒</span>
+        <span>Grocery</span>
+      </button>
+
+      <button class="categoryCard" onclick="selectCategory('Mobiles')">
+        <span class="emoji">📱</span>
+        <span>Mobiles</span>
+      </button>
+
+      <button class="categoryCard" onclick="selectCategory('Electronics')">
+        <span class="emoji">💻</span>
+        <span>Electronics</span>
+      </button>
+
+      <button class="categoryCard" onclick="selectCategory('Fashion')">
+        <span class="emoji">👕</span>
+        <span>Fashion</span>
+      </button>
+
+      <button class="categoryCard" onclick="selectCategory('Home')">
+        <span class="emoji">🛋️</span>
+        <span>Home</span>
+      </button>
+
+      <button class="categoryCard" onclick="selectCategory('Beauty')">
+        <span class="emoji">🧴</span>
+        <span>Beauty</span>
+      </button>
+
+      <button class="categoryCard" onclick="selectCategory('Sports')">
+        <span class="emoji">⚽</span>
+        <span>Sports</span>
+      </button>
+
+    </div>
+
+  </section>
+
+  <!-- HERO -->
+  <section class="hero">
+
+    <div class="heroContent">
+
+      <h1>
+        Bihar ka Apna<br>
+        <span>Online Marketplace</span>
+      </h1>
+
+      <p>
+        Local Products &nbsp;|&nbsp;
+        Best Prices &nbsp;|&nbsp;
+        Fast Delivery
+      </p>
+
+      <button class="shopBtn" onclick="showAllProducts()">
+        Shop Now →
+      </button>
+
+    </div>
+
+    <div class="heroTag">
+      Proudly From Bihar ❤️
+    </div>
+
+    <div class="heroArt">
+      🏪
+    </div>
+
+  </section>
+
+  <!-- MARKET -->
+  <section class="section">
+
+    <div class="sectionHeader">
+
+      <div class="marketTitle">
+        <span class="marketIcon">🏪</span>
+
+        <div>
+          <h2>Market</h2>
+          <small style="color:#667085;">
+            Best Products from Trusted Sellers
+          </small>
+        </div>
+      </div>
+
+      <button class="viewAll" onclick="showAllProducts()">
+        View All →
+      </button>
+
+    </div>
+
+    <div id="products" class="productScroller">
+      <div class="loading">
+        ⏳ Real products load हो रहे हैं...
+      </div>
+    </div>
+
+  </section>
+
+  <!-- DEALS -->
+  <section class="section">
+
+    <div class="sectionHeader">
+      <h2>🔥 Deals for You</h2>
+    </div>
+
+    <div class="dealScroller">
+
+      <div class="deal">
+        <div class="dealText">
+          <strong>Special Deals</strong>
+          <b>Mobiles & Accessories</b>
+          <small>Trusted Sellers</small>
+        </div>
+        <div class="dealEmoji">📱</div>
+      </div>
+
+      <div class="deal">
+        <div class="dealText">
+          <strong>Great Choice</strong>
+          <b>Fashion & Lifestyle</b>
+          <small>Shop Local</small>
+        </div>
+        <div class="dealEmoji">👕</div>
+      </div>
+
+      <div class="deal">
+        <div class="dealText">
+          <strong>Shop Today</strong>
+          <b>Home & Kitchen</b>
+          <small>Quality Products</small>
+        </div>
+        <div class="dealEmoji">🍳</div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- POPULAR CATEGORIES -->
+  <section class="section">
+
+    <div class="sectionHeader">
+      <h2>Popular Categories</h2>
+    </div>
+
+    <div class="popularRow">
+
+      <button class="popular" onclick="selectCategory('Grocery')">
+        <div class="popularEmoji">🥦</div>
+        <p>Fresh Grocery</p>
+      </button>
+
+      <button class="popular" onclick="selectCategory('Mobiles')">
+        <div class="popularEmoji">📱</div>
+        <p>Mobiles</p>
+      </button>
+
+      <button class="popular" onclick="selectCategory('Fashion')">
+        <div class="popularEmoji">👕</div>
+        <p>Fashion</p>
+      </button>
+
+      <button class="popular" onclick="selectCategory('Home')">
+        <div class="popularEmoji">🍳</div>
+        <p>Home & Kitchen</p>
+      </button>
+
+      <button class="popular" onclick="selectCategory('Beauty')">
+        <div class="popularEmoji">🧴</div>
+        <p>Beauty</p>
+      </button>
+
+      <button class="popular" onclick="selectCategory('Sports')">
+        <div class="popularEmoji">⚽</div>
+        <p>Sports</p>
+      </button>
+
+    </div>
+
+  </section>
+
+</main>
+
+
+<!-- DRAWER -->
+<div id="overlay" class="overlay" onclick="closeDrawer(event)">
+
+  <div class="drawer" onclick="event.stopPropagation()">
+
+    <div class="drawerHeader">
+      <h2>BR Digital Marketplace</h2>
+      <button class="closeDrawer" onclick="closeDrawer()">✕</button>
+    </div>
+
+    <button class="drawerItem" onclick="goHome()">
+      🏠 Home
+    </button>
+
+    <button class="drawerItem" onclick="showAllProducts();closeDrawer()">
+      🏪 Market
+    </button>
+
+    <button class="drawerItem" onclick="window.location.href='account.html'">
+      👤 My Account
+    </button>
+
+    <button class="drawerItem" onclick="window.location.href='seller-login.html'">
+      🏬 Seller Login
+    </button>
+
+    <button class="drawerItem" onclick="window.location.href='admin-login.html'">
+      🔐 Admin Login
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- CART -->
+<div id="cartPanel" class="cartPanel">
+
+  <div class="cartHeader">
+    <h3>🛒 My Cart</h3>
+    <button onclick="toggleCart()">✕</button>
+  </div>
+
+  <div id="cartItems"></div>
+
+  <div id="cartEmpty" class="empty">
+    आपका cart अभी खाली है।
+  </div>
+
+  <button
+    id="checkoutButton"
+    class="checkoutBtn"
+    style="display:none;"
+    onclick="goCheckout()"
+  >
+    Proceed to Buy →
+  </button>
+
+</div>
+
+
+<!-- BOTTOM NAV -->
+<nav class="bottomNav">
+
+  <a class="active" href="index.html">
+    <span class="navIcon">⌂</span>
+    <span>Home</span>
+  </a>
+
+  <button onclick="document.querySelector('.categoryRow').scrollIntoView({behavior:'smooth'})">
+    <span class="navIcon">▦</span>
+    <span>Categories</span>
+  </button>
+
+  <button onclick="showAllProducts()">
+    <span class="navIcon">🏪</span>
+    <span>Market</span>
+  </button>
+
+  <a href="orders.html">
+    <span class="navIcon">📦</span>
+    <span>Orders</span>
+  </a>
+
+  <a href="account.html">
+    <span class="navIcon">♙</span>
+    <span>Account</span>
+  </a>
+
+</nav>
+
+
+<script>
+
+/* =========================
+   SUPABASE
+========================= */
+
+const SUPABASE_URL =
+  "https://uryjmibcdfjfxoljrigt.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_uYbJw0ARCCkCpQ9QB6FxaQ_JrIxtOOp";
+
+const supabaseClient =
+  supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+/* =========================
+   VARIABLES
+========================= */
+
+let allProducts = [];
+let filteredProducts = [];
+
+let cart =
+  JSON.parse(localStorage.getItem("br_market_cart") || "[]");
+
+
+/* =========================
+   LOAD REAL PRODUCTS
+========================= */
+
+async function loadProducts(){
+
+  const box =
+    document.getElementById("products");
+
+  box.innerHTML =
+    `<div class="loading">
+      ⏳ Real products load हो रहे हैं...
+    </div>`;
+
+  try{
+
+    const {data,error} =
+      await supabaseClient
+      .from("products")
+      .select(`
+        id,
+        product_name,
+        description,
+        image_url,
+        category,
+        price,
+        stock,
+        brand,
+        status
+      `)
+      .eq("status","approved")
+      .order("id",{ascending:false});
+
+    if(error){
+      console.error(error);
+
+      box.innerHTML =
+        `<div class="empty">
+          Products load नहीं हो पाए।<br>
+          Please थोड़ी देर बाद फिर try करें।
+        </div>`;
+
+      return;
+    }
+
+    allProducts = data || [];
+    filteredProducts = [...allProducts];
+
+    renderProducts();
+
+  }catch(err){
+
+    console.error(err);
+
+    box.innerHTML =
+      `<div class="empty">
+        Products load करने में समस्या हुई।
+      </div>`;
+  }
+}
+
+
+/* =========================
+   RENDER PRODUCTS
+========================= */
+
+function renderProducts(){
+
+  const box =
+    document.getElementById("products");
+
+  if(!filteredProducts.length){
+
+    box.innerHTML =
+      `<div class="empty">
+        अभी इस section में कोई approved product उपलब्ध नहीं है।
+      </div>`;
+
+    return;
+  }
+
+  box.innerHTML =
+    filteredProducts
+    .map(productCard)
+    .join("");
+}
+
+
+/* =========================
+   PRODUCT CARD
+========================= */
+
+function productCard(p){
+
+  const image =
+    p.image_url ||
+    "https://placehold.co/500x500?text=Product";
+
+  const price =
+    Number(p.price || 0);
+
+  /*
+    Rating / old price / discount
+    केवल तभी दिखेंगे जब आपके database
+    object में ये values मौजूद हों।
+    कोई fake value नहीं बनाई जाएगी।
+  */
+
+  const rating =
+    p.rating != null
+    ? `<div class="rating">⭐ ${escapeHtml(String(p.rating))}</div>`
+    : "";
+
+  const oldPrice =
+    p.old_price != null
+    ? `<span class="oldPrice">₹${Number(p.old_price).toLocaleString("en-IN")}</span>`
+    : "";
+
+  const discount =
+    p.discount != null
+    ? `<div class="discount">${escapeHtml(String(p.discount))}% OFF</div>`
+    : "";
+
+  return `
+    <div class="productCard">
+
+      ${discount}
+
+      <img
+        class="productImage"
+        src="${escapeHtml(image)}"
+        alt="${escapeHtml(p.product_name || "Product")}"
+        loading="lazy"
+        onerror="this.style.display='none';"
+      >
+
+      ${rating}
+
+      <div class="productName">
+        ${escapeHtml(p.product_name || "Product")}
+      </div>
+
+      <div class="productDesc">
+        ${escapeHtml(p.description || p.brand || "")}
+      </div>
+
+      <div class="productPrice">
+
+        <span class="price">
+          ₹${price.toLocaleString("en-IN")}
+        </span>
+
+        ${oldPrice}
+
+      </div>
+
+      <button
+        class="addBtn"
+        onclick='addToCart(${JSON.stringify(p).replace(/'/g,"&#39;")})'
+        aria-label="Add to cart"
+      >
+        +
+      </button>
+
+    </div>
+  `;
+}
+
+
+/* =========================
+   SEARCH
+========================= */
+
+function searchProducts(){
+
+  const value =
+    document
+    .getElementById("searchInput")
+    .value
+    .trim()
+    .toLowerCase();
+
+  if(!value){
+
+    filteredProducts =
+      [...allProducts];
+
+  }else{
+
+    filteredProducts =
+      allProducts.filter(p => {
+
+        const text =
+          [
+            p.product_name,
+            p.description,
+            p.brand,
+            p.category,
+            p.product_type
+          ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+
+        return text.includes(value);
+      });
+  }
+
+  renderProducts();
+}
+
+
+/* =========================
+   CATEGORY
+========================= */
+
+function selectCategory(category){
+
+  filteredProducts =
+    allProducts.filter(p =>
+      String(p.category || "")
+      .toLowerCase()
+      .includes(category.toLowerCase())
+    );
+
+  renderProducts();
+
+  document
+    .getElementById("products")
+    .scrollIntoView({
+      behavior:"smooth",
+      block:"start"
+    });
+}
+
+
+function showAllProducts(){
+
+  filteredProducts =
+    [...allProducts];
+
+  renderProducts();
+
+  document
+    .getElementById("products")
+    .scrollIntoView({
+      behavior:"smooth",
+      block:"start"
+    });
+}
+
+
+/* =========================
+   CART
+========================= */
+
+function saveCart(){
+
+  localStorage.setItem(
+    "br_market_cart",
+    JSON.stringify(cart)
+  );
+
+  updateCartBadge();
+  renderCart();
+}
+
+
+function addToCart(product){
+
+  const existing =
+    cart.find(item =>
+      String(item.id) === String(product.id)
+    );
+
+  if(existing){
+
+    existing.qty++;
+
+  }else{
+
+    cart.push({
+      id:product.id,
+      product_name:product.product_name,
+      image_url:product.image_url,
+      price:Number(product.price || 0),
+      qty:1
+    });
+
+  }
+
+  saveCart();
+
+  document
+    .getElementById("cartPanel")
+    .classList.add("show");
+}
+
+
+function removeCart(id){
+
+  cart =
+    cart.filter(item =>
+      String(item.id) !== String(id)
+    );
+
+  saveCart();
+}
+
+
+function changeQty(id,change){
+
+  const item =
+    cart.find(item =>
+      String(item.id) === String(id)
+    );
+
+  if(!item) return;
+
+  item.qty += change;
+
+  if(item.qty <= 0){
+
+    removeCart(id);
+
+    return;
+  }
+
+  saveCart();
+}
+
+
+function updateCartBadge(){
+
+  const count =
+    cart.reduce(
+      (sum,item) =>
+        sum + Number(item.qty || 0),
+      0
+    );
+
+  document
+    .getElementById("cartBadge")
+    .textContent = count;
+}
+
+
+function renderCart(){
+
+  const itemsBox =
+    document.getElementById("cartItems");
+
+  const empty =
+    document.getElementById("cartEmpty");
+
+  const checkout =
+    document.getElementById("checkoutButton");
+
+  if(!cart.length){
+
+    itemsBox.innerHTML = "";
+
+    empty.style.display = "block";
+
+    checkout.style.display = "none";
+
+    return;
+  }
+
+  empty.style.display = "none";
+
+  checkout.style.display = "block";
+
+  itemsBox.innerHTML =
+    cart.map(item => `
+
+      <div class="cartItem">
+
+        <img
+          src="${escapeHtml(item.image_url || "")}"
+          alt=""
+        >
+
+        <div class="cartInfo">
+
+          <strong>
+            ${escapeHtml(item.product_name)}
+          </strong>
+
+          <div>
+            ₹${Number(item.price).toLocaleString("en-IN")}
+          </div>
+
+          <div class="qty">
+
+            <button
+              onclick="changeQty('${item.id}',-1)"
+            >
+              −
+            </button>
+
+            <span>${item.qty}</span>
+
+            <button
+              onclick="changeQty('${item.id}',1)"
+            >
+              +
+            </button>
+
+            <button
+              onclick="removeCart('${item.id}')"
+              style="margin-left:auto;color:#d22;"
+            >
+              🗑
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    `).join("");
+}
+
+
+function toggleCart(){
+
+  document
+    .getElementById("cartPanel")
+    .classList.toggle("show");
+
+  renderCart();
+}
+
+
+function goCheckout(){
+
+  if(!cart.length){
+
+    alert("Cart खाली है।");
+
+    return;
+  }
+
+  /*
+    आपका existing checkout/order system
+    जिस page पर है वहाँ भेज सकते हैं।
+  */
+
+  window.location.href =
+    "account.html";
+}
+
+
+/* =========================
+   DRAWER
+========================= */
+
+function openDrawer(){
+
+  document
+    .getElementById("overlay")
+    .classList.add("show");
+}
+
+
+function closeDrawer(){
+
+  document
+    .getElementById("overlay")
+    .classList.remove("show");
+}
+
+
+function goHome(){
+
+  closeDrawer();
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+}
+
+
+/* =========================
+   VOICE SEARCH
+========================= */
+
+function startVoiceSearch(){
+
+  const SpeechRecognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  if(!SpeechRecognition){
+
+    alert(
+      "आपके Android browser में Voice Search support नहीं है।"
+    );
+
+    return;
+  }
+
+  const recognition =
+    new SpeechRecognition();
+
+  recognition.lang = "hi-IN";
+
+  recognition.interimResults = false;
+
+  recognition.onresult = function(event){
+
+    const text =
+      event.results[0][0].transcript;
+
+    document
+      .getElementById("searchInput")
+      .value = text;
+
+    searchProducts();
+  };
+
+  recognition.start();
+}
+
+
+/* =========================
+   LOCATION
+========================= */
+
+async function loadLocation(){
+
+  const place =
+    document.getElementById("deliveryPlace");
+
+  try{
+
+    const {
+      data:{session}
+    } =
+      await supabaseClient
+      .auth.getSession();
+
+    /*
+      यहाँ user की saved location होने पर
+      बाद में sellers/customer address से
+      dynamic location जोड़ी जा सकती है।
+    */
+
+    place.textContent =
+      "Bihar • India";
+
+  }catch(e){
+
+    place.textContent =
+      "Bihar • India";
+  }
+}
+
+
+/* =========================
+   ESCAPE HTML
+========================= */
+
+function escapeHtml(value){
+
+  return String(value)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+
+
+/* =========================
+   START
+========================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function(){
+
+    updateCartBadge();
+    renderCart();
+    loadProducts();
+    loadLocation();
+
+  }
+);
+
+</script>
+
+</body>
+  </html>
