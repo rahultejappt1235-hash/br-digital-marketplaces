@@ -513,35 +513,8 @@
 
   </button>
 
-</nav> 
-
-  /* Bottom Categories */
-
-const bottomCategories =
-  document.getElementById("bottomCategories");
-
-if(bottomCategories){
-
-  bottomCategories.onclick =
-    function(){
-
-      const categories =
-        document.getElementById("topCategories");
-
-      if(categories){
-
-        categories.scrollIntoView({
-          behavior:"smooth",
-          block:"start"
-        });
-
-      }
-
-    };
-
-}
-
-
+</nav>
+  
 <!-- ================= CART MODAL ================= -->
 
 <div
@@ -2212,6 +2185,32 @@ document.addEventListener(
 
   }
 );
+
+  /* ================= BOTTOM CATEGORIES ================= */
+
+const bottomCategories =
+  document.getElementById("bottomCategories");
+
+if(bottomCategories){
+
+  bottomCategories.onclick =
+    function(){
+
+      const categories =
+        document.getElementById("topCategories");
+
+      if(categories){
+
+        categories.scrollIntoView({
+          behavior:"smooth",
+          block:"start"
+        });
+
+      }
+
+    };
+
+}
 
 </script>
 
