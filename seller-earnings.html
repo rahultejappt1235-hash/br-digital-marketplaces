@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Earnings - BR Digital Marketplace</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f4f7fb;
+  color:#17212b;
+}
+
+.header{
+  background:#fff;
+  padding:16px 22px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  box-shadow:0 2px 10px rgba(0,0,0,.08);
+}
+
+.logo{
+  font-size:22px;
+  font-weight:800;
+}
+
+.logo span{
+  color:#f47700;
+}
+
+.back{
+  color:#1677ed;
+  font-weight:bold;
+  text-decoration:none;
+}
+
+.container{
+  max-width:900px;
+  margin:25px auto;
+  padding:0 15px;
+}
+
+.hero{
+  background:#fff;
+  padding:28px;
+  border-radius:24px;
+  box-shadow:0 8px 30px rgba(0,0,0,.08);
+}
+
+.hero h1{
+  margin:0 0 10px;
+  color:#f47700;
+  font-size:34px;
+}
+
+.hero p{
+  margin:0;
+  color:#666;
+  font-size:18px;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
+  margin-top:22px;
+}
+
+.stat{
+  background:#fff;
+  border-radius:20px;
+  padding:24px;
+  box-shadow:0 6px 20px rgba(0,0,0,.06);
+}
+
+.stat-title{
+  color:#666;
+  font-weight:bold;
+  font-size:15px;
+}
+
+.stat-value{
+  margin-top:10px;
+  font-size:28px;
+  font-weight:800;
+  color:#1677ed;
+}
+
+.section{
+  background:#fff;
+  margin-top:22px;
+  padding:24px;
+  border-radius:22px;
+  box-shadow:0 6px 20px rgba(0,0,0,.06);
+}
+
+.section h2{
+  margin-top:0;
+  color:#f47700;
+}
+
+.order{
+  border:1px solid #e1e6eb;
+  border-radius:16px;
+  padding:18px;
+  margin-top:14px;
+}
+
+.order-top{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.amount{
+  font-size:21px;
+  font-weight:800;
+}
+
+.status{
+  padding:6px 12px;
+  border-radius:20px;
+  background:#dcfce7;
+  color:#166534;
+  font-weight:bold;
+}
+
+.order-info{
+  margin-top:10px;
+  color:#666;
+  line-height:1.6;
+}
+
+.empty{
+  text-align:center;
+  padding:45px 15px;
+  color:#666;
+}
+
+.empty-icon{
+  font-size:55px;
+}
+
+.message{
+  margin-top:18px;
+  padding:15px;
+  border-radius:12px;
+  text-align:center;
+}
+
+.error{
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+.loading{
+  background:#dbeafe;
+  color:#1e40af;
+}
+
+.refresh{
+  margin-top:20px;
+  border:0;
+  background:#1677ed;
+  color:#fff;
+  padding:13px 20px;
+  border-radius:12px;
+  font-size:16px;
+  font-weight:bold;
+}
+
+@media(max-width:600px){
+
+  .header{
+    padding:14px;
+  }
+
+  .logo{
+    font-size:18px;
+  }
+
+  .back{
+    font-size:14px;
+  }
+
+  .container{
+    margin:15px auto;
+    padding:0 12px;
+  }
+
+  .hero{
+    padding:22px 18px;
+  }
+
+  .hero h1{
+    font-size:28px;
+  }
+
+  .hero p{
+    font-size:16px;
+    line-height:1.5;
+  }
+
+  .stats{
+    grid-template-columns:1fr;
+    gap:12px;
+  }
+
+  .stat{
+    padding:20px;
+  }
+
+  .section{
+    padding:18px;
+  }
+
+  .order-top{
+    display:block;
+  }
+
+  .status{
+    display:inline-block;
+    margin-top:10px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+
+  <div class="logo">
+    🏪 BR <span>Digital Marketplace</span>
+  </div>
+
+  <a href="seller-dashboard.html" class="back">
+    ← Dashboard
+  </a>
+
+</header>
+
+<div class="container">
+
+  <div class="hero">
+
+    <h1>💰 My Earnings</h1>
+
+    <p>
+      आपके real orders से sales और earnings की जानकारी यहाँ दिखाई जाएगी।
+    </p>
+
+    <button class="refresh" onclick="loadEarnings()">
+      🔄 Refresh Earnings
+    </button>
+
+  </div>
+
+
+  <div class="stats">
+
+    <div class="stat">
+      <div class="stat-title">
+        💰 Total Sales
+      </div>
+
+      <div class="stat-value" id="totalSales">
+        ₹0
+      </div>
+    </div>
+
+
+    <div class="stat">
+      <div class="stat-title">
+        📦 Total Orders
+      </div>
+
+      <div class="stat-value" id="totalOrders">
+        0
+      </div>
+    </div>
+
+
+    <div class="stat">
+      <div class="stat-title">
+        ✅ Delivered Orders
+      </div>
+
+      <div class="stat-value" id="deliveredOrders">
+        0
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="section">
+
+    <h2>📊 Sales Details</h2>
+
+    <div id="message"></div>
+
+    <div id="ordersList">
+
+      <div class="empty">
+        <div class="empty-icon">💰</div>
+        <h2>अभी कोई earning नहीं है</h2>
+        <p>
+          जब customer आपका product order करेगा,
+          तब real earning यहाँ दिखाई जाएगी।
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+const SUPABASE_URL =
+"https://uryjmibcdfjfxoljrigt.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_uYbJw0ARCCkCpQ9QB6FxaQ_JrIxtOOp";
+
+const db = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+/* ================================
+   FORMAT MONEY
+================================ */
+
+function money(value){
+
+  return "₹" +
+    Number(value || 0).toLocaleString(
+      "en-IN",
+      {
+        minimumFractionDigits:2,
+        maximumFractionDigits:2
+     
