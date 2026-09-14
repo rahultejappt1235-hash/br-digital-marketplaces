@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>My Products - BR Digital Marketplace</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f4f7fb;
+  color:#17212b;
+}
+
+.header{
+  background:#fff;
+  min-height:70px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px 20px;
+  box-shadow:0 2px 12px rgba(0,0,0,.08);
+  position:sticky;
+  top:0;
+  z-index:100;
+}
+
+.brand{
+  font-size:23px;
+  font-weight:800;
+}
+
+.brand span{
+  color:#f47700;
+}
+
+.back{
+  color:#1677ed;
+  text-decoration:none;
+  font-size:17px;
+  font-weight:bold;
+}
+
+.main{
+  width:100%;
+  max-width:1100px;
+  margin:auto;
+  padding:25px 18px;
+}
+
+.title-box{
+  background:#fff;
+  border-radius:20px;
+  padding:22px;
+  margin-bottom:18px;
+  box-shadow:0 5px 20px rgba(0,0,0,.06);
+}
+
+.title-box h1{
+  margin:0 0 8px;
+  font-size:32px;
+}
+
+.title-box p{
+  margin:0;
+  color:#666;
+}
+
+.tabs{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+  margin-bottom:18px;
+}
+
+.tabs button{
+  border:0;
+  background:#fff;
+  color:#174a7e;
+  padding:12px 18px;
+  border-radius:12px;
+  font-weight:bold;
+  white-space:nowrap;
+  cursor:pointer;
+}
+
+.tabs button.active{
+  background:#f47700;
+  color:#fff;
+}
+
+#productList{
+  display:grid;
+  gap:15px;
+}
+
+.product{
+  background:#fff;
+  border-radius:18px;
+  padding:16px;
+  display:flex;
+  gap:16px;
+  box-shadow:0 5px 20px rgba(0,0,0,.06);
+}
+
+.product-image{
+  width:125px;
+  height:125px;
+  border-radius:14px;
+  object-fit:cover;
+  background:#eef2f7;
+  flex-shrink:0;
+}
+
+.product-info{
+  flex:1;
+  min-width:0;
+}
+
+.product-name{
+  font-size:21px;
+  font-weight:800;
+  margin-bottom:7px;
+}
+
+.product-meta{
+  color:#666;
+  margin:5px 0;
+}
+
+.price{
+  font-size:20px;
+  font-weight:bold;
+  margin:8px 0;
+}
+
+.status{
+  display:inline-block;
+  padding:6px 10px;
+  border-radius:20px;
+  font-size:13px;
+  font-weight:bold;
+}
+
+.status-pending{
+  background:#fff3cd;
+  color:#856404;
+}
+
+.status-approved{
+  background:#dcfce7;
+  color:#166534;
+}
+
+.status-rejected{
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+.status-other{
+  background:#e5e7eb;
+  color:#374151;
+}
+
+.empty{
+  background:#fff;
+  border-radius:18px;
+  padding:45px 20px;
+  text-align:center;
+  color:#666;
+  box-shadow:0 5px 20px rgba(0,0,0,.06);
+}
+
+.loading{
+  text-align:center;
+  padding:40px;
+  color:#666;
+}
+
+.error{
+  background:#fee2e2;
+  color:#991b1b;
+  padding:15px;
+  border-radius:14px;
+  font-weight:bold;
+}
+
+/* MOBILE */
+
+@media(max-width:700px){
+
+  .header{
+    padding:10px 12px;
+    min-height:64px;
+  }
+
+  .brand{
+    font-size:17px;
+  }
+
+  .back{
+    font-size:14px;
+  }
+
+  .main{
+    padding:14px 10px;
+  }
+
+  .title-box{
+    padding:18px;
+    border-radius:17px;
+  }
+
+  .title-box h1{
+    font-size:27px;
+  }
+
+  .title-box p{
+    font-size:14px;
+    line-height:1.5;
+  }
+
+  .tabs{
+    gap:7px;
+  }
+
+  .tabs button{
+    padding:10px 13px;
+    font-size:13px;
+  }
+
+  .product{
+    padding:13px;
+    gap:12px;
+    border-radius:16px;
+  }
+
+  .product-image{
+    width:95px;
+    height:95px;
+  }
+
+  .product-name{
+    font-size:17px;
+  }
+
+  .product-meta{
+    font-size:13px;
+  }
+
+  .price{
+    font-size:17px;
+  }
+
+  .status{
+    font-size:11px;
+  }
+}
+
+@media(max-width:380px){
+
+  .brand{
+    font-size:15px;
+  }
+
+  .back{
+    font-size:13px;
+  }
+
+  .product{
+    gap:9px;
+  }
+
+  .product-image{
+    width:82px;
+    height:82px;
+  }
+
+  .product-name{
+    font-size:15px;
+  }
+
+  .product-meta{
+    font-size:12px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+
+  <div class="brand">
+    🏪 BR <span>Digital Marketplace</span>
+  </div>
+
+  <a class="back" href="seller-dashboard.html">
+    ← Dashboard
+  </a>
+
+</header>
+
+<main class="main">
+
+  <section class="title-box">
+
+    <h1>📦 My Products</h1>
+
+    <p>
+      अपने products और उनका verification status यहाँ देखें।
+    </p>
+
+  </section>
+
+
+  <div class="tabs">
+
+    <button
+      id="tabAll"
+      class="active"
+      onclick="showProducts('all')">
+      All
+    </button>
+
+    <button
+      id="tabPending"
+      onclick="showProducts('pending')">
+      ⏳ Pending
+    </button>
+
+    <button
+      id="tabApproved"
+      onclick="showProducts('approved')">
+      ✅ Approved
+    </button>
+
+    <button
+      id="tabRejected"
+      onclick="showProducts('rejected')">
+      ❌ Rejected
+    </button>
+
+  </div>
+
+
+  <div id="productList">
+    <div class="loading">
+      Products loading...
+    </div>
+  </div>
+
+</main>
+
+
+<script>
+
+/* =========================
+   SUPABASE
+========================= */
+
+const SUPABASE_URL =
+"https://uryjmibcdfjfxoljrigt.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_uYbJw0ARCCkCpQ9QB6FxaQ_JrIxtOOp";
+
+const db =
+supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+/* =========================
+   GLOBAL
+========================= */
+
+let currentUser = null;
+let allProducts = [];
+
+
+/* =========================
+   ESCAPE HTML
+========================= */
+
+function esc(value){
+
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================
+   STATUS
+========================= */
+
+function statusClass(status){
+
+  const s =
+    String(status || "")
+      .toLowerCase();
+
+  if(s === "pending"){
+    return "status-pending";
+  }
+
+  if(s === "approved"){
+    return "status-approved";
+  }
+
+  if(s === "rejected"){
+    return "status-rejected";
+  }
+
+  return "status-other";
+
+}
+
+
+function statusText(status){
+
+  const s =
+    String(status || "pending")
+      .toLowerCase();
+
+  if(s === "pending"){
+    return "⏳ Pending Approval";
+  }
+
+  if(s === "approved"){
+    return "✅ Approved";
+  }
+
+  if(s === "rejected"){
+    return "❌ Rejected";
+  }
+
+  return esc(status);
+
+}
+
+
+/* =========================
+   LOAD SELLER PRODUCTS
+========================= */
+
+async function loadProducts(){
+
+  const listBox =
+    document.getElementById("productList");
+
+  listBox.innerHTML =
+    '<div class="loading">Products loading...</div>';
+
+
+  const {
+    data:{
+      user
+    },
+    error:authError
+  } =
+  await db.auth.getUser();
+
+
+  if(authError || !user){
+
+    window.location.href =
+      "seller-login.html";
+
+    return;
+
+  }
+
+
+  currentUser = user;
+
+
+  const {
+    data,
+    error
+  } =
+  await db
+    .from("products")
+    .select(`
+      id,
+      product_name,
+      brand,
+      category,
+      product_type,
+      description,
+      price,
+      stock,
+      image_url,
+      seller_name,
+      status,
+      created_at,
+      seller_id
+    `)
+    .eq("seller_id",user.id)
+    .order("created_at",{ascending:false});
+
+
+  if(error){
+
+    console.error(error);
+
+    listBox.innerHTML =
+      `<div class="error">
+        ❌ Products load नहीं हुए:<br>
+        ${esc(error.message)}
+      </div>`;
+
+    return;
+
+  }
+
+
+  allProducts =
+    data || [];
+
+
+  showProducts("all");
+
+}
+
+
+/* =========================
+   SHOW PRODUCTS
+========================= */
+
+function showProducts(filter){
+
+  document
+    .querySelectorAll(".tabs button")
+    .forEach(btn =>
+      btn.classList.remove("active")
+    );
+
+
+  const tab =
+    document.getElementById(
+      "tab" +
+      filter.charAt(0).toUpperCase() +
+      filter.slice(1)
+    );
+
+
+  if(tab){
+    tab.classList.add("active");
+  }
+
+
+  let products =
+    allProducts;
+
+
+  if(filter !== "all"){
+
+    products =
+      allProducts.filter(p =>
+        String(p.status || "")
+          .toLowerCase() === filter
+      );
+
+  }
+
+
+  renderProducts(products);
+
+}
+
+
+/* =========================
+   RENDER
+========================= */
+
+function renderProducts(products){
+
+  const listBox =
+    document.getElementById("productList");
+
+
+  if(!products.length){
+
+    listBox.innerHTML = `
+      <div class="empty">
+        <div style="font-size:45px;">📦</div>
+
+        <h2>कोई product नहीं मिला</h2>
+
+        <p>
+          इस category में अभी आपका कोई product नहीं है।
+        </p>
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  listBox.innerHTML =
+    products.map(product => {
+
+      const image =
+        product.image_url || "";
+
+
+      return `
+        <article class="product">
+
+          ${
+            image
+            ?
+            `<img
+              class="product-image"
+              src="${esc(image)}"
+              alt="${esc(product.product_name)}"
+              onerror="this.style.display='none';">`
+            :
+            `<div class="product-image"
+              style="display:flex;align-items:center;justify-content:center;font-size:40px;">
+              📦
+            </div>`
+          }
+
+          <div class="product-info">
+
+            <div class="product-name">
+              ${esc(product.product_name || "Unnamed Product")}
+            </div>
+
+            <div class="product-meta">
+              Brand: ${esc(product.brand || "-")}
+            </div>
+
+            <div class="product-meta">
+              Category: ${esc(product.category || "-")}
+            </div>
+
+            <div class="product-meta">
+              Stock: ${Number(product.stock || 0)}
+            </div>
+
+            <div class="price">
+              ₹${Number(product.price || 0).toLocaleString("en-IN")}
+            </div>
+
+            <span class="status ${statusClass(product.status)}">
+              ${statusText(product.status)}
+            </span>
+
+          </div>
+
+        </article>
+      `;
+
+    }).join("");
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function(){
+
+    loadProducts();
+
+  }
+);
+
+</script>
+
+</body>
+</html>
