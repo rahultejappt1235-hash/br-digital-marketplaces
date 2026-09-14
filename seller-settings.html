@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width,initial-scale=1.0">
+
+<title>Seller Settings - BR Digital Marketplace</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f3f6fa;
+  color:#17202a;
+}
+
+.header{
+  background:#fff;
+  padding:18px 28px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  box-shadow:0 2px 10px #0001;
+}
+
+.brand{
+  font-size:25px;
+  font-weight:900;
+}
+
+.brand span{
+  color:#ef7d00;
+}
+
+.back{
+  color:#1677ff;
+  text-decoration:none;
+  font-weight:800;
+}
+
+.main{
+  max-width:1000px;
+  margin:25px auto;
+  padding:0 18px;
+}
+
+.hero{
+  background:#fff;
+  border-radius:22px;
+  padding:28px;
+  box-shadow:0 4px 18px #0000000d;
+  margin-bottom:20px;
+}
+
+.hero h1{
+  margin:0 0 10px;
+  color:#ef7d00;
+  font-size:36px;
+}
+
+.hero p{
+  margin:0;
+  color:#667085;
+  font-size:18px;
+}
+
+.message{
+  display:none;
+  padding:14px;
+  border-radius:12px;
+  margin-bottom:18px;
+  font-weight:700;
+}
+
+.form-card{
+  background:#fff;
+  border-radius:20px;
+  padding:22px;
+  box-shadow:0 4px 18px #0000000d;
+  margin-bottom:18px;
+}
+
+.form-card h2{
+  margin-top:0;
+  color:#17202a;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+
+.field.full{
+  grid-column:1/-1;
+}
+
+label{
+  font-weight:800;
+}
+
+input,
+textarea{
+  width:100%;
+  padding:13px;
+  border:1px solid #d8dee8;
+  border-radius:10px;
+  font-size:16px;
+  background:#fff;
+}
+
+textarea{
+  min-height:110px;
+  resize:vertical;
+}
+
+input:disabled{
+  background:#f1f5f9;
+  color:#667085;
+}
+
+.save{
+  width:100%;
+  margin-top:18px;
+  padding:15px;
+  border:0;
+  border-radius:11px;
+  background:#1677ff;
+  color:#fff;
+  font-size:17px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.save:disabled{
+  opacity:.6;
+}
+
+.status{
+  background:#f8fafc;
+  border-radius:12px;
+  padding:15px;
+  line-height:1.8;
+}
+
+.loading{
+  background:#fff;
+  border-radius:18px;
+  padding:30px;
+  text-align:center;
+  color:#667085;
+}
+
+@media(max-width:700px){
+
+  .header{
+    padding:14px 16px;
+  }
+
+  .brand{
+    font-size:20px;
+  }
+
+  .back{
+    font-size:14px;
+  }
+
+  .main{
+    margin-top:15px;
+    padding:0 12px;
+  }
+
+  .hero{
+    padding:22px 18px;
+  }
+
+  .hero h1{
+    font-size:30px;
+  }
+
+  .hero p{
+    font-size:17px;
+    line-height:1.5;
+  }
+
+  .grid{
+    grid-template-columns:1fr;
+  }
+
+  .field.full{
+    grid-column:auto;
+  }
+
+  .form-card{
+    padding:17px;
+  }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<header class="header">
+
+  <div class="brand">
+    🏪 BR <span>Digital Marketplace</span>
+  </div>
+
+  <a
+    href="seller-dashboard.html"
+    class="back">
+
+    ← Dashboard
+
+  </a>
+
+</header>
+
+
+<main class="main">
+
+
+  <section class="hero">
+
+    <h1>
+      ⚙️ Seller Settings
+    </h1>
+
+    <p>
+      अपनी seller और business information यहाँ देखें और update करें।
+    </p>
+
+  </section>
+
+
+  <div
+    id="message"
+    class="message">
+  </div>
+
+
+  <div
+    id="loading"
+    class="loading">
+
+    Seller information load हो रही है...
+
+  </div>
+
+
+  <form
+    id="settingsForm"
+    style="display:none;">
+
+
+    <!-- ACCOUNT -->
+
+    <section class="form-card">
+
+      <h2>
+        👤 Account Information
+      </h2>
+
+      <div class="grid">
+
+        <div class="field">
+
+          <label>
+            Full Name
+          </label>
+
+          <input
+            id="ownerName"
+            type="text"
+            placeholder="Owner name">
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Email
+          </label>
+
+          <input
+            id="email"
+            type="email"
+            disabled>
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Mobile Number
+          </label>
+
+          <input
+            id="phone"
+            type="tel"
+            placeholder="Mobile number">
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- BUSINESS -->
+
+    <section class="form-card">
+
+      <h2>
+        🏢 Business Information
+      </h2>
+
+      <div class="grid">
+
+        <div class="field">
+
+          <label>
+            Business Name
+          </label>
+
+          <input
+            id="businessName"
+            type="text"
+            placeholder="Business name">
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Business Type
+          </label>
+
+          <input
+            id="businessType"
+            type="text"
+            placeholder="Business type">
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Year of Establishment
+          </label>
+
+          <input
+            id="year"
+            type="text"
+            placeholder="Year">
+
+        </div>
+
+
+        <div class="field full">
+
+          <label>
+            Business Description
+          </label>
+
+          <textarea
+            id="description"
+            placeholder="Business description"></textarea>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ADDRESS -->
+
+    <section class="form-card">
+
+      <h2>
+        📍 Shop Address
+      </h2>
+
+      <div class="grid">
+
+        <div class="field full">
+
+          <label>
+            Shop Address
+          </label>
+
+          <textarea
+            id="shopAddress"
+            placeholder="Shop address"></textarea>
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            City
+          </label>
+
+          <input
+            id="city"
+            type="text">
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            State
+          </label>
+
+          <input
+            id="state"
+            type="text">
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            PIN Code
+          </label>
+
+          <input
+            id="pincode"
+            type="text">
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- STATUS -->
+
+    <section class="form-card">
+
+      <h2>
+        🛡️ Seller Status
+      </h2>
+
+      <div
+        id="sellerStatus"
+        class="status">
+
+      </div>
+
+    </section>
+
+
+    <button
+      id="saveBtn"
+      class="save"
+      type="submit">
+
+      💾 Save Changes
+
+    </button>
+
+
+  </form>
+
+
+</main>
+
+
+<script>
+
+/* =========================================
+   SUPABASE
+========================================= */
+
+const SUPABASE_URL =
+"https://uryjmibcdfjfxoljrigt.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+"sb_publishable_uYbJw0ARCCkCpQ9QB6FxaQ_JrIxtOOp";
+
+const supabaseClient =
+supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
+
+
+/* =========================================
+   GLOBAL
+========================================= */
+
+let currentUser = null;
+let seller = null;
+
+
+/* =========================================
+   MESSAGE
+========================================= */
+
+function showMessage(
+  text,
+  success=false
+){
+
+  const el =
+    document.getElementById(
+      'message'
+    );
+
+  el.textContent = text;
+
+  el.style.display = 'block';
+
+  el.style.background =
+    success
+      ? '#dcfce7'
+      : '#fee2e2';
+
+  el.style.color =
+    success
+      ? '#166534'
+      : '#991b1b';
+
+}
+
+
+/* =========================================
+   LOGIN
+========================================= */
+
+async function checkLogin(){
+
+  const {
+    data,
+    error
+  } =
+  await supabaseClient
+    .auth
+    .getUser();
+
+
+  if(error || !data?.user){
+
+    location.href =
+      'seller-login.html';
+
+    return false;
+
+  }
+
+
+  currentUser =
+    data.user;
+
+  return true;
+
+}
+
+
+/* =========================================
+   LOAD SELLER
+========================================= */
+
+async function loadSeller(){
+
+  const {
+    data,
+    error
+  } =
+  await supabaseClient
+    .from('sellers')
+    .select('*')
+    .eq(
+      'user_id',
+      currentUser.id
+    )
+    .maybeSingle();
+
+
+  if(error){
+
+    showMessage(
+      '❌ Seller profile load नहीं हुआ: ' +
+      error.message
+    );
+
+    return false;
+
+  }
+
+
+  if(!data){
+
+    showMessage(
+      '❌ Seller profile नहीं मिला।'
+    );
+
+    return false;
+
+  }
+
+
+  seller = data;
+
+  return true;
+
+}
+
+
+/* =========================================
+   FILL FORM
+========================================= */
+
+function fillForm(){
+
+  document.getElementById(
+    'ownerName'
+  ).value =
+    seller.owner_name || '';
+
+
+  document.getElementById(
+    'email'
+  ).value =
+    currentUser.email || '';
+
+
+  document.getElementById(
+    'phone'
+  ).value =
+    seller.phone ||
+    currentUser.user_metadata?.phone ||
+    '';
+
+
+  document.getElementById(
+    'businessName'
+  ).value =
+    seller.business_name || '';
+
+
+  document.getElementById(
+    'businessType'
+  ).value =
+    seller.business_type || '';
+
+
+  document.getElementById(
+    'year'
+  ).value =
+    seller.year_of_establishment ||
+    seller.established_year ||
+    '';
+
+
+  document.getElementById(
+    'description'
+  ).value =
+    seller.description || '';
+
+
+  document.getElementById(
+    'shopAddress'
+  ).value =
+    seller.shop_address || '';
+
+
+  document.getElementById(
+    'city'
+  ).value =
+    seller.city || '';
+
+
+  document.getElementById(
+    'state'
+  ).value =
+    seller.state || '';
+
+
+  document.getElementById(
+    'pincode'
+  ).value =
+    seller.pincode || '';
+
+
+  const status =
+    seller.status || 'pending';
+
+
+  document.getElementById(
+    'sellerStatus'
+  ).innerHTML = `
+
+    <b>Status:</b>
+    ${status}<br>
+
+    <b>Verification:</b>
+    ${seller.verification_status || 'pending'}<br>
+
+    <b>Application:</b>
+    ${seller.application_status || 'pending'}<br>
+
+    <b>Account:</b>
+    ${
+      seller.is_active
+      ? '🟢 Active'
+      : '🔴 Inactive'
+    }
+
+  `;
+
+}
+
+
+/* =========================================
+   SAVE
+========================================= */
+
+document.getElementById(
+  'settingsForm'
+).addEventListener(
+  'submit',
+  async function(e){
+
+    e.preventDefault();
+
+
+    const saveBtn =
+      document.getElementById(
+        'saveBtn'
+      );
+
+
+    saveBtn.disabled = true;
+
+    saveBtn.textContent =
+      '⏳ Saving...';
+
+
+    const updateData = {
+
+      owner_name:
+        document.getElementById(
+          'ownerName'
+        ).value.trim(),
+
+      phone:
+        document.getElementById(
+          'phone'
+        ).value.trim(),
+
+      business_name:
+        document.getElementById(
+          'businessName'
+        ).value.trim(),
+
+      business_type:
+        document.getElementById(
+          'businessType'
+        ).value.trim(),
+
+      description:
+        document.getElementById(
+          'description'
+        ).value.trim(),
+
+      shop_address:
+        document.getElementById(
+          'shopAddress'
+        ).value.trim(),
+
+      city:
+        document.getElementById(
+          'city'
+        ).value.trim(),
+
+      state:
+        document.getElementById(
+          'state'
+        ).value.trim(),
+
+      pincode:
+        document.getElementById(
+          'pincode'
+        ).value.trim(),
+
+      updated_at:
+        new Date().toISOString()
+
+    };
+
+
+    const year =
+      document.getElementById(
+        'year'
+      ).value.trim();
+
+
+    if(year){
+
+      updateData.year_of_establishment =
+        year;
+
+    }
+
+
+    const {
+      data,
+      error
+    } =
+    await supabaseClient
+      .from('sellers')
+      .update(updateData)
+      .eq(
+        'user_id',
+        currentUser.id
+      )
+      .select('*')
+      .maybeSingle();
+
+
+    if(error){
+
+      showMessage(
+        '❌ Changes save नहीं हुए: ' +
+        error.message
+      );
+
+      saveBtn.disabled = false;
+
+      saveBtn.textContent =
+        '💾 Save Changes';
+
+      return;
+
+    }
+
+
+    if(data){
+
+      seller = data;
+
+      fillForm();
+
+    }
+
+
+    showMessage(
+      '✅ Seller settings successfully update हो गईं।',
+      true
+    );
+
+
+    saveBtn.disabled = false;
+
+    saveBtn.textContent =
+      '💾 Save Changes';
+
+  }
+);
+
+
+/* =========================================
+   START
+========================================= */
+
+async function start(){
+
+  const loggedIn =
+    await checkLogin();
+
+
+  if(!loggedIn)
+    return;
+
+
+  const found =
+    await loadSeller();
+
+
+  const loading =
+    document.getElementById(
+      'loading'
+    );
+
+
+  if(!found){
+
+    if(loading)
+      loading.style.display='none';
+
+    return;
+
+  }
+
+
+  fillForm();
+
+
+  if(loading)
+    loading.style.display='none';
+
+
+  document.getElementById(
+    'settingsForm'
+  ).style.display='block';
+
+}
+
+
+start();
+
+</script>
+
+</body>
+  </html>
