@@ -1,0 +1,5282 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1.0"
+>
+
+<title>Admin Dashboard - BR Digital Marketplace</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+/* =====================================================
+   BASIC
+===================================================== */
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f5f7fa;
+  color:#17202a;
+}
+
+button,
+input,
+select,
+textarea{
+  font-family:inherit;
+}
+
+
+/* =====================================================
+   SIDEBAR
+===================================================== */
+
+.sidebar{
+  position:fixed;
+  left:0;
+  top:0;
+  width:280px;
+  height:100vh;
+  background:#10233b;
+  color:#fff;
+  padding:20px 15px;
+  z-index:1000;
+  overflow-y:auto;
+}
+
+.sidebar-brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:5px 8px 20px;
+  border-bottom:1px solid #ffffff20;
+  margin-bottom:18px;
+}
+
+.sidebar-logo{
+  width:48px;
+  height:48px;
+  background:#1677ff;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:23px;
+  font-weight:900;
+  flex-shrink:0;
+}
+
+.sidebar-title{
+  font-size:20px;
+  font-weight:800;
+  line-height:1.05;
+}
+
+.sidebar-subtitle{
+  font-size:12px;
+  margin-top:6px;
+  color:#d8e2ef;
+}
+
+.nav-item{
+  width:100%;
+  border:0;
+  background:transparent;
+  color:#fff;
+  padding:14px 12px;
+  border-radius:9px;
+  margin:3px 0;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  font-size:16px;
+  cursor:pointer;
+  text-align:left;
+}
+
+.nav-item:hover{
+  background:#ffffff12;
+}
+
+.nav-item.active{
+  background:#1677ff;
+}
+
+.nav-icon{
+  width:25px;
+  text-align:center;
+  font-size:21px;
+}
+
+.verify-badge{
+  margin-left:auto;
+  background:#ef3340;
+  padding:4px 9px;
+  border-radius:12px;
+  font-size:13px;
+  font-weight:800;
+}
+
+.local-card{
+  position:absolute;
+  left:15px;
+  right:15px;
+  bottom:18px;
+  background:#0b1b2f;
+  border-radius:15px;
+  padding:18px 10px;
+  text-align:center;
+}
+
+.local-icon{
+  font-size:55px;
+}
+
+.local-card b{
+  display:block;
+  font-size:20px;
+  margin:5px 0;
+}
+
+.local-card span{
+  color:#dbe5f0;
+  font-size:14px;
+}
+
+
+/* =====================================================
+   MAIN
+===================================================== */
+
+.main-wrap{
+  margin-left:280px;
+  min-height:100vh;
+}
+
+.top{
+  background:#fff;
+  box-shadow:0 2px 10px #0001;
+  padding:14px 22px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  position:sticky;
+  top:0;
+  z-index:900;
+}
+
+.search-top{
+  width:min(650px,70%);
+  padding:13px 15px;
+  border:1px solid #ddd;
+  border-radius:10px;
+  font-size:15px;
+}
+
+.admin-top{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:700;
+}
+
+.admin-avatar{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  background:#e5e7eb;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.main{
+  max-width:1250px;
+  margin:25px auto;
+  padding:0 20px;
+}
+
+.welcome{
+  margin-bottom:20px;
+}
+
+.welcome h1{
+  margin:0 0 8px;
+  font-size:38px;
+}
+
+.muted{
+  color:#667085;
+}
+
+
+/* =====================================================
+   MOBILE MENU
+===================================================== */
+
+.mobile-menu{
+  display:none;
+  border:0;
+  background:#10233b;
+  color:#fff;
+  padding:8px 12px;
+  border-radius:8px;
+  font-size:21px;
+  cursor:pointer;
+}
+
+
+/* =====================================================
+   STATS
+===================================================== */
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:15px;
+}
+
+.stat{
+  background:#fff;
+  border-radius:16px;
+  box-shadow:0 3px 15px #0000000d;
+  padding:20px;
+}
+
+.stat b{
+  font-size:28px;
+}
+
+
+/* =====================================================
+   TABS
+===================================================== */
+
+.tabs{
+  display:flex;
+  gap:8px;
+  margin:20px 0;
+  overflow:auto;
+}
+
+.tab{
+  border:1px solid #ddd;
+  border-radius:9px;
+  padding:10px 13px;
+  font-weight:700;
+  cursor:pointer;
+  background:#fff;
+  white-space:nowrap;
+}
+
+.tab.active{
+  background:#ff7a00;
+  color:#fff;
+  border-color:#ff7a00;
+}
+
+
+/* =====================================================
+   PANELS
+===================================================== */
+
+.panel{
+  background:#fff;
+  border-radius:16px;
+  box-shadow:0 3px 15px #0000000d;
+  padding:20px;
+  overflow:auto;
+}
+
+.hidden{
+  display:none!important;
+}
+
+.search{
+  width:100%;
+  padding:12px;
+  border:1px solid #ddd;
+  border-radius:9px;
+  margin-bottom:15px;
+}
+
+.notice{
+  padding:12px;
+  border-radius:10px;
+  margin-bottom:15px;
+  background:#fff7ed;
+  border:1px solid #fed7aa;
+}
+
+
+/* =====================================================
+   TABLE
+===================================================== */
+
+.table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:780px;
+}
+
+.table th,
+.table td{
+  padding:11px;
+  border-bottom:1px solid #eee;
+  text-align:left;
+  vertical-align:middle;
+}
+
+.thumb{
+  width:55px;
+  height:45px;
+  object-fit:cover;
+  border-radius:8px;
+}
+
+.danger{
+  background:#fee2e2;
+  color:#991b1b;
+  border:0;
+  border-radius:7px;
+  padding:7px 9px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.small{
+  background:#eef2ff;
+  color:#3730a3;
+  border:0;
+  border-radius:7px;
+  padding:7px 9px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.small:hover{
+  opacity:.85;
+}
+
+
+/* =====================================================
+   PRODUCT STATUS
+===================================================== */
+
+.status-badge{
+  display:inline-block;
+  padding:6px 10px;
+  border-radius:15px;
+  font-size:13px;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+.status-pending{
+  background:#fff7d6;
+  color:#8a6500;
+}
+
+.status-approved{
+  background:#dcfce7;
+  color:#166534;
+}
+
+.status-rejected{
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+.product-actions{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+}
+
+.view-product-btn{
+  background:#eef2ff;
+  color:#3730a3;
+  border:0;
+  border-radius:7px;
+  padding:7px 9px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.approve-product-btn{
+  background:#dcfce7;
+  color:#166534;
+  border:0;
+  border-radius:7px;
+  padding:7px 9px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.reject-product-btn{
+  background:#fee2e2;
+  color:#991b1b;
+  border:0;
+  border-radius:7px;
+  padding:7px 9px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+
+/* =====================================================
+   PRODUCT VERIFICATION
+===================================================== */
+
+.product-verify-card{
+  border:1px solid #e5e7eb;
+  border-radius:16px;
+  padding:18px;
+  background:#fff;
+}
+
+.product-verify-head{
+  display:flex;
+  gap:18px;
+  align-items:flex-start;
+  margin-bottom:20px;
+}
+
+.product-large-image{
+  width:180px;
+  height:160px;
+  object-fit:cover;
+  border-radius:12px;
+  border:1px solid #ddd;
+  background:#f8fafc;
+}
+
+.product-verify-title{
+  margin:0 0 8px;
+  font-size:27px;
+}
+
+.product-detail-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+  margin-top:18px;
+}
+
+.product-detail-box{
+  background:#f8fafc;
+  padding:13px;
+  border-radius:10px;
+}
+
+.product-detail-box b{
+  display:block;
+  margin-bottom:5px;
+}
+
+.product-invoice-box{
+  margin-top:18px;
+  padding:16px;
+  border-radius:12px;
+  background:#f8fafc;
+  border:1px solid #e5e7eb;
+}
+
+.invoice-status{
+  font-weight:700;
+}
+
+.invoice-available{
+  color:#166534;
+}
+
+.invoice-not-available{
+  color:#667085;
+}
+
+.product-verify-actions{
+  display:flex;
+  gap:12px;
+  margin-top:20px;
+}
+
+.product-approve-large{
+  flex:1;
+  background:#16a34a;
+  color:#fff;
+  border:0;
+  border-radius:10px;
+  padding:14px;
+  font-weight:800;
+  font-size:16px;
+  cursor:pointer;
+}
+
+.product-reject-large{
+  flex:1;
+  background:#dc2626;
+  color:#fff;
+  border:0;
+  border-radius:10px;
+  padding:14px;
+  font-weight:800;
+  font-size:16px;
+  cursor:pointer;
+}
+
+.back-product-btn{
+  background:#eef2ff;
+  color:#3730a3;
+  border:0;
+  border-radius:8px;
+  padding:9px 13px;
+  font-weight:700;
+  cursor:pointer;
+  margin-bottom:15px;
+}
+
+
+/* =====================================================
+   SELLER VERIFICATION
+===================================================== */
+
+.verification-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin-bottom:18px;
+  flex-wrap:wrap;
+}
+
+.verification-head h2{
+  margin:0 0 5px;
+  font-size:30px;
+}
+
+.verification-status{
+  background:#fff7ed;
+  color:#9a3412;
+  border:1px solid #fed7aa;
+  padding:9px 14px;
+  border-radius:20px;
+  font-weight:700;
+}
+
+.seller-profile{
+  background:#fff;
+  border:1px solid #e5e7eb;
+  border-radius:16px;
+  padding:18px;
+  margin-bottom:18px;
+}
+
+.seller-profile h3{
+  margin:0 0 8px;
+  font-size:25px;
+}
+
+.seller-info{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin-top:15px;
+}
+
+.info-box{
+  background:#f8fafc;
+  border-radius:10px;
+  padding:12px;
+}
+
+.verify-info{
+  background:#fff;
+  border:1px solid #e5e7eb;
+  border-radius:16px;
+  padding:18px;
+  margin-top:18px;
+}
+
+.verify-info h2{
+  margin-top:0;
+}
+
+.verify-info-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+}
+
+.verify-info-item{
+  background:#f8fafc;
+  padding:13px;
+  border-radius:9px;
+}
+
+
+/* =====================================================
+   DOCUMENTS
+===================================================== */
+
+.verify-documents{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+}
+
+.doc-card{
+  border:1px solid #e5e7eb;
+  border-radius:14px;
+  padding:14px;
+  background:#fff;
+}
+
+.doc-card h4{
+  margin:0 0 10px;
+  font-size:16px;
+}
+
+.auto-doc-preview{
+  min-height:110px;
+  padding:8px;
+  border-radius:10px;
+  background:#f8fafc;
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  justify-content:flex-start;
+  align-items:center;
+}
+
+.auto-doc-preview img{
+  width:90px;
+  height:70px;
+  object-fit:cover;
+  border-radius:7px;
+  display:block;
+  cursor:pointer;
+  border:1px solid #ddd;
+}
+
+.auto-doc-preview iframe{
+  width:90px;
+  height:70px;
+  border:1px solid #ddd;
+  border-radius:7px;
+  background:#fff;
+}
+
+.auto-doc-empty{
+  width:100%;
+  text-align:center;
+  color:#667085;
+  padding:20px 5px;
+  font-size:14px;
+}
+
+.doc-placeholder{
+  height:130px;
+  background:#f8fafc;
+  border-radius:9px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  color:#667085;
+  margin-bottom:10px;
+}
+
+.doc-btn{
+  width:100%;
+  background:#1677ff;
+  color:#fff;
+  border:0;
+  border-radius:8px;
+  padding:10px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.doc-btn:hover{
+  background:#0868eb;
+}
+
+
+/* =====================================================
+   MAP
+===================================================== */
+
+.map-link{
+  display:inline-block;
+  margin-top:12px;
+  background:#1677ff;
+  color:#fff;
+  padding:9px 13px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:700;
+}
+
+
+/* =====================================================
+   ADMIN ACTION
+===================================================== */
+
+.remark-box{
+  width:100%;
+  min-height:100px;
+  padding:12px;
+  border:1px solid #ddd;
+  border-radius:10px;
+  resize:vertical;
+  font-size:15px;
+}
+
+.verify-actions{
+  display:flex;
+  gap:12px;
+  margin-top:15px;
+}
+
+.approve-btn{
+  flex:1;
+  background:#16a34a;
+  color:#fff;
+  border:0;
+  border-radius:10px;
+  padding:14px;
+  font-weight:800;
+  cursor:pointer;
+  font-size:16px;
+}
+
+.reject-btn{
+  flex:1;
+  background:#dc2626;
+  color:#fff;
+  border:0;
+  border-radius:10px;
+  padding:14px;
+  font-weight:800;
+  cursor:pointer;
+  font-size:16px;
+}
+
+
+/* =====================================================
+   DOCUMENT MODAL
+===================================================== */
+
+.doc-modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:#000b;
+  z-index:2000;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.doc-modal.show{
+  display:flex;
+}
+
+.doc-modal-box{
+  background:#fff;
+  border-radius:15px;
+  max-width:950px;
+  width:100%;
+  max-height:90vh;
+  overflow:auto;
+  padding:18px;
+  position:relative;
+}
+
+.modal-close{
+  position:absolute;
+  right:15px;
+  top:10px;
+  border:0;
+  background:#fee2e2;
+  color:#991b1b;
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  font-size:22px;
+  cursor:pointer;
+}
+
+.modal-title{
+  margin:0 45px 15px 0;
+}
+
+.modal-image{
+  max-width:100%;
+  max-height:70vh;
+  display:block;
+  margin:auto;
+  border-radius:10px;
+}
+
+.modal-pdf{
+  width:100%;
+  height:70vh;
+  border:1px solid #ddd;
+  border-radius:10px;
+}
+
+.multiple-list{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+
+.multiple-list img{
+  width:100%;
+  height:180px;
+  object-fit:cover;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media(max-width:1000px){
+
+  .sidebar{
+    width:235px;
+  }
+
+  .main-wrap{
+    margin-left:235px;
+  }
+
+  .stats{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .verify-documents{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+}
+
+@media(max-width:700px){
+
+  .sidebar{
+    transform:translateX(-100%);
+    transition:transform .25s ease;
+  }
+
+  .sidebar.open{
+    transform:translateX(0);
+  }
+
+  .main-wrap{
+    margin-left:0;
+  }
+
+  .mobile-menu{
+    display:block;
+  }
+
+  .top{
+    padding:10px;
+  }
+
+  .search-top{
+    width:52%;
+  }
+
+  .admin-top span{
+    display:none;
+  }
+
+  .main{
+    padding:0 12px;
+  }
+
+  .welcome h1{
+    font-size:30px;
+  }
+
+  .stats{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .verify-documents{
+    grid-template-columns:1fr;
+  }
+
+  .seller-info,
+  .verify-info-grid,
+  .product-detail-grid{
+    grid-template-columns:1fr;
+  }
+
+  .verify-actions,
+  .product-verify-actions{
+    flex-direction:column;
+  }
+
+  .multiple-list{
+    grid-template-columns:1fr;
+  }
+
+  .local-card{
+    position:static;
+    margin-top:20px;
+  }
+
+  .product-verify-head{
+    flex-direction:column;
+  }
+
+  .product-large-image{
+    width:100%;
+    height:220px;
+  }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
+
+<aside class="sidebar" id="sidebar">
+
+  <div class="sidebar-brand">
+
+    <div class="sidebar-logo">
+      BR
+    </div>
+
+    <div>
+
+      <div class="sidebar-title">
+        BR Digital<br>
+        Marketplace
+      </div>
+
+      <div class="sidebar-subtitle">
+        Shop Local, Support Bihar 🇮🇳
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <button
+    class="nav-item active"
+    onclick="showDashboard()">
+
+    <span class="nav-icon">🏠</span>
+
+    Dashboard
+
+  </button>
+
+
+  <button
+    class="nav-item"
+    onclick="showVerificationList()">
+
+    <span class="nav-icon">🛡️</span>
+
+    Seller Verification
+
+    <span
+      class="verify-badge"
+      id="pendingBadge">
+      0
+    </span>
+
+  </button>
+
+
+  <button
+    class="nav-item"
+    onclick="showTabById('sellers')">
+
+    <span class="nav-icon">👥</span>
+
+    Sellers
+
+  </button>
+
+
+  <button
+    class="nav-item"
+    onclick="showTabById('info')">
+
+    <span class="nav-icon">📦</span>
+
+    Orders
+
+  </button>
+
+
+  <button
+    class="nav-item"
+    onclick="showTabById('products')">
+
+    <span class="nav-icon">📦</span>
+
+    Products
+
+  </button>
+
+
+  <button
+    class="nav-item"
+    onclick="showTabById('users')">
+
+    <span class="nav-icon">👤</span>
+
+    Customers
+
+  </button>
+
+
+  <button
+    class="nav-item"
+    type="button">
+
+    <span class="nav-icon">📈</span>
+
+    Reports
+
+  </button>
+
+
+  <button
+    class="nav-item"
+    type="button">
+
+    <span class="nav-icon">⚙️</span>
+
+    Settings
+
+  </button>
+
+
+  <div class="local-card">
+
+    <div class="local-icon">
+      🛍️
+    </div>
+
+    <b>Grow Local</b>
+    <b>Support Bihar</b>
+
+    <span>
+      BR Digital Marketplace ❤️
+    </span>
+
+  </div>
+
+</aside>
+
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<div class="main-wrap">
+
+
+<header class="top">
+
+
+  <button
+    class="mobile-menu"
+    id="adminMenuBtn"
+    type="button"
+    aria-label="Open menu">
+
+    ☰
+
+  </button>
+
+
+  <input
+    class="search-top"
+    placeholder="🔎 Search sellers, orders, products..."
+  >
+
+
+  <div class="admin-top">
+
+    <div class="admin-avatar">
+      👨‍💼
+    </div>
+
+    <span>
+      Admin
+    </span>
+
+
+    <button
+      class="logout"
+      onclick="logout()"
+      style="
+        border:0;
+        border-radius:8px;
+        padding:9px 12px;
+        background:#17202a;
+        color:#fff;
+        font-weight:700;
+        cursor:pointer;
+      ">
+
+      Logout
+
+    </button>
+
+  </div>
+
+</header>
+
+
+
+<main class="main">
+
+
+  <!-- =====================================================
+       WELCOME
+  ===================================================== -->
+
+  <div class="welcome">
+
+    <h1>
+      👋 Main Admin
+    </h1>
+
+    <p
+      id="adminName"
+      class="muted">
+
+      Checking access...
+
+    </p>
+
+  </div>
+
+
+  <div
+    id="notice"
+    class="notice hidden">
+  </div>
+
+
+
+  <!-- =====================================================
+       STATS
+  ===================================================== -->
+
+  <section class="stats">
+
+    <div class="stat">
+
+      <div class="muted">
+        Products
+      </div>
+
+      <b id="productCount">
+        0
+      </b>
+
+    </div>
+
+
+    <div class="stat">
+
+      <div class="muted">
+        Sellers
+      </div>
+
+      <b id="sellerCount">
+        0
+      </b>
+
+    </div>
+
+
+    <div class="stat">
+
+      <div class="muted">
+        Active Users
+      </div>
+
+      <b id="userCount">
+        0
+      </b>
+
+    </div>
+
+
+    <div class="stat">
+
+      <div class="muted">
+        Low Stock
+      </div>
+
+      <b id="lowStock">
+        0
+      </b>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- =====================================================
+       TABS
+  ===================================================== -->
+
+  <div class="tabs">
+
+
+    <button
+      class="tab active"
+      onclick="showTab('products',this)">
+
+      📦 Products
+
+    </button>
+
+
+    <button
+      class="tab"
+      onclick="showTab('sellers',this)">
+
+      👨‍💼 Sellers
+
+    </button>
+
+
+    <button
+      class="tab"
+      onclick="showTab('verification',this)">
+
+      🛡️ Seller Verification
+
+    </button>
+
+
+    <button
+      class="tab"
+      onclick="showTab('users',this)">
+
+      👥 Users
+
+    </button>
+
+
+    <button
+      class="tab"
+      onclick="showTab('info',this)">
+
+      📦 Orders
+
+    </button>
+
+
+  </div>
+
+
+
+  <!-- =====================================================
+       PRODUCTS
+  ===================================================== -->
+
+  <section
+    id="products"
+    class="panel">
+
+    <h2>
+      Product Management
+    </h2>
+
+
+    <p class="muted">
+      Seller द्वारा भेजे गए products यहाँ verify करें।
+    </p>
+
+
+    <input
+      class="search"
+      id="productSearch"
+      oninput="renderProducts()"
+      placeholder="🔎 Product search..."
+    >
+
+
+    <div id="productTable"></div>
+
+  </section>
+
+
+
+  <!-- =====================================================
+       SELLERS
+  ===================================================== -->
+
+  <section
+    id="sellers"
+    class="panel hidden">
+
+    <h2>
+      Seller Management
+    </h2>
+
+    <div id="sellerTable"></div>
+
+  </section>
+
+
+
+  <!-- =====================================================
+       VERIFICATION
+  ===================================================== -->
+
+  <section
+    id="verification"
+    class="panel hidden">
+
+
+    <button
+      class="back-btn"
+      onclick="showVerificationList()">
+
+      ← Back to Seller Verification
+
+    </button>
+
+
+    <div id="verificationContent">
+
+      <h2>
+        🛡️ Seller Verification
+      </h2>
+
+      <p class="muted">
+        Pending seller verification select करें।
+      </p>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- =====================================================
+       USERS
+  ===================================================== -->
+
+  <section
+    id="users"
+    class="panel hidden">
+
+    <h2>
+      User Management
+    </h2>
+
+    <div id="userTable"></div>
+
+  </section>
+
+
+
+  <!-- =====================================================
+       ORDERS
+  ===================================================== -->
+
+  <section
+    id="info"
+    class="panel hidden">
+
+    <h2>
+      📦 Order Management
+    </h2>
+
+
+    <div
+      id="orderNotice"
+      class="notice hidden">
+    </div>
+
+
+    <div
+      style="
+        display:flex;
+        gap:8px;
+        flex-wrap:wrap;
+        margin-bottom:12px;
+      ">
+
+
+      <button
+        class="small"
+        onclick="loadOrders()">
+
+        🔄 Refresh Orders
+
+      </button>
+
+
+      <select
+        id="orderStatusFilter"
+        onchange="renderOrders()"
+        style="
+          padding:10px;
+          border:1px solid #ddd;
+          border-radius:9px;
+        ">
+
+        <option value="">
+          All Status
+        </option>
+
+        <option value="pending">
+          Pending
+        </option>
+
+        <option value="confirmed">
+          Confirmed
+        </option>
+
+        <option value="shipped">
+          Shipped
+        </option>
+
+        <option value="delivered">
+          Delivered
+        </option>
+
+        <option value="cancelled">
+          Cancelled
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <input
+      class="search"
+      id="orderSearch"
+      oninput="renderOrders()"
+      placeholder="🔎 Order ID / customer / seller search..."
+    >
+
+
+    <div id="orderTable">
+
+      <p class="muted">
+        Orders load karne ke liye Orders tab open karein.
+      </p>
+
+    </div>
+
+  </section>
+
+
+</main>
+
+</div>
+
+
+
+<!-- =====================================================
+     DOCUMENT / PRODUCT MODAL
+===================================================== -->
+
+<div
+  class="doc-modal"
+  id="docModal"
+  onclick="closeDocModal(event)">
+
+
+  <div
+    class="doc-modal-box"
+    onclick="event.stopPropagation()">
+
+
+    <button
+      class="modal-close"
+      onclick="closeDocModal()">
+
+      ×
+
+    </button>
+
+
+    <h2
+      class="modal-title"
+      id="modalTitle">
+
+      Document
+
+    </h2>
+
+
+    <div id="modalBody"></div>
+
+
+  </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     MAIN JAVASCRIPT
+===================================================== -->
+
+<script>
+
+
+/* =====================================================
+   SUPABASE
+===================================================== */
+
+const SUPABASE_URL =
+"https://uryjmibcdfjfxoljrigt.supabase.co";
+
+
+const SUPABASE_PUBLISHABLE_KEY =
+"sb_publishable_uYbJw0ARCCkCpQ9QB6FxaQ_JrIxtOOp";
+
+
+const supabaseClient =
+supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
+
+
+
+/* =====================================================
+   GLOBAL DATA
+===================================================== */
+
+let products = [];
+
+let profiles = [];
+
+let orders = [];
+
+window.sellersData = [];
+
+window.currentVerificationSeller = null;
+
+
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function esc(v){
+
+  return String(v ?? '')
+    .replace(/[&<>"']/g,m=>({
+
+      '&':'&amp;',
+      '<':'&lt;',
+      '>':'&gt;',
+      '"':'&quot;',
+      "'":'&#039;'
+
+    }[m]));
+
+}
+
+
+
+/* =====================================================
+   NOTICE
+===================================================== */
+
+function notice(t){
+
+  const n =
+    document.getElementById('notice');
+
+  if(!n) return;
+
+  n.textContent = t;
+
+  n.classList.remove('hidden');
+
+}
+
+
+
+/* =====================================================
+   AUTH GUARD
+===================================================== */
+
+async function guard(){
+
+  const {
+    data:{user},
+    error
+  } =
+  await supabaseClient.auth.getUser();
+
+
+  if(error || !user){
+
+    location.href =
+      'admin-login.html';
+
+    return null;
+
+  }
+
+
+  const adminName =
+    document.getElementById('adminName');
+
+
+  if(adminName){
+
+    adminName.textContent =
+      (user.email || 'Admin') +
+      ' • Main Admin';
+
+  }
+
+
+  return user;
+
+}
+
+
+
+/* =====================================================
+   SIDEBAR
+===================================================== */
+
+function closeSidebar(){
+
+  const sidebar =
+    document.getElementById('sidebar');
+
+  if(sidebar){
+
+    sidebar.classList.remove('open');
+
+  }
+
+}
+
+
+function toggleSidebar(){
+
+  const sidebar =
+    document.getElementById('sidebar');
+
+  if(sidebar){
+
+    sidebar.classList.toggle('open');
+
+  }
+
+}
+
+
+
+/* =====================================================
+   TAB CONTROL
+===================================================== */
+
+function showTab(id,btn){
+
+  document
+    .querySelectorAll('.panel')
+    .forEach(x =>
+      x.classList.add('hidden')
+    );
+
+
+  const panel =
+    document.getElementById(id);
+
+
+  if(panel){
+
+    panel.classList.remove('hidden');
+
+  }
+
+
+  document
+    .querySelectorAll('.tab')
+    .forEach(x =>
+      x.classList.remove('active')
+    );
+
+
+  if(btn){
+
+    btn.classList.add('active');
+
+  }
+
+}
+
+
+function showTabById(id){
+
+  const tabs =
+    [...document.querySelectorAll('.tab')];
+
+
+  const tab =
+    tabs.find(x => {
+
+      const click =
+        x.getAttribute('onclick') || '';
+
+      return click.includes(
+        "'" + id + "'"
+      );
+
+    });
+
+
+  showTab(id,tab);
+
+  closeSidebar();
+
+}
+
+
+function showDashboard(){
+
+  const firstTab =
+    document.querySelector('.tab');
+
+
+  showTab(
+    'products',
+    firstTab
+  );
+
+  closeSidebar();
+
+}
+
+
+
+/* =====================================================
+   LOAD EVERYTHING
+===================================================== */
+
+async function load(){
+
+  const user =
+    await guard();
+
+
+  if(!user)
+    return;
+
+
+  const [pr,pu] =
+    await Promise.all([
+
+
+      supabaseClient
+        .from('products')
+        .select('*')
+        .order('id',{
+          ascending:false
+        }),
+
+
+      supabaseClient
+        .from('profiles')
+        .select(
+          'id,full_name,phone,role,is_active,created_at'
+        )
+        .order('created_at',{
+          ascending:false
+        })
+
+    ]);
+
+
+  if(pr.error){
+
+    notice(
+      '⚠️ Products load nahi hue: ' +
+      pr.error.message
+    );
+
+  }else{
+
+    products =
+      pr.data || [];
+
+  }
+
+
+  if(pu.error){
+
+    notice(
+      '⚠️ Profiles load nahi hue: ' +
+      pu.error.message
+    );
+
+  }else{
+
+    profiles =
+      pu.data || [];
+
+  }
+
+
+  updateStats();
+
+  renderProducts();
+
+  renderProfiles();
+
+  await loadSellers();
+
+  await loadOrders();
+
+}
+
+
+
+/* =====================================================
+   STATS
+===================================================== */
+
+function updateStats(){
+
+  const productCount =
+    document.getElementById('productCount');
+
+
+  const sellerCount =
+    document.getElementById('sellerCount');
+
+
+  const userCount =
+    document.getElementById('userCount');
+
+
+  const lowStock =
+    document.getElementById('lowStock');
+
+
+  const pendingBadge =
+    document.getElementById('pendingBadge');
+
+
+  if(productCount){
+
+    productCount.textContent =
+      products.length;
+
+  }
+
+
+  if(sellerCount){
+
+    sellerCount.textContent =
+      profiles.filter(
+        x => x.role === 'seller'
+      ).length;
+
+  }
+
+
+  if(userCount){
+
+    userCount.textContent =
+      profiles.filter(
+        x => x.is_active === true
+      ).length;
+
+  }
+
+
+  if(lowStock){
+
+    lowStock.textContent =
+      products.filter(
+        x => Number(x.stock || 0) <= 5
+      ).length;
+
+  }
+
+
+  const pending =
+    (window.sellersData || [])
+      .filter(x =>
+        String(x.status || '')
+          .toLowerCase() === 'pending'
+      )
+      .length;
+
+
+  if(pendingBadge){
+
+    pendingBadge.textContent =
+      pending;
+
+  }
+
+}
+
+
+
+/* =====================================================
+   PRODUCT STATUS HTML
+===================================================== */
+
+function productStatus(status){
+
+  const s =
+    String(status || 'pending')
+      .toLowerCase();
+
+
+  if(s === 'approved'){
+
+    return `
+      <span class="status-badge status-approved">
+        🟢 Approved
+      </span>
+    `;
+
+  }
+
+
+  if(s === 'rejected'){
+
+    return `
+      <span class="status-badge status-rejected">
+        🔴 Rejected
+      </span>
+    `;
+
+  }
+
+
+  return `
+    <span class="status-badge status-pending">
+      🟡 Pending
+    </span>
+  `;
+
+}
+
+
+
+/* =====================================================
+   PRODUCTS
+===================================================== */
+
+function renderProducts(){
+
+  const q =
+    (
+      document.getElementById(
+        'productSearch'
+      )?.value || ''
+    )
+    .toLowerCase();
+
+
+  const list =
+    products.filter(p => {
+
+      const text = [
+
+        p.product_name,
+        p.brand,
+        p.category,
+        p.product_type,
+        p.seller_name,
+        p.status
+
+      ]
+      .join(' ')
+      .toLowerCase();
+
+
+      return text.includes(q);
+
+    });
+
+
+  const table =
+    document.getElementById(
+      'productTable'
+    );
+
+
+  if(!table)
+    return;
+
+
+  if(!list.length){
+
+    table.innerHTML =
+      '<p class="muted">No products found.</p>';
+
+    return;
+
+  }
+
+
+  table.innerHTML = `
+
+    <table class="table">
+
+      <thead>
+
+        <tr>
+
+          <th>Image</th>
+
+          <th>Product</th>
+
+          <th>Price</th>
+
+          <th>Stock</th>
+
+          <th>Category</th>
+
+          <th>Status</th>
+
+          <th>Action</th>
+
+        </tr>
+
+      </thead>
+
+
+      <tbody>
+
+        ${
+          list.map(p => {
+
+            const status =
+              String(
+                p.status || 'pending'
+              ).toLowerCase();
+
+
+            let actions = `
+
+              <button
+                class="view-product-btn"
+                onclick="openProductVerification('${esc(p.id)}')">
+
+                👁️ View
+
+              </button>
+
+            `;
+
+
+            if(status === 'pending'){
+
+              actions += `
+
+                <button
+                  class="approve-product-btn"
+                  onclick="verifyProduct('${esc(p.id)}','approved')">
+
+                  ✅ Approve
+
+                </button>
+
+
+                <button
+                  class="reject-product-btn"
+                  onclick="verifyProduct('${esc(p.id)}','rejected')">
+
+                  ❌ Reject
+
+                </button>
+
+              `;
+
+            }
+
+
+            actions += `
+
+              <button
+                class="danger"
+                onclick="deleteProduct('${esc(p.id)}')">
+
+                Delete
+
+              </button>
+
+            `;
+
+
+            return `
+
+              <tr>
+
+                <td>
+
+                  ${
+                    p.image_url
+
+                    ?
+
+                    `<img
+                      class="thumb"
+                      src="${esc(p.image_url)}"
+                      onerror="this.style.display='none'"
+                    >`
+
+                    :
+
+                    '-'
+                  }
+
+                </td>
+
+
+                <td>
+
+                  <b>
+                    ${esc(p.product_name)}
+                  </b>
+
+                  ${
+                    p.seller_name
+
+                    ?
+
+                    `<br>
+                     <span class="muted">
+                       Seller: ${esc(p.seller_name)}
+                     </span>`
+
+                    :
+
+                    ''
+                  }
+
+                </td>
+
+
+                <td>
+                  ₹${Number(p.price || 0)}
+                </td>
+
+
+                <td>
+                  ${Number(p.stock || 0)}
+                </td>
+
+
+                <td>
+                  ${esc(p.category)}
+                </td>
+
+
+                <td>
+                  ${productStatus(p.status)}
+                </td>
+
+
+                <td>
+
+                  <div class="product-actions">
+
+                    ${actions}
+
+                  </div>
+
+                </td>
+
+              </tr>
+
+            `;
+
+          }).join('')
+        }
+
+      </tbody>
+
+    </table>
+
+  `;
+
+}
+
+
+
+/* =====================================================
+   OPEN PRODUCT VERIFICATION
+===================================================== */
+
+async function openProductVerification(productId){
+
+  const product =
+    products.find(
+      p =>
+        String(p.id) ===
+        String(productId)
+    );
+
+
+  if(!product){
+
+    alert(
+      'Product nahi mila.'
+    );
+
+    return;
+
+  }
+
+
+  document.getElementById(
+    'modalTitle'
+  ).textContent =
+    '📦 Product Verification';
+
+
+  document.getElementById(
+    'modalBody'
+  ).innerHTML = `
+
+    <div class="product-verify-card">
+
+      <div class="product-verify-head">
+
+        ${
+          product.image_url
+
+          ?
+
+          `<img
+            class="product-large-image"
+            src="${esc(product.image_url)}"
+            alt="Product Image"
+          >`
+
+          :
+
+          `<div class="product-large-image"
+               style="
+                 display:flex;
+                 align-items:center;
+                 justify-content:center;
+                 color:#667085;
+               ">
+
+            No Product Image
+
+          </div>`
+
+        }
+
+
+        <div style="flex:1;">
+
+          <h2 class="product-verify-title">
+
+            ${esc(
+              product.product_name ||
+              '-'
+            )}
+
+          </h2>
+
+
+          <div style="margin-bottom:10px;">
+
+            ${productStatus(product.status)}
+
+          </div>
+
+
+          <p class="muted">
+
+            Seller:
+            <b>
+              ${esc(
+                product.seller_name ||
+                '-'
+              )}
+            </b>
+
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="product-detail-grid">
+
+
+        <div class="product-detail-box">
+
+          <b>
+            Brand
+          </b>
+
+          ${esc(
+            product.brand || '-'
+          )}
+
+        </div>
+
+
+        <div class="product-detail-box">
+
+          <b>
+            Category
+          </b>
+
+          ${esc(
+            product.category || '-'
+          )}
+
+        </div>
+
+
+        <div class="product-detail-box">
+
+          <b>
+            Product Type
+          </b>
+
+          ${esc(
+            product.product_type || '-'
+          )}
+
+        </div>
+
+
+        <div class="product-detail-box">
+
+          <b>
+            Price
+          </b>
+
+          ₹${Number(
+            product.price || 0
+          )}
+
+        </div>
+
+
+        <div class="product-detail-box">
+
+          <b>
+            Stock
+          </b>
+
+          ${Number(
+            product.stock || 0
+          )}
+
+        </div>
+
+
+        <div class="product-detail-box">
+
+          <b>
+            Serial Number / IMEI
+          </b>
+
+          ${esc(
+            product.serial_number || '-'
+          )}
+
+        </div>
+
+
+      </div>
+
+
+      <div
+        class="product-detail-box"
+        style="margin-top:12px;">
+
+        <b>
+          Description
+        </b>
+
+        <div style="white-space:pre-wrap;">
+
+          ${esc(
+            product.description || '-'
+          )}
+
+        </div>
+
+      </div>
+
+
+      <div class="product-invoice-box">
+
+        <h3 style="margin-top:0;">
+          🧾 Purchase Invoice / Bill
+        </h3>
+
+
+        ${
+          product.invoice_document_url
+
+          ?
+
+          `
+
+            <div class="invoice-status invoice-available">
+
+              ✅ Invoice provided by seller.
+
+            </div>
+
+
+            <button
+              class="doc-btn"
+              style="margin-top:12px;"
+              onclick="viewProductInvoice('${esc(product.id)}')">
+
+              🧾 View Invoice
+
+            </button>
+
+          `
+
+          :
+
+          `
+
+            <div class="invoice-status invoice-not-available">
+
+              ℹ️ Invoice Not Provided
+
+            </div>
+
+            <p class="muted">
+
+              Seller ने invoice upload नहीं किया है।
+
+            </p>
+
+          `
+
+        }
+
+      </div>
+
+
+      ${
+        String(
+          product.status || 'pending'
+        ).toLowerCase() === 'pending'
+
+        ?
+
+        `
+
+          <div class="product-verify-actions">
+
+            <button
+              class="product-approve-large"
+              onclick="verifyProduct(
+                '${esc(product.id)}',
+                'approved'
+              )">
+
+              ✅ Approve Product
+
+            </button>
+
+
+            <button
+              class="product-reject-large"
+              onclick="verifyProduct(
+                '${esc(product.id)}',
+                'rejected'
+              )">
+
+              ❌ Reject Product
+
+            </button>
+
+          </div>
+
+        `
+
+        :
+
+        `
+
+          <div
+            class="notice"
+            style="margin-top:20px;">
+
+            यह product पहले ही
+            ${esc(product.status || '')}
+            status में है।
+
+          </div>
+
+        `
+
+      }
+
+    </div>
+
+  `;
+
+
+  document.getElementById(
+    'docModal'
+  )
+  .classList.add('show');
+
+}
+
+
+
+/* =====================================================
+   VERIFY PRODUCT
+===================================================== */
+
+async function verifyProduct(
+  productId,
+  status
+){
+
+  const product =
+    products.find(
+      p =>
+        String(p.id) ===
+        String(productId)
+    );
+
+
+  if(!product){
+
+    alert(
+      'Product नहीं मिला।'
+    );
+
+    return;
+
+  }
+
+
+  const question =
+    status === 'approved'
+
+    ?
+
+    'क्या आप इस product को APPROVE करना चाहते हैं?'
+
+    :
+
+    'क्या आप इस product को REJECT करना चाहते हैं?';
+
+
+  if(!confirm(question))
+    return;
+
+
+  const {
+    error
+  } =
+  await supabaseClient
+    .from('products')
+    .update({
+      status:status
+    })
+    .eq('id',product.id);
+
+
+  if(error){
+
+    alert(
+      '❌ Product status update failed:\n' +
+      error.message
+    );
+
+    return;
+
+  }
+
+
+  product.status =
+    status;
+
+
+  updateStats();
+
+  renderProducts();
+
+  closeDocModal();
+
+
+  alert(
+
+    status === 'approved'
+
+    ?
+
+    '✅ Product approved successfully.'
+
+    :
+
+    '❌ Product rejected successfully.'
+
+  );
+
+}
+
+
+
+/* =====================================================
+   VIEW PRODUCT INVOICE
+===================================================== */
+
+async function viewProductInvoice(
+  productId
+){
+
+  const product =
+    products.find(
+      p =>
+        String(p.id) ===
+        String(productId)
+    );
+
+
+  if(!product){
+
+    alert(
+      'Product नहीं मिला।'
+    );
+
+    return;
+
+  }
+
+
+  const path =
+    product.invoice_document_url;
+
+
+  if(!path){
+
+    alert(
+      'Invoice उपलब्ध नहीं है।'
+    );
+
+    return;
+
+  }
+
+
+  await viewPrivateDocument(
+    path,
+    '🧾 Purchase Invoice / Bill'
+  );
+
+}
+
+
+
+/* =====================================================
+   PRIVATE DOCUMENT VIEWER
+===================================================== */
+
+async function viewPrivateDocument(
+  path,
+  title
+){
+
+  if(!path){
+
+    alert(
+      'Document available nahi hai.'
+    );
+
+    return;
+
+  }
+
+
+  let url = path;
+
+
+  /*
+    अगर database में पूरा URL है
+    तो वही इस्तेमाल होगा।
+    अगर storage path है तो signed URL बनेगा।
+  */
+
+  if(
+    !String(path)
+      .startsWith('http://') &&
+    !String(path)
+      .startsWith('https://')
+  ){
+
+    const {
+      data,
+      error
+    } =
+    await supabaseClient
+      .storage
+      .from('seller-kyc')
+      .createSignedUrl(
+        path,
+        300
+      );
+
+
+    if(error){
+
+      alert(
+        '❌ Document open nahi hua:\n' +
+        error.message
+      );
+
+      return;
+
+    }
+
+
+    if(
+      !data ||
+      !data.signedUrl
+    ){
+
+      alert(
+        '❌ Signed URL nahi mila.'
+      );
+
+      return;
+
+    }
+
+
+    url =
+      data.signedUrl;
+
+  }
+
+
+  const lower =
+    String(path)
+      .toLowerCase();
+
+
+  document.getElementById(
+    'modalTitle'
+  ).textContent =
+    title || 'Document';
+
+
+  if(
+    lower.endsWith('.pdf')
+  ){
+
+    document.getElementById(
+      'modalBody'
+    ).innerHTML = `
+
+      <iframe
+        class="modal-pdf"
+        src="${esc(url)}"
+        title="${esc(title || 'Document')}">
+      </iframe>
+
+
+      <p
+        style="
+          text-align:center;
+          margin-top:15px;
+        ">
+
+        <a
+          href="${esc(url)}"
+          target="_blank"
+          rel="noopener"
+          class="map-link">
+
+          📄 Open PDF
+
+        </a>
+
+      </p>
+
+    `;
+
+  }else{
+
+    document.getElementById(
+      'modalBody'
+    ).innerHTML = `
+
+      <img
+        class="modal-image"
+        src="${esc(url)}"
+        alt="Document"
+      >
+
+
+      <p
+        style="
+          text-align:center;
+          margin-top:15px;
+        ">
+
+        <a
+          href="${esc(url)}"
+          target="_blank"
+          rel="noopener"
+          class="map-link">
+
+          📄 Open Document
+
+        </a>
+
+      </p>
+
+    `;
+
+  }
+
+
+  document.getElementById(
+    'docModal'
+  )
+  .classList.add('show');
+
+}
+
+
+
+/* =====================================================
+   SELLERS
+===================================================== */
+
+async function loadSellers(){
+
+  const {
+    data,
+    error
+  } =
+  await supabaseClient
+    .from('sellers')
+    .select('*')
+    .order('created_at',{
+      ascending:false
+    });
+
+
+  if(error){
+
+    notice(
+      '⚠️ Sellers load nahi hue: ' +
+      error.message
+    );
+
+    return;
+
+  }
+
+
+  window.sellersData =
+    data || [];
+
+
+  updateStats();
+
+  renderSellerManagement();
+
+}
+
+
+function renderSellerManagement(){
+
+  const list =
+    window.sellersData || [];
+
+
+  const el =
+    document.getElementById(
+      'sellerTable'
+    );
+
+
+  if(!el)
+    return;
+
+
+  if(!list.length){
+
+    el.innerHTML =
+      '<p class="muted">No sellers found.</p>';
+
+    return;
+
+  }
+
+
+  el.innerHTML = `
+
+    <input
+      class="search"
+      id="sellerSearch"
+      oninput="filterSellerRows()"
+      placeholder="🔎 Seller / business search..."
+    >
+
+
+    <div id="sellerRows">
+
+      ${sellerRows(list)}
+
+    </div>
+
+  `;
+
+}
+
+
+function sellerRows(list){
+
+  return `
+
+    <table class="table">
+
+      <thead>
+
+        <tr>
+
+          <th>Business</th>
+          <th>Owner</th>
+          <th>Status</th>
+          <th>Active</th>
+          <th>Created</th>
+          <th>Action</th>
+
+        </tr>
+
+      </thead>
+
+
+      <tbody>
+
+        ${
+          list.map(x => `
+
+            <tr>
+
+              <td>
+                ${esc(x.business_name || '-')}
+              </td>
+
+
+              <td>
+                ${esc(x.owner_name || '-')}
+              </td>
+
+
+              <td>
+                ${esc(x.status || 'pending')}
+              </td>
+
+
+              <td>
+
+                ${
+                  x.is_active
+                  ? '🟢 Active'
+                  : '🔴 Inactive'
+                }
+
+              </td>
+
+
+              <td>
+
+                ${
+                  x.created_at
+
+                  ?
+
+                  new Date(
+                    x.created_at
+                  )
+                  .toLocaleDateString('en-IN')
+
+                  :
+
+                  '-'
+                }
+
+              </td>
+
+
+              <td>
+
+                <button
+                  class="small"
+                  onclick="openSellerVerification('${esc(x.id)}')">
+
+                  🛡️ Verification
+
+                </button>
+
+              </td>
+
+            </tr>
+
+          `).join('')
+        }
+
+      </tbody>
+
+    </table>
+
+  `;
+
+}
+
+
+function filterSellerRows(){
+
+  const q =
+    (
+      document.getElementById(
+        'sellerSearch'
+      )?.value || ''
+    )
+    .toLowerCase();
+
+
+  const rows =
+    document.getElementById(
+      'sellerRows'
+    );
+
+
+  if(!rows)
+    return;
+
+
+  rows.innerHTML =
+
+    sellerRows(
+
+      (window.sellersData || [])
+        .filter(x =>
+
+          String(
+            x.business_name || ''
+          )
+          .toLowerCase()
+          .includes(q)
+
+          ||
+
+          String(
+            x.owner_name || ''
+          )
+          .toLowerCase()
+          .includes(q)
+
+        )
+
+    );
+
+}
+
+
+
+/* =====================================================
+   VERIFICATION LIST
+===================================================== */
+
+function showVerificationList(){
+
+  showTabById('verification');
+
+
+  const box =
+    document.getElementById(
+      'verificationContent'
+    );
+
+
+  if(!box)
+    return;
+
+
+  const sellers =
+    window.sellersData || [];
+
+
+  const pending =
+    sellers.filter(x =>
+
+      String(
+        x.status || 'pending'
+      )
+      .toLowerCase() === 'pending'
+
+    );
+
+
+  box.innerHTML = `
+
+    <div class="verification-head">
+
+      <div>
+
+        <h2>
+          🛡️ Seller Verification
+        </h2>
+
+        <p class="muted">
+          Real seller applications
+        </p>
+
+      </div>
+
+
+      <div class="verification-status">
+
+        Pending:
+        ${pending.length}
+
+      </div>
+
+    </div>
+
+
+    ${
+      pending.length
+
+      ?
+
+      pending.map(x => `
+
+        <div
+          class="seller-profile"
+          style="cursor:pointer"
+          onclick="openSellerVerification('${esc(x.id)}')">
+
+          <h3>
+
+            ${
+              esc(
+                x.business_name ||
+                'Business Name not submitted'
+              )
+            }
+
+          </h3>
+
+
+          <p>
+
+            <b>Owner:</b>
+            ${esc(x.owner_name || '-')}
+
+          </p>
+
+
+          <p class="muted">
+            Status: Pending
+          </p>
+
+        </div>
+
+      `).join('')
+
+
+      :
+
+      `
+
+        <div class="notice">
+
+          कोई pending seller verification नहीं है।
+
+        </div>
+
+      `
+
+    }
+
+  `;
+
+}
+
+
+
+/* =====================================================
+   PRIVATE DOCUMENT SIGNED URL
+===================================================== */
+
+async function getDocumentSignedUrl(path){
+
+  if(!path)
+    return null;
+
+
+  const {
+    data,
+    error
+  } =
+  await supabaseClient
+    .storage
+    .from('seller-kyc')
+    .createSignedUrl(
+      path,
+      300
+    );
+
+
+  if(error){
+
+    console.log(
+      'Document preview error:',
+      path,
+      error.message
+    );
+
+    return null;
+
+  }
+
+
+  return data?.signedUrl || null;
+
+}
+
+
+
+/* =====================================================
+   AUTOMATIC DOCUMENT PREVIEW
+===================================================== */
+
+async function buildAutoDocumentPreview(paths){
+
+  if(!paths || !paths.length){
+
+    return `
+
+      <div class="auto-doc-preview">
+
+        <div class="auto-doc-empty">
+
+          Document submitted nahi hai.
+
+        </div>
+
+      </div>
+
+    `;
+
+  }
+
+
+  const items = [];
+
+
+  for(const path of paths){
+
+    const url =
+      await getDocumentSignedUrl(path);
+
+
+    if(!url)
+      continue;
+
+
+    const lower =
+      String(path).toLowerCase();
+
+
+    if(
+
+      lower.endsWith('.jpg') ||
+      lower.endsWith('.jpeg') ||
+      lower.endsWith('.png') ||
+      lower.endsWith('.webp')
+
+    ){
+
+      items.push(`
+
+        <img
+          src="${esc(url)}"
+          alt="Document"
+          onclick="viewVerificationDocument(
+            '${esc(path)}',
+            'Document'
+          )"
+        >
+
+      `);
+
+    }
+
+
+    else if(
+      lower.endsWith('.pdf')
+    ){
+
+      items.push(`
+
+        <iframe
+          src="${esc(url)}"
+          title="Document">
+        </iframe>
+
+      `);
+
+    }
+
+  }
+
+
+  if(!items.length){
+
+    return `
+
+      <div class="auto-doc-preview">
+
+        <div class="auto-doc-empty">
+
+          Document preview available nahi hai.
+
+        </div>
+
+      </div>
+
+    `;
+
+  }
+
+
+  return `
+
+    <div class="auto-doc-preview">
+
+      ${items.join('')}
+
+    </div>
+
+  `;
+
+}
+
+
+
+/* =====================================================
+   OPEN SELLER VERIFICATION
+===================================================== */
+
+async function openSellerVerification(sellerId){
+
+  showTabById('verification');
+
+
+  const box =
+    document.getElementById(
+      'verificationContent'
+    );
+
+
+  if(!box)
+    return;
+
+
+  box.innerHTML =
+    '<p class="muted">Seller documents load ho rahe hain...</p>';
+
+
+  const {
+    data:seller,
+    error
+  } =
+  await supabaseClient
+    .from('sellers')
+    .select('*')
+    .eq('id',sellerId)
+    .maybeSingle();
+
+
+  if(error){
+
+    box.innerHTML = `
+
+      <div class="notice">
+
+        ❌ Seller load nahi hua:<br>
+        ${esc(error.message)}
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  if(!seller){
+
+    box.innerHTML = `
+
+      <div class="notice">
+
+        ❌ Seller profile nahi mila.
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  window.currentVerificationSeller =
+    seller;
+
+
+
+  /* =====================================================
+     DOCUMENT LIST
+  ===================================================== */
+
+  const docs = [];
+
+
+  if(seller.aadhaar_document_url){
+
+    docs.push({
+
+      title:'🪪 Aadhaar Front',
+
+      path:
+        seller.aadhaar_document_url
+
+    });
+
+  }
+
+
+  if(seller.aadhaar_back_document_url){
+
+    docs.push({
+
+      title:'🪪 Aadhaar Back',
+
+      path:
+        seller.aadhaar_back_document_url
+
+    });
+
+  }
+
+
+  if(seller.pan_document_url){
+
+    docs.push({
+
+      title:'💳 PAN Card',
+
+      path:
+        seller.pan_document_url
+
+    });
+
+  }
+
+
+  if(seller.business_proof_url){
+
+    docs.push({
+
+      title:'📄 Business Proof',
+
+      path:
+        seller.business_proof_url
+
+    });
+
+  }
+
+
+
+  /* BUSINESS PROOF MULTIPLE */
+
+  let businessProofs = [];
+
+
+  try{
+
+    if(seller.business_proof_urls){
+
+      businessProofs =
+        Array.isArray(
+          seller.business_proof_urls
+        )
+        ?
+        seller.business_proof_urls
+        :
+        JSON.parse(
+          seller.business_proof_urls
+        );
+
+    }
+
+  }catch(e){
+
+    businessProofs=[];
+
+  }
+
+
+  if(businessProofs.length){
+
+    docs.push({
+
+      title:'📄 Business Proofs',
+
+      paths:businessProofs
+
+    });
+
+  }
+
+
+
+  /* SHOP PHOTOS */
+
+  let shopPhotos = [];
+
+
+  try{
+
+    if(seller.shop_photo_urls){
+
+      shopPhotos =
+        Array.isArray(
+          seller.shop_photo_urls
+        )
+        ?
+        seller.shop_photo_urls
+        :
+        JSON.parse(
+          seller.shop_photo_urls
+        );
+
+    }
+
+  }catch(e){
+
+    shopPhotos=[];
+
+  }
+
+
+  if(shopPhotos.length){
+
+    docs.push({
+
+      title:'🏪 Shop Photos',
+
+      paths:shopPhotos
+
+    });
+
+  }
+
+  else if(seller.shop_photo_url){
+
+    docs.push({
+
+      title:'🏪 Shop Photo',
+
+      path:
+        seller.shop_photo_url
+
+    });
+
+  }
+
+
+
+  /* GST */
+
+  if(seller.gst_certificate_url){
+
+    docs.push({
+
+      title:'📋 GST Certificate',
+
+      path:
+        seller.gst_certificate_url
+
+    });
+
+  }
+
+
+
+  /* SELLER INVOICE IF ANY */
+
+  if(seller.invoice_document_url){
+
+    docs.push({
+
+      title:'🧾 Invoice / Bill',
+
+      path:
+        seller.invoice_document_url
+
+    });
+
+  }
+
+
+
+  /* =====================================================
+     ADDRESS
+  ===================================================== */
+
+  const address =
+    [
+
+      seller.shop_address,
+      seller.city,
+      seller.state,
+      seller.pincode
+
+    ]
+    .filter(Boolean)
+    .join(', ');
+
+
+  const lat =
+    seller.latitude;
+
+
+  const lng =
+    seller.longitude;
+
+
+
+  /* =====================================================
+     BUILD DOCUMENT HTML
+  ===================================================== */
+
+  let docHtml = '';
+
+
+  for(const d of docs){
+
+    let paths = [];
+
+
+    if(
+      d.paths &&
+      d.paths.length
+    ){
+
+      paths =
+        d.paths;
+
+    }
+
+    else if(d.path){
+
+      paths =
+        [d.path];
+
+    }
+
+
+    const preview =
+      await buildAutoDocumentPreview(
+        paths
+      );
+
+
+    docHtml += `
+
+      <div class="doc-card">
+
+        <h4>
+          ${esc(d.title)}
+        </h4>
+
+        ${preview}
+
+      </div>
+
+    `;
+
+  }
+
+
+
+  /* =====================================================
+     PAGE
+  ===================================================== */
+
+  box.innerHTML = `
+
+    <div class="verification-head">
+
+      <div>
+
+        <h2>
+          🛡️ Seller Verification
+        </h2>
+
+        <p class="muted">
+
+          Review seller documents
+          and approve or reject
+
+        </p>
+
+      </div>
+
+
+      <div class="verification-status">
+
+        Status:
+        ${esc(seller.status || 'pending')}
+
+      </div>
+
+    </div>
+
+
+
+    <!-- SELLER PROFILE -->
+
+    <div class="seller-profile">
+
+      <h3>
+
+        ${
+          esc(
+            seller.business_name ||
+            'Business Name not submitted'
+          )
+        }
+
+      </h3>
+
+
+      <p>
+
+        <b>Owner:</b>
+        ${esc(seller.owner_name || '-')}
+
+      </p>
+
+
+      <div class="seller-info">
+
+
+        <div class="info-box">
+
+          <b>
+            Business Type
+          </b>
+
+          <br>
+
+          <span class="muted">
+
+            ${esc(
+              seller.business_type || '-'
+            )}
+
+          </span>
+
+        </div>
+
+
+        <div class="info-box">
+
+          <b>
+            Location
+          </b>
+
+          <br>
+
+          <span class="muted">
+
+            ${esc(
+              address || '-'
+            )}
+
+          </span>
+
+        </div>
+
+
+        <div class="info-box">
+
+          <b>
+            Applied On
+          </b>
+
+          <br>
+
+          <span class="muted">
+
+            ${
+              seller.created_at
+
+              ?
+
+              new Date(
+                seller.created_at
+              )
+              .toLocaleDateString('en-IN')
+
+              :
+
+              '-'
+            }
+
+          </span>
+
+        </div>
+
+
+      </div>
+
+    </div>
+
+
+
+    <!-- DOCUMENTS -->
+
+    <div class="verify-info">
+
+      <h2>
+        📄 Submitted Documents
+      </h2>
+
+
+      ${
+        docHtml
+
+        ?
+
+        `
+
+          <div class="verify-documents">
+
+            ${docHtml}
+
+          </div>
+
+        `
+
+        :
+
+        `
+
+          <div class="notice">
+
+            Seller ने अभी कोई
+            document submit नहीं किया है।
+
+          </div>
+
+        `
+
+      }
+
+    </div>
+
+
+
+    <!-- ADDRESS -->
+
+    <div class="verify-info">
+
+      <h2>
+        📍 Address + Live Location
+      </h2>
+
+
+      <div class="verify-info-grid">
+
+
+        <div class="verify-info-item">
+
+          <b>
+            Shop Address
+          </b>
+
+          <br><br>
+
+          ${esc(address || '-')}
+
+        </div>
+
+
+        <div class="verify-info-item">
+
+          <b>
+            Coordinates
+          </b>
+
+          <br><br>
+
+          ${
+            lat && lng
+
+            ?
+
+            esc(lat) +
+            ' , ' +
+            esc(lng)
+
+            :
+
+            'Location not submitted'
+
+          }
+
+        </div>
+
+
+      </div>
+
+
+      ${
+        lat && lng
+
+        ?
+
+        `
+
+          <a
+            class="map-link"
+            target="_blank"
+            rel="noopener"
+            href="https://www.google.com/maps?q=${encodeURIComponent(lat + ',' + lng)}">
+
+            📍 View Location
+
+          </a>
+
+        `
+
+        :
+
+        ''
+
+      }
+
+    </div>
+
+
+
+    <!-- BUSINESS DETAILS -->
+
+    <div class="verify-info">
+
+      <h2>
+        🏢 Business Details
+      </h2>
+
+
+      <div class="verify-info-grid">
+
+
+        <div class="verify-info-item">
+
+          <b>
+            Business Name
+          </b>
+
+          <br><br>
+
+          ${esc(
+            seller.business_name || '-'
+          )}
+
+        </div>
+
+
+        <div class="verify-info-item">
+
+          <b>
+            Owner Name
+          </b>
+
+          <br><br>
+
+          ${esc(
+            seller.owner_name || '-'
+          )}
+
+        </div>
+
+
+        <div class="verify-info-item">
+
+          <b>
+            Business Type
+          </b>
+
+          <br><br>
+
+          ${esc(
+            seller.business_type || '-'
+          )}
+
+        </div>
+
+
+        <div class="verify-info-item">
+
+          <b>
+            Description
+          </b>
+
+          <br><br>
+
+          ${esc(
+            seller.description || '-'
+          )}
+
+        </div>
+
+
+        <div class="verify-info-item">
+
+          <b>
+            Year of Establishment
+          </b>
+
+          <br><br>
+
+          ${esc(
+            seller.year_of_establishment ||
+            seller.established_year ||
+            '-'
+          )}
+
+        </div>
+
+
+      </div>
+
+    </div>
+
+
+
+    <!-- ADMIN ACTION -->
+
+    <div class="verify-info">
+
+      <h2>
+        📝 Admin Remark
+      </h2>
+
+
+      <textarea
+        id="adminRemark"
+        class="remark-box"
+        placeholder="Write your remarks about this seller..."
+      ></textarea>
+
+
+      <div class="verify-actions">
+
+
+        <button
+          class="approve-btn"
+          onclick="verifySeller('approved')">
+
+          ✅ Approve Seller
+
+        </button>
+
+
+        <button
+          class="reject-btn"
+          onclick="verifySeller('rejected')">
+
+          ❌ Reject Seller
+
+        </button>
+
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+
+/* =====================================================
+   OPEN PRIVATE DOCUMENT
+===================================================== */
+
+async function viewVerificationDocument(
+  path,
+  title
+){
+
+  await viewPrivateDocument(
+    path,
+    title
+  );
+
+}
+
+
+
+/* =====================================================
+   MULTIPLE DOCUMENTS
+===================================================== */
+
+async function viewMultipleDocuments(
+  index
+){
+
+  const seller =
+    window.currentVerificationSeller;
+
+
+  if(!seller)
+    return;
+
+
+  let list = [];
+
+
+  try{
+
+    if(seller.shop_photo_urls){
+
+      list =
+        Array.isArray(
+          seller.shop_photo_urls
+        )
+        ?
+        seller.shop_photo_urls
+        :
+        JSON.parse(
+          seller.shop_photo_urls
+        );
+
+    }
+
+  }catch(e){
+
+    list=[];
+
+  }
+
+
+  if(!list.length){
+
+    try{
+
+      if(seller.business_proof_urls){
+
+        list =
+          Array.isArray(
+            seller.business_proof_urls
+          )
+          ?
+          seller.business_proof_urls
+          :
+          JSON.parse(
+            seller.business_proof_urls
+          );
+
+      }
+
+    }catch(e){
+
+      list=[];
+
+    }
+
+  }
+
+
+  if(!list.length){
+
+    alert(
+      'Documents available nahi hain.'
+    );
+
+    return;
+
+  }
+
+
+  document.getElementById(
+    'modalTitle'
+  ).textContent =
+    'Submitted Photos';
+
+
+  const body =
+    document.getElementById(
+      'modalBody'
+    );
+
+
+  body.innerHTML =
+    '<p class="muted">Photos load ho rahi hain...</p>';
+
+
+  const urls=[];
+
+
+  for(const path of list){
+
+    const {
+      data,
+      error
+    } =
+    await supabaseClient
+      .storage
+      .from('seller-kyc')
+      .createSignedUrl(
+        path,
+        300
+      );
+
+
+    if(
+      !error &&
+      data?.signedUrl
+    ){
+
+      urls.push(
+        data.signedUrl
+      );
+
+    }
+
+  }
+
+
+  if(!urls.length){
+
+    body.innerHTML =
+      '<p class="muted">Photos open nahi ho paayi.</p>';
+
+    document.getElementById(
+      'docModal'
+    )
+    .classList.add('show');
+
+    return;
+
+  }
+
+
+  body.innerHTML = `
+
+    <div class="multiple-list">
+
+      ${
+        urls.map(url => `
+
+          <img
+            src="${esc(url)}"
+            onclick="window.open(
+              '${esc(url)}',
+              '_blank'
+            )"
+          >
+
+        `).join('')
+      }
+
+    </div>
+
+  `;
+
+
+  document.getElementById(
+    'docModal'
+  )
+  .classList.add('show');
+
+}
+
+
+
+/* =====================================================
+   CLOSE MODAL
+===================================================== */
+
+function closeDocModal(event){
+
+  if(
+    !event ||
+    event.target.id === 'docModal'
+  ){
+
+    document.getElementById(
+      'docModal'
+    )
+    .classList.remove('show');
+
+
+    document.getElementById(
+      'modalBody'
+    ).innerHTML='';
+
+  }
+
+}
+
+
+
+/* =====================================================
+   APPROVE / REJECT SELLER
+===================================================== */
+
+async function verifySeller(status){
+
+  const seller =
+    window.currentVerificationSeller;
+
+
+  if(!seller){
+
+    alert(
+      'Seller select nahi hai.'
+    );
+
+    return;
+
+  }
+
+
+  const remark =
+    document.getElementById(
+      'adminRemark'
+    )?.value.trim() || '';
+
+
+  const question =
+    status === 'approved'
+
+    ?
+
+    'Kya aap is seller ko APPROVE karna chahte hain?'
+
+    :
+
+    'Kya aap is seller ko REJECT karna chahte hain?';
+
+
+  if(!confirm(question))
+    return;
+
+
+  const updateData = {
+
+    status:status,
+
+    updated_at:
+      new Date().toISOString()
+
+  };
+
+
+  if(status === 'approved'){
+
+    updateData.is_active =
+      true;
+
+    updateData.verification_status =
+      'verified';
+
+    updateData.application_status =
+      'approved';
+
+  }
+
+
+  if(status === 'rejected'){
+
+    updateData.is_active =
+      false;
+
+    updateData.verification_status =
+      'rejected';
+
+    updateData.application_status =
+      'rejected';
+
+  }
+
+
+  const {
+    error
+  } =
+  await supabaseClient
+    .from('sellers')
+    .update(updateData)
+    .eq('id',seller.id);
+
+
+  if(error){
+
+    alert(
+      '❌ Verification update failed:\n' +
+      error.message
+    );
+
+    return;
+
+  }
+
+
+  if(remark){
+
+    const {
+      error:remarkError
+    } =
+    await supabaseClient
+      .from('sellers')
+      .update({
+        admin_remark:remark
+      })
+      .eq('id',seller.id);
+
+
+    if(remarkError){
+
+      console.log(
+        'Admin remark save skipped:',
+        remarkError.message
+      );
+
+    }
+
+  }
+
+
+  alert(
+
+    status === 'approved'
+
+    ?
+
+    '✅ Seller approved successfully.'
+
+    :
+
+    '❌ Seller rejected.'
+
+  );
+
+
+  await loadSellers();
+
+
+  const updated =
+    (window.sellersData || [])
+      .find(
+        x =>
+          String(x.id) ===
+          String(seller.id)
+      );
+
+
+  if(updated){
+
+    window.currentVerificationSeller =
+      updated;
+
+  }
+
+
+  showVerificationList();
+
+}
+
+
+
+/* =====================================================
+   USERS
+===================================================== */
+
+function renderProfiles(){
+
+  const el =
+    document.getElementById(
+      'userTable'
+    );
+
+
+  if(!el)
+    return;
+
+
+  el.innerHTML =
+    makeProfileTable(
+      profiles
+    );
+
+}
+
+
+function makeProfileTable(list){
+
+  if(!list.length){
+
+    return `
+      <p class="muted">
+        No records found.
+      </p>
+    `;
+
+  }
+
+
+  return `
+
+    <table class="table">
+
+      <thead>
+
+        <tr>
+
+          <th>Name</th>
+          <th>Phone</th>
+          <th>Role</th>
+          <th>Active</th>
+          <th>Created</th>
+
+        </tr>
+
+      </thead>
+
+
+      <tbody>
+
+        ${
+          list.map(x => `
+
+            <tr>
+
+              <td>
+                ${esc(x.full_name || '-')}
+              </td>
+
+              <td>
+                ${esc(x.phone || '-')}
+              </td>
+
+              <td>
+                ${esc(x.role || '-')}
+              </td>
+
+              <td>
+                ${x.is_active ? '✅' : '❌'}
+              </td>
+
+              <td>
+
+                ${
+                  x.created_at
+
+                  ?
+
+                  new Date(
+                    x.created_at
+                  )
+                  .toLocaleDateString('en-IN')
+
+                  :
+
+                  '-'
+                }
+
+              </td>
+
+            </tr>
+
+          `).join('')
+        }
+
+      </tbody>
+
+    </table>
+
+  `;
+
+}
+
+
+
+/* =====================================================
+   ORDERS
+===================================================== */
+
+function orderNotice(t){
+
+  const n =
+    document.getElementById(
+      'orderNotice'
+    );
+
+
+  if(!n)
+    return;
+
+
+  n.textContent=t;
+
+  n.classList.remove('hidden');
+
+}
+
+
+function orderEsc(v){
+
+  return esc(v);
+
+}
+
+
+function orderDate(v){
+
+  if(!v)
+    return '-';
+
+
+  const d =
+    new Date(v);
+
+
+  return isNaN(
+    d.getTime()
+  )
+
+  ?
+
+  '-'
+
+  :
+
+  d.toLocaleString('en-IN');
+
+}
+
+
+function statusOptions(current){
+
+  const statuses = [
+
+    'pending',
+    'confirmed',
+    'shipped',
+    'delivered',
+    'cancelled'
+
+  ];
+
+
+  return `
+
+    <select
+      onchange="
+        setOrderStatus(
+          this.dataset.id,
+          this.value
+        )
+      "
+      data-id="${orderEsc(current.id)}"
+      style="
+        padding:7px;
+        border:1px solid #ddd;
+        border-radius:7px;
+      ">
+
+
+      ${
+        statuses.map(s => `
+
+          <option
+            value="${s}"
+            ${
+              String(
+                current.status || 'pending'
+              ).toLowerCase() === s
+              ?
+              'selected'
+              :
+              ''
+            }>
+
+            ${
+              s.charAt(0).toUpperCase() +
+              s.slice(1)
+            }
+
+          </option>
+
+        `).join('')
+      }
+
+
+    </select>
+
+  `;
+
+}
+
+
+function renderOrders(){
+
+  const q =
+    (
+      document.getElementById(
+        'orderSearch'
+      )?.value || ''
+    )
+    .toLowerCase();
+
+
+  const sf =
+    (
+      document.getElementById(
+        'orderStatusFilter'
+      )?.value || ''
+    )
+    .toLowerCase();
+
+
+  const list =
+    (orders || [])
+      .filter(o => {
+
+
+        const text = [
+
+          o.id,
+          o.customer_id,
+          o.seller_id,
+          o.business_id,
+          o.shipping_name,
+          o.shipping_phone,
+          o.shipping_city,
+          o.shipping_state,
+          o.status,
+          o.payment_method,
+          o.payment_status
+
+        ]
+        .join(' ')
+        .toLowerCase();
+
+
+        return (
+
+          (!q || text.includes(q))
+
+          &&
+
+          (
+            !sf ||
+
+            String(
+              o.status || 'pending'
+            )
+            .toLowerCase() === sf
+          )
+
+        );
+
+      });
+
+
+  const el =
+    document.getElementById(
+      'orderTable'
+    );
+
+
+  if(!el)
+    return;
+
+
+  if(!list.length){
+
+    el.innerHTML =
+      '<p class="muted">No orders found.</p>';
+
+    return;
+
+  }
+
+
+  el.innerHTML = `
+
+    <table class="table">
+
+      <thead>
+
+        <tr>
+
+          <th>Order ID</th>
+          <th>Customer</th>
+          <th>Phone</th>
+          <th>Total</th>
+          <th>Payment</th>
+          <th>Address</th>
+          <th>Created</th>
+          <th>Status</th>
+
+        </tr>
+
+      </thead>
+
+
+      <tbody>
+
+        ${
+          list.map(o => {
+
+
+            const address = [
+
+              o.shipping_address,
+              o.shipping_city,
+              o.shipping_state,
+              o.shipping_pincode
+
+            ]
+            .filter(Boolean)
+            .join(', ');
+
+
+            return `
+
+              <tr>
+
+                <td>
+                  ${orderEsc(o.id)}
+                </td>
+
+
+                <td>
+
+                  ${orderEsc(
+                    o.shipping_name ||
+                    o.customer_id ||
+                    '-'
+                  )}
+
+                </td>
+
+
+                <td>
+
+                  ${orderEsc(
+                    o.shipping_phone ||
+                    '-'
+                  )}
+
+                </td>
+
+
+                <td>
+
+                  ₹${Number(
+                    o.total_amount || 0
+                  ).toFixed(2)}
+
+                </td>
+
+
+                <td>
+
+                  ${orderEsc(
+                    o.payment_method || '-'
+                  )}
+
+                  /
+
+                  ${orderEsc(
+                    o.payment_status || '-'
+                  )}
+
+                </td>
+
+
+                <td>
+
+                  ${orderEsc(
+                    address || '-'
+                  )}
+
+                </td>
+
+
+                <td>
+
+                  ${orderEsc(
+                    orderDate(
+                      o.created_at
+                    )
+                  )}
+
+                </td>
+
+
+                <td>
+
+                  ${statusOptions(o)}
+
+                </td>
+
+
+              </tr>
+
+            `;
+
+          }).join('')
+        }
+
+      </tbody>
+
+    </table>
+
+  `;
+
+}
+
+
+
+async function loadOrders(){
+
+  const el =
+    document.getElementById(
+      'orderTable'
+    );
+
+
+  if(!el)
+    return;
+
+
+  el.innerHTML =
+    '<p class="muted">Orders load ho rahe hain...</p>';
+
+
+  const {
+    data,
+    error
+  } =
+  await supabaseClient
+    .from('orders')
+    .select('*')
+    .order('created_at',{
+      ascending:false
+    });
+
+
+  if(error){
+
+    orderNotice(
+      '⚠️ Orders load nahi hue: ' +
+      error.message
+    );
+
+
+    el.innerHTML =
+      '<p class="muted">Orders load nahi ho paaye.</p>';
+
+    return;
+
+  }
+
+
+  orders =
+    data || [];
+
+
+  renderOrders();
+
+}
+
+
+
+async function setOrderStatus(
+  id,
+  status
+){
+
+  const {
+    error
+  } =
+  await supabaseClient
+    .from('orders')
+    .update({
+      status:status
+    })
+    .eq('id',id);
+
+
+  if(error){
+
+    alert(
+      '❌ Order status update failed: ' +
+      error.message
+    );
+
+    return;
+
+  }
+
+
+  const x =
+    (orders || [])
+      .find(
+        v =>
+          String(v.id) ===
+          String(id)
+      );
+
+
+  if(x){
+
+    x.status =
+      status;
+
+  }
+
+
+  renderOrders();
+
+}
+
+
+
+/* =====================================================
+   DELETE PRODUCT
+===================================================== */
+
+async function deleteProduct(id){
+
+  if(!confirm(
+    'Product delete karein?'
+  )){
+
+    return;
+
+  }
+
+
+  const {
+    error
+  } =
+  await supabaseClient
+    .from('products')
+    .delete()
+    .eq('id',id);
+
+
+  if(error){
+
+    alert(
+      '❌ Delete failed: ' +
+      error.message
+    );
+
+    return;
+
+  }
+
+
+  products =
+    products.filter(
+      p =>
+        String(p.id) !==
+        String(id)
+    );
+
+
+  updateStats();
+
+  renderProducts();
+
+}
+
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+async function logout(){
+
+  await supabaseClient
+    .auth
+    .signOut();
+
+
+  sessionStorage.removeItem(
+    'br_admin_ok'
+  );
+
+
+  location.href =
+    'admin-login.html';
+
+}
+
+
+
+/* =====================================================
+   START
+===================================================== */
+
+load();
+
+</script>
+
+
+
+<!-- =====================================================
+     MOBILE MENU - SEPARATE SAFE SCRIPT
+===================================================== -->
+
+<script>
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function(){
+
+    const btn =
+      document.getElementById(
+        "adminMenuBtn"
+      );
+
+
+    const sidebar =
+      document.getElementById(
+        "sidebar"
+      );
+
+
+    if(!btn || !sidebar)
+      return;
+
+
+    btn.addEventListener(
+      "click",
+      function(){
+
+        sidebar.classList.toggle(
+          "open"
+        );
+
+      }
+    );
+
+
+    document
+      .querySelectorAll(
+        ".nav-item"
+      )
+      .forEach(function(item){
+
+        item.addEventListener(
+          "click",
+          function(){
+
+            if(
+              window.innerWidth <= 700
+            ){
+
+              sidebar.classList.remove(
+                "open"
+              );
+
+            }
+
+          }
+        );
+
+      });
+
+  }
+);
+
+</script>
+
+
+</body>
+  </html>
