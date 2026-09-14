@@ -1,1 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<title>Seller Login - BR Digital Marketplace</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  background:#f5f7fa;
+  font-family:Arial,sans-serif;
+  color:#17212b;
+}
+
+.header{
+  background:white;
+  padding:22px 15px;
+  text-align:center;
+  box-shadow:0 2px 10px rgba(0,0,0,.08);
+}
+
+.logo{
+  font-size:28px;
+  font-weight:800;
+}
+
+.logo span{
+  color:#ff7900;
+}
+
+.container{
+  max-width:600px;
+  margin:35px auto;
+  padding:0 15px;
+}
+
+.card{
+  background:white;
+  border-radius:24px;
+  padding:28px 22px;
+  box-shadow:0 8px 30px rgba(0,0,0,.10);
+}
+
+.step{
+  display:inline-block;
+  background:#1677ed;
+  color:white;
+  padding:7px 14px;
+  border-radius:20px;
+  font-weight:bold;
+  margin-bottom:15px;
+}
+
+h1{
+  margin:5px 0 8px;
+  color:#f47700;
+  font-size:31px;
+}
+
+.subtitle{
+  color:#666;
+  font-size:16px;
+  margin-bottom:25px;
+}
+
+label{
+  display:block;
+  font-size:16px;
+  font-weight:700;
+  margin:17px 0 7px;
+}
+
+input{
+  width:100%;
+  padding:16px;
+  border:1px solid #d5d5d5;
+  border-radius:13px;
+  font-size:16px;
+  outline:none;
+}
+
+input:focus{
+  border-color:#1677ed;
+}
+
+button{
+  width:100%;
+  border:0;
+  border-radius:14px;
+  padding:17px;
+  font-size:18px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.login-btn{
+  margin-top:22px;
+  background:#1677ed;
+  color:white;
+}
+
+.signup-btn{
+  margin-top:12px;
+  background:#18212b;
+  color:white;
+}
+
+.message{
+  display:none;
+  margin-top:18px;
+  padding:15px;
+  border-radius:12px;
+  text-align:center;
+  line-height:1.5;
+  font-weight:bold;
+}
+
+.success{
+  display:block;
+  background:#dcfce7;
+  color:#166534;
+}
+
+.error{
+  display:block;
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+.pending{
+  display:block;
+  background:#fff7ed;
+  color:#9a3412;
+}
+
+.back{
+  display:block;
+  text-align:center;
+  margin-top:22px;
+  color:#f47700;
+  font-weight:bold;
+  text-decoration:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <div class="logo">
+    🏪 BR <span>Digital Marketplace</span>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="card">
+
+  <div class="step">🔐 Seller Login</div>
+
+  <h1>Seller Login 👨‍💼</h1>
+
+  <div class="subtitle">
+    Login to your BR Digital Marketplace Seller Account
+  </div>
+
+  <label>
+    Email Address
+  </label>
+
+  <input
+    id="email"
+    type="email"
+    placeholder="Enter your email"
+    autocomplete="email"
+  >
+
+  <label>
+    Password
+  </label>
+
+  <input
+    id="password"
+    type="password"
+    placeholder="Enter your password"
+    autocomplete="current-password"
+  >
+
+  <button
+    id="loginBtn"
+    class="login-btn"
+    onclick="sellerLogin()"
+  >
+    🔐 Seller Login
+  </button>
+
+  <button
+    class="signup-btn"
+    onclick="sellerSignup()"
+  >
+    ➕ Create Seller Account
+  </button>
+
+  <div id="message" class="message"></div>
+
+  <a href="index.html" class="back">
+    ← Marketplace par wapas
+  </a>
+
+</div>
+
+</div>
+
+
+<script>
+
+const SUPABASE_URL =
+"https://uryjmibcdfjfxoljrigt.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_uYbJw0ARCCkCpQ9QB6FxaQ_JrIxtOOp";
+
+const db =
+supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+// ================================
+// MESSAGE
+// ================================
+
+function showMessage(text,type){
+
+  const box =
+    document.getElementById("message");
+
+  box.className =
+    "message " + type;
+
+  box.innerHTML = text;
+
+}
+
+
+// ================================
+// SELLER LOGIN
+// ================================
+
+async function sellerLogin(){
+
+  const email =
+    document.getElementById("email")
+    .value.trim();
+
+  const password =
+    document.getElementById("password")
+    .value;
+
+  const button =
+    document.getElementById("loginBtn");
+
+
+  if(!email || !password){
+
+    showMessage(
+      "❌ Email और Password दोनों भरें।",
+      "error"
+    );
+
+    return;
+  }
+
+
+  button.disabled = true;
+  button.textContent = "Logging in...";
+
+
+  try{
+
+    // ================================
+    // SUPABASE AUTH LOGIN
+    // ================================
+
+    const { data, error } =
+      await db.auth.signInWithPassword({
+
+        email:email,
+
+        password:password
+
+      });
+
+
+    if(error){
+      throw error;
+    }
+
+
+    if(!data || !data.user){
+
+      throw new Error(
+        "Login नहीं हुआ।"
+      );
+
+    }
+
+
+    const user =
+      data.user;
+
+
+    // ================================
+    // SELLER PROFILE CHECK
+    // ================================
+
+    const { data: seller, error: sellerError } =
+      await db
+        .from("sellers")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+
+    if(sellerError){
+
+      console.error(
+        "Seller profile error:",
+        sellerError
+      );
+
+      await db.auth.signOut();
+
+      throw new Error(
+        "Seller profile check नहीं हो पाया।"
+      );
+    }
+
+
+    if(!seller){
+
+      await db.auth.signOut();
+
+      showMessage(
+        "❌ Seller profile नहीं मिला। कृपया पहले Seller Account create करें।",
+        "error"
+      );
+
+      button.disabled = false;
+      button.textContent = "🔐 Seller Login";
+
+      return;
+    }
+
+
+    // ================================
+    // REJECTED
+    // ================================
+
+    if(
+      seller.status === "rejected" ||
+      seller.application_status === "rejected"
+    ){
+
+      await db.auth.signOut();
+
+      showMessage(
+        "❌ आपका Seller application rejected है।",
+        "error"
+      );
+
+      button.disabled = false;
+      button.textContent = "🔐 Seller Login";
+
+      return;
+    }
+
+
+    // ================================
+    // PENDING
+    // ================================
+
+    if(
+      seller.status === "pending" ||
+      seller.application_status === "pending"
+    ){
+
+      await db.auth.signOut();
+
+      showMessage(
+        "⏳ आपका Seller account अभी Admin approval के लिए pending है। Approval के बाद Dashboard खुलेगा।",
+        "pending"
+      );
+
+      button.disabled = false;
+      button.textContent = "🔐 Seller Login";
+
+      return;
+    }
+
+
+    // ================================
+    // APPROVED + ACTIVE
+    // ================================
+
+    if(
+      seller.status === "approved" &&
+      seller.is_active === true
+    ){
+
+      showMessage(
+        "✅ Login successful!<br>Seller Dashboard खुल रहा है...",
+        "success"
+      );
+
+      setTimeout(function(){
+
+        window.location.href =
+          "seller-dashboard.html";
+
+      },1000);
+
+      return;
+    }
+
+
+    // ================================
+    // OTHER STATUS
+    // ================================
+
+    await db.auth.signOut();
+
+    showMessage(
+      "⏳ आपका Seller account अभी verification/approval process में है।",
+      "pending"
+    );
+
+    button.disabled = false;
+    button.textContent = "🔐 Seller Login";
+
+
+  }catch(error){
+
+    console.error(
+      "Seller Login Error:",
+      error
+    );
+
+    showMessage(
+      "❌ Login failed: " +
+      (error.message || "Invalid email or password."),
+      "error"
+    );
+
+    button.disabled = false;
+    button.textContent = "🔐 Seller Login";
+
+  }
+
+}
+
+
+// ================================
+// SELLER SIGNUP
+// ================================
+
+function sellerSignup(){
+
+  window.location.href =
+    "seller-signup.html";
+
+}
+
+</script>
+
+</body>
+  </html>
