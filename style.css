@@ -5088,3 +5088,26 @@ body{
   }
 
    }
+
+.bottomCategoryBtn{
+  background:none;
+  border:0;
+  font:inherit;
+  color:inherit;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  cursor:pointer;
+  padding:0;
+}
+
+.bottomCategoryBtn span{
+  font-size:25px;
+  line-height:1;
+}
+
+.bottomCategoryBtn{
+  font-size:14px;
+}
