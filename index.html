@@ -172,11 +172,71 @@ function render(){
    return `<article class="product"><div class="pImage"><img src="${esc(img)}" onerror="this.src='https://placehold.co/600x500?text=Product'"><span>NEW</span></div><div class="pInfo"><small>${esc(brand)}</small><h3>${esc(name)}</h3><div class="price"><b>₹${price.toLocaleString("en-IN")}</b>${stock?`<em>${stock} left</em>`:""}</div><button onclick="addCart('${esc(id)}')">Add to Cart</button></div></article>`;
  }).join("")||`<div class="empty"><b>🔍 Product nahi mila</b><span>Category ya search badal kar dekhein.</span></div>`;
 }
-async function loadProducts(){
- const {data,error}=await db.from("products").select("*");
- if(error){console.error(error);document.getElementById("status").textContent="Products load nahi hue";return;}
- products=data||[];drawBrands();render();
-}
+
+  async function loadProducts(){
+
+  const status =
+    document.getElementById("status");
+
+  if(status){
+    status.textContent = "Products load ho rahe hain...";
+  }
+
+  try{
+
+    const {
+      data,
+      error
+    } = await db
+      .from("products")
+      .select(`
+        id,
+        product_name,
+        description,
+        image_url,
+        category,
+        price,
+        stock,
+        brand,
+        status
+      `)
+      .eq("status","approved")
+      .order("id",{ascending:false});
+
+    if(error){
+      throw error;
+    }
+
+    products = data || [];
+
+    drawBrands();
+    render();
+
+  }catch(error){
+
+    console.error(
+      "Products load error:",
+      error
+    );
+
+    if(status){
+      status.textContent =
+        "Products load nahi hue";
+    }
+
+    document.getElementById(
+      "productGrid"
+    ).innerHTML = `
+      <div class="empty">
+        <b>⚠️ Products load nahi ho pa rahe</b>
+        <span>Thodi der baad dobara try karein.</span>
+      </div>
+    `;
+
+  }
+  }
+
+  
 function addCart(id){
   const p=products.find(x=>String(x.id)===String(id));
   if(!p)return;
