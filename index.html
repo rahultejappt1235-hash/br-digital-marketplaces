@@ -1451,6 +1451,26 @@ function renderProducts(
       card.className =
         "product-card";
 
+          card.addEventListener("click", function(e){
+
+  if(
+    e.target.closest(".add-product") ||
+    e.target.closest(".wishlist-btn")
+  ){
+    return;
+  }
+
+  localStorage.setItem(
+    "br_selected_product",
+    JSON.stringify(product)
+  );
+
+  window.location.href =
+    "product-details.html?id=" +
+    encodeURIComponent(product.id);
+
+});
+
 
       const image =
   product.public_image_url || "";
