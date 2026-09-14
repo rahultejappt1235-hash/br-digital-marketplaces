@@ -138,12 +138,9 @@ async function loadProducts(){
 
  try{
 
-  const url =
-   SUPABASE_URL +
-   "/rest/v1/products" +
-   "?select=id,product_name,description,image_url,category,price,stock,status" +
-   "&status=eq.approved" +
-   "&order=id.desc";
+  let r=await fetch(
+   SUPABASE_URL+
+   "/rest/v1/products?select=id,product_name,description,image_url,category,price,stock,status&status=eq.approved&order=id.desc",
 
   let r=await fetch(
    url,
