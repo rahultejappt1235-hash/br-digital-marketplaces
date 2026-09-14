@@ -1,50 +1,24 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1.0"
+>
+
 <title>Admin Dashboard - BR Digital Marketplace</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-  .auto-doc-preview{
-  min-height:110px;
-  padding:8px;
-  border-radius:10px;
-  background:#f8fafc;
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  justify-content:flex-start;
-  align-items:center;
-}
 
-.auto-doc-preview img{
-  width:90px;
-  height:70px;
-  object-fit:cover;
-  border-radius:7px;
-  display:block;
-  cursor:pointer;
-  border:1px solid #ddd;
-}
+/* =====================================================
+   BASIC
+===================================================== */
 
-.auto-doc-preview iframe{
-  width:90px;
-  height:70px;
-  border:1px solid #ddd;
-  border-radius:7px;
-  background:#fff;
-}
-
-.auto-doc-empty{
-  width:100%;
-  text-align:center;
-  color:#667085;
-  padding:20px 5px;
-  font-size:14px;
-}
 *{
   box-sizing:border-box;
 }
@@ -56,7 +30,17 @@ body{
   color:#17202a;
 }
 
-/* ================= SIDEBAR ================= */
+button,
+input,
+select,
+textarea{
+  font-family:inherit;
+}
+
+
+/* =====================================================
+   SIDEBAR
+===================================================== */
 
 .sidebar{
   position:fixed;
@@ -67,7 +51,7 @@ body{
   background:#10233b;
   color:#fff;
   padding:20px 15px;
-  z-index:20;
+  z-index:1000;
   overflow-y:auto;
 }
 
@@ -90,6 +74,7 @@ body{
   justify-content:center;
   font-size:23px;
   font-weight:900;
+  flex-shrink:0;
 }
 
 .sidebar-title{
@@ -169,7 +154,10 @@ body{
   font-size:14px;
 }
 
-/* ================= MAIN ================= */
+
+/* =====================================================
+   MAIN
+===================================================== */
 
 .main-wrap{
   margin-left:280px;
@@ -186,7 +174,7 @@ body{
   gap:10px;
   position:sticky;
   top:0;
-  z-index:10;
+  z-index:900;
 }
 
 .search-top{
@@ -229,20 +217,41 @@ body{
   font-size:38px;
 }
 
+.muted{
+  color:#667085;
+}
+
+
+/* =====================================================
+   MOBILE MENU
+===================================================== */
+
+.mobile-menu{
+  display:none;
+  border:0;
+  background:#10233b;
+  color:#fff;
+  padding:8px 12px;
+  border-radius:8px;
+  font-size:21px;
+  cursor:pointer;
+}
+
+
+/* =====================================================
+   STATS
+===================================================== */
+
 .stats{
   display:grid;
   grid-template-columns:repeat(4,1fr);
   gap:15px;
 }
 
-.stat,
-.panel{
+.stat{
   background:#fff;
   border-radius:16px;
   box-shadow:0 3px 15px #0000000d;
-}
-
-.stat{
   padding:20px;
 }
 
@@ -250,9 +259,10 @@ body{
   font-size:28px;
 }
 
-.muted{
-  color:#667085;
-}
+
+/* =====================================================
+   TABS
+===================================================== */
 
 .tabs{
   display:flex;
@@ -262,13 +272,12 @@ body{
 }
 
 .tab{
-  border:0;
+  border:1px solid #ddd;
   border-radius:9px;
   padding:10px 13px;
   font-weight:700;
   cursor:pointer;
   background:#fff;
-  border:1px solid #ddd;
   white-space:nowrap;
 }
 
@@ -278,9 +287,21 @@ body{
   border-color:#ff7a00;
 }
 
+
+/* =====================================================
+   PANELS
+===================================================== */
+
 .panel{
+  background:#fff;
+  border-radius:16px;
+  box-shadow:0 3px 15px #0000000d;
   padding:20px;
   overflow:auto;
+}
+
+.hidden{
+  display:none!important;
 }
 
 .search{
@@ -290,6 +311,19 @@ body{
   border-radius:9px;
   margin-bottom:15px;
 }
+
+.notice{
+  padding:12px;
+  border-radius:10px;
+  margin-bottom:15px;
+  background:#fff7ed;
+  border:1px solid #fed7aa;
+}
+
+
+/* =====================================================
+   TABLE
+===================================================== */
 
 .table{
   width:100%;
@@ -331,19 +365,10 @@ body{
   cursor:pointer;
 }
 
-.notice{
-  padding:12px;
-  border-radius:10px;
-  margin-bottom:15px;
-  background:#fff7ed;
-  border:1px solid #fed7aa;
-}
 
-.hidden{
-  display:none!important;
-}
-
-/* ================= VERIFICATION ================= */
+/* =====================================================
+   SELLER VERIFICATION
+===================================================== */
 
 .verification-head{
   display:flex;
@@ -406,6 +431,23 @@ body{
   margin-top:0;
 }
 
+.verify-info-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+}
+
+.verify-info-item{
+  background:#f8fafc;
+  padding:13px;
+  border-radius:9px;
+}
+
+
+/* =====================================================
+   DOCUMENTS
+===================================================== */
+
 .verify-documents{
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -424,13 +466,42 @@ body{
   font-size:16px;
 }
 
-.doc-preview{
-  width:100%;
-  height:130px;
+.auto-doc-preview{
+  min-height:110px;
+  padding:8px;
+  border-radius:10px;
+  background:#f8fafc;
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  justify-content:flex-start;
+  align-items:center;
+}
+
+.auto-doc-preview img{
+  width:90px;
+  height:70px;
   object-fit:cover;
-  border-radius:9px;
-  background:#f3f4f6;
-  margin-bottom:10px;
+  border-radius:7px;
+  display:block;
+  cursor:pointer;
+  border:1px solid #ddd;
+}
+
+.auto-doc-preview iframe{
+  width:90px;
+  height:70px;
+  border:1px solid #ddd;
+  border-radius:7px;
+  background:#fff;
+}
+
+.auto-doc-empty{
+  width:100%;
+  text-align:center;
+  color:#667085;
+  padding:20px 5px;
+  font-size:14px;
 }
 
 .doc-placeholder{
@@ -460,17 +531,10 @@ body{
   background:#0868eb;
 }
 
-.verify-info-grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:12px;
-}
 
-.verify-info-item{
-  background:#f8fafc;
-  padding:13px;
-  border-radius:9px;
-}
+/* =====================================================
+   MAP
+===================================================== */
 
 .map-link{
   display:inline-block;
@@ -483,6 +547,11 @@ body{
   font-weight:700;
 }
 
+
+/* =====================================================
+   ADMIN ACTION
+===================================================== */
+
 .remark-box{
   width:100%;
   min-height:100px;
@@ -490,7 +559,6 @@ body{
   border:1px solid #ddd;
   border-radius:10px;
   resize:vertical;
-  font-family:Arial,sans-serif;
   font-size:15px;
 }
 
@@ -535,14 +603,17 @@ body{
   margin-bottom:15px;
 }
 
-/* ================= MODAL ================= */
+
+/* =====================================================
+   DOCUMENT MODAL
+===================================================== */
 
 .doc-modal{
   display:none;
   position:fixed;
   inset:0;
   background:#000b;
-  z-index:100;
+  z-index:2000;
   align-items:center;
   justify-content:center;
   padding:20px;
@@ -603,17 +674,10 @@ body{
   cursor:pointer;
 }
 
-/* ================= MOBILE ================= */
 
-.mobile-menu{
-  display:none;
-  border:0;
-  background:#10233b;
-  color:#fff;
-  padding:8px 11px;
-  border-radius:8px;
-  font-size:20px;
-}
+/* =====================================================
+   MOBILE
+===================================================== */
 
 @media(max-width:1000px){
 
@@ -639,7 +703,7 @@ body{
 
   .sidebar{
     transform:translateX(-100%);
-    transition:.25s;
+    transition:transform .25s ease;
   }
 
   .sidebar.open{
@@ -659,7 +723,11 @@ body{
   }
 
   .search-top{
-    width:55%;
+    width:52%;
+  }
+
+  .admin-top span{
+    display:none;
   }
 
   .main{
@@ -691,106 +759,188 @@ body{
     grid-template-columns:1fr;
   }
 
+  .local-card{
+    position:static;
+    margin-top:20px;
+  }
+
 }
+
 </style>
+
 </head>
+
 
 <body>
 
-<!-- ================= SIDEBAR ================= -->
+
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
 
 <aside class="sidebar" id="sidebar">
 
   <div class="sidebar-brand">
 
-    <div class="sidebar-logo">BR</div>
+    <div class="sidebar-logo">
+      BR
+    </div>
 
     <div>
+
       <div class="sidebar-title">
-        BR Digital<br>Marketplace
+        BR Digital<br>
+        Marketplace
       </div>
 
       <div class="sidebar-subtitle">
         Shop Local, Support Bihar 🇮🇳
       </div>
+
     </div>
 
   </div>
 
-  <button class="nav-item active"
+
+  <button
+    class="nav-item active"
     onclick="showDashboard()">
+
     <span class="nav-icon">🏠</span>
+
     Dashboard
+
   </button>
 
-  <button class="nav-item"
+
+  <button
+    class="nav-item"
     onclick="showVerificationList()">
-    <span class="nav-icon">👥</span>
+
+    <span class="nav-icon">🛡️</span>
+
     Seller Verification
-    <span class="verify-badge" id="pendingBadge">0</span>
+
+    <span
+      class="verify-badge"
+      id="pendingBadge">
+      0
+    </span>
+
   </button>
 
-  <button class="nav-item"
+
+  <button
+    class="nav-item"
     onclick="showTabById('sellers')">
+
     <span class="nav-icon">👥</span>
+
     Sellers
+
   </button>
 
-  <button class="nav-item"
+
+  <button
+    class="nav-item"
     onclick="showTabById('info')">
+
     <span class="nav-icon">📦</span>
+
     Orders
+
   </button>
 
-  <button class="nav-item"
+
+  <button
+    class="nav-item"
     onclick="showTabById('products')">
+
     <span class="nav-icon">📦</span>
+
     Products
+
   </button>
 
-  <button class="nav-item"
+
+  <button
+    class="nav-item"
     onclick="showTabById('users')">
+
     <span class="nav-icon">👤</span>
+
     Customers
+
   </button>
 
-  <button class="nav-item">
+
+  <button
+    class="nav-item"
+    type="button">
+
     <span class="nav-icon">📈</span>
+
     Reports
+
   </button>
 
-  <button class="nav-item">
+
+  <button
+    class="nav-item"
+    type="button">
+
     <span class="nav-icon">⚙️</span>
+
     Settings
+
   </button>
+
 
   <div class="local-card">
-    <div class="local-icon">🛍️</div>
+
+    <div class="local-icon">
+      🛍️
+    </div>
+
     <b>Grow Local</b>
     <b>Support Bihar</b>
-    <span>BR Digital Marketplace ❤️</span>
+
+    <span>
+      BR Digital Marketplace ❤️
+    </span>
+
   </div>
 
 </aside>
 
 
-<!-- ================= MAIN ================= -->
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
 
 <div class="main-wrap">
 
+
 <header class="top">
 
+
   <button
-  class="mobile-menu"
-  id="adminMenuBtn"
-  type="button">
-  ☰
+    class="mobile-menu"
+    id="adminMenuBtn"
+    type="button"
+    aria-label="Open menu">
+
+    ☰
+
   </button>
+
 
   <input
     class="search-top"
     placeholder="🔎 Search sellers, orders, products..."
   >
+
 
   <div class="admin-top">
 
@@ -798,12 +948,26 @@ body{
       👨‍💼
     </div>
 
-    <span>Admin</span>
+    <span>
+      Admin
+    </span>
 
-    <button class="logout"
+
+    <button
+      class="logout"
       onclick="logout()"
-      style="border:0;border-radius:8px;padding:9px 12px;background:#17202a;color:#fff;font-weight:700;cursor:pointer">
+      style="
+        border:0;
+        border-radius:8px;
+        padding:9px 12px;
+        background:#17202a;
+        color:#fff;
+        font-weight:700;
+        cursor:pointer;
+      ">
+
       Logout
+
     </button>
 
   </div>
@@ -811,88 +975,167 @@ body{
 </header>
 
 
+
 <main class="main">
+
+
+  <!-- =====================================================
+       WELCOME
+  ===================================================== -->
 
   <div class="welcome">
 
-    <h1>👋 Main Admin</h1>
+    <h1>
+      👋 Main Admin
+    </h1>
 
-    <p id="adminName" class="muted">
+    <p
+      id="adminName"
+      class="muted">
+
       Checking access...
+
     </p>
 
   </div>
 
-  <div id="notice"
+
+  <div
+    id="notice"
     class="notice hidden">
   </div>
 
 
-  <!-- ================= STATS ================= -->
+
+  <!-- =====================================================
+       STATS
+  ===================================================== -->
 
   <section class="stats">
 
     <div class="stat">
-      <div class="muted">Products</div>
-      <b id="productCount">0</b>
+
+      <div class="muted">
+        Products
+      </div>
+
+      <b id="productCount">
+        0
+      </b>
+
     </div>
 
-    <div class="stat">
-      <div class="muted">Sellers</div>
-      <b id="sellerCount">0</b>
-    </div>
 
     <div class="stat">
-      <div class="muted">Active Users</div>
-      <b id="userCount">0</b>
+
+      <div class="muted">
+        Sellers
+      </div>
+
+      <b id="sellerCount">
+        0
+      </b>
+
     </div>
 
+
     <div class="stat">
-      <div class="muted">Low Stock</div>
-      <b id="lowStock">0</b>
+
+      <div class="muted">
+        Active Users
+      </div>
+
+      <b id="userCount">
+        0
+      </b>
+
+    </div>
+
+
+    <div class="stat">
+
+      <div class="muted">
+        Low Stock
+      </div>
+
+      <b id="lowStock">
+        0
+      </b>
+
     </div>
 
   </section>
 
 
-  <!-- ================= TABS ================= -->
+
+  <!-- =====================================================
+       TABS
+  ===================================================== -->
 
   <div class="tabs">
 
-    <button class="tab active"
+
+    <button
+      class="tab active"
       onclick="showTab('products',this)">
+
       📦 Products
+
     </button>
 
-    <button class="tab"
+
+    <button
+      class="tab"
       onclick="showTab('sellers',this)">
+
       👨‍💼 Sellers
+
     </button>
 
-    <button class="tab"
+
+    <button
+      class="tab"
       onclick="showTab('verification',this)">
+
       🛡️ Seller Verification
+
     </button>
 
-    <button class="tab"
+
+    <button
+      class="tab"
       onclick="showTab('users',this)">
+
       👥 Users
+
     </button>
 
-    <button class="tab"
+
+    <button
+      class="tab"
       onclick="showTab('info',this)">
+
       📦 Orders
+
     </button>
+
 
   </div>
 
 
-  <!-- ================= PRODUCTS ================= -->
 
-  <section id="products"
+  <!-- =====================================================
+       PRODUCTS
+  ===================================================== -->
+
+  <section
+    id="products"
     class="panel">
 
-    <h2>Product Management</h2>
+    <h2>
+      Product Management
+    </h2>
+
 
     <input
       class="search"
@@ -901,37 +1144,54 @@ body{
       placeholder="🔎 Product search..."
     >
 
+
     <div id="productTable"></div>
 
   </section>
 
 
-  <!-- ================= SELLERS ================= -->
 
-  <section id="sellers"
+  <!-- =====================================================
+       SELLERS
+  ===================================================== -->
+
+  <section
+    id="sellers"
     class="panel hidden">
 
-    <h2>Seller Management</h2>
+    <h2>
+      Seller Management
+    </h2>
 
     <div id="sellerTable"></div>
 
   </section>
 
 
-  <!-- ================= VERIFICATION ================= -->
 
-  <section id="verification"
+  <!-- =====================================================
+       VERIFICATION
+  ===================================================== -->
+
+  <section
+    id="verification"
     class="panel hidden">
+
 
     <button
       class="back-btn"
       onclick="showVerificationList()">
+
       ← Back to Seller Verification
+
     </button>
+
 
     <div id="verificationContent">
 
-      <h2>🛡️ Seller Verification</h2>
+      <h2>
+        🛡️ Seller Verification
+      </h2>
 
       <p class="muted">
         Pending seller verification select करें।
@@ -942,52 +1202,99 @@ body{
   </section>
 
 
-  <!-- ================= USERS ================= -->
 
-  <section id="users"
+  <!-- =====================================================
+       USERS
+  ===================================================== -->
+
+  <section
+    id="users"
     class="panel hidden">
 
-    <h2>User Management</h2>
+    <h2>
+      User Management
+    </h2>
 
     <div id="userTable"></div>
 
   </section>
 
 
-  <!-- ================= ORDERS ================= -->
 
-  <section id="info"
+  <!-- =====================================================
+       ORDERS
+  ===================================================== -->
+
+  <section
+    id="info"
     class="panel hidden">
 
-    <h2>📦 Order Management</h2>
+    <h2>
+      📦 Order Management
+    </h2>
 
-    <div id="orderNotice"
+
+    <div
+      id="orderNotice"
       class="notice hidden">
     </div>
 
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+
+    <div
+      style="
+        display:flex;
+        gap:8px;
+        flex-wrap:wrap;
+        margin-bottom:12px;
+      ">
+
 
       <button
         class="small"
         onclick="loadOrders()">
+
         🔄 Refresh Orders
+
       </button>
+
 
       <select
         id="orderStatusFilter"
         onchange="renderOrders()"
-        style="padding:10px;border:1px solid #ddd;border-radius:9px">
+        style="
+          padding:10px;
+          border:1px solid #ddd;
+          border-radius:9px;
+        ">
 
-        <option value="">All Status</option>
-        <option value="pending">Pending</option>
-        <option value="confirmed">Confirmed</option>
-        <option value="shipped">Shipped</option>
-        <option value="delivered">Delivered</option>
-        <option value="cancelled">Cancelled</option>
+        <option value="">
+          All Status
+        </option>
+
+        <option value="pending">
+          Pending
+        </option>
+
+        <option value="confirmed">
+          Confirmed
+        </option>
+
+        <option value="shipped">
+          Shipped
+        </option>
+
+        <option value="delivered">
+          Delivered
+        </option>
+
+        <option value="cancelled">
+          Cancelled
+        </option>
 
       </select>
 
     </div>
+
 
     <input
       class="search"
@@ -996,50 +1303,72 @@ body{
       placeholder="🔎 Order ID / customer / seller search..."
     >
 
+
     <div id="orderTable">
+
       <p class="muted">
         Orders load karne ke liye Orders tab open karein.
       </p>
+
     </div>
 
   </section>
+
 
 </main>
 
 </div>
 
 
-<!-- ================= DOCUMENT MODAL ================= -->
+
+<!-- =====================================================
+     DOCUMENT MODAL
+===================================================== -->
 
 <div
   class="doc-modal"
   id="docModal"
   onclick="closeDocModal(event)">
 
+
   <div
     class="doc-modal-box"
     onclick="event.stopPropagation()">
 
+
     <button
       class="modal-close"
       onclick="closeDocModal()">
+
       ×
+
     </button>
+
 
     <h2
       class="modal-title"
       id="modalTitle">
+
       Document
+
     </h2>
 
+
     <div id="modalBody"></div>
+
 
   </div>
 
 </div>
 
 
+
+<!-- =====================================================
+     MAIN JAVASCRIPT
+===================================================== -->
+
 <script>
+
 
 /* =====================================================
    SUPABASE
@@ -1048,14 +1377,17 @@ body{
 const SUPABASE_URL =
 "https://uryjmibcdfjfxoljrigt.supabase.co";
 
+
 const SUPABASE_PUBLISHABLE_KEY =
 "sb_publishable_uYbJw0ARCCkCpQ9QB6FxaQ_JrIxtOOp";
+
 
 const supabaseClient =
 supabase.createClient(
   SUPABASE_URL,
   SUPABASE_PUBLISHABLE_KEY
 );
+
 
 
 /* =====================================================
@@ -1067,37 +1399,49 @@ let profiles = [];
 let orders = [];
 
 window.sellersData = [];
+
 window.currentVerificationSeller = null;
 
 
+
 /* =====================================================
-   BASIC HELPERS
+   ESCAPE HTML
 ===================================================== */
 
 function esc(v){
 
   return String(v ?? '')
     .replace(/[&<>"']/g,m=>({
+
       '&':'&amp;',
       '<':'&lt;',
       '>':'&gt;',
       '"':'&quot;',
       "'":'&#039;'
+
     }[m]));
 
 }
 
+
+
+/* =====================================================
+   NOTICE
+===================================================== */
 
 function notice(t){
 
   const n =
     document.getElementById('notice');
 
+  if(!n) return;
+
   n.textContent = t;
 
   n.classList.remove('hidden');
 
 }
+
 
 
 /* =====================================================
@@ -1112,6 +1456,7 @@ async function guard(){
   } =
   await supabaseClient.auth.getUser();
 
+
   if(error || !user){
 
     location.href =
@@ -1121,87 +1466,29 @@ async function guard(){
 
   }
 
-  document.getElementById(
-    'adminName'
-  ).textContent =
-    (user.email || 'Admin') +
-    ' • Main Admin';
+
+  const adminName =
+    document.getElementById('adminName');
+
+
+  if(adminName){
+
+    adminName.textContent =
+      (user.email || 'Admin') +
+      ' • Main Admin';
+
+  }
+
 
   return user;
 
 }
 
 
+
 /* =====================================================
-   TAB CONTROL
+   SIDEBAR
 ===================================================== */
-
-function showTab(id,btn){
-
-  document
-    .querySelectorAll('.panel')
-    .forEach(x=>
-      x.classList.add('hidden')
-    );
-
-  const panel =
-    document.getElementById(id);
-
-  if(panel)
-    panel.classList.remove('hidden');
-
-
-  document
-    .querySelectorAll('.tab')
-    .forEach(x=>
-      x.classList.remove('active')
-    );
-
-  if(btn)
-    btn.classList.add('active');
-
-}
-
-
-function showTabById(id){
-
-  const tab =
-    [...document.querySelectorAll('.tab')]
-      .find(x =>
-        x.getAttribute('onclick')?.includes(
-          "'" + id + "'"
-        )
-      );
-
-  showTab(id,tab);
-
-  // Mobile menu automatically close
-  const sidebar =
-    document.getElementById('sidebar');
-
-  if(sidebar){
-    sidebar.classList.remove('open');
-  }
-
-}
-
-
-function showTabById(id){
-
-  const tab =
-    [...document.querySelectorAll('.tab')]
-      .find(x =>
-        x.getAttribute('onclick')?.includes(
-          "'" + id + "'"
-        )
-      );
-
-  showTab(id,tab);
-
-  closeSidebar();
-
-}
-
 
 function closeSidebar(){
 
@@ -1209,7 +1496,9 @@ function closeSidebar(){
     document.getElementById('sidebar');
 
   if(sidebar){
+
     sidebar.classList.remove('open');
+
   }
 
 }
@@ -1221,10 +1510,96 @@ function toggleSidebar(){
     document.getElementById('sidebar');
 
   if(sidebar){
+
     sidebar.classList.toggle('open');
+
   }
 
 }
+
+
+
+/* =====================================================
+   TAB CONTROL
+===================================================== */
+
+function showTab(id,btn){
+
+  document
+    .querySelectorAll('.panel')
+    .forEach(x =>
+      x.classList.add('hidden')
+    );
+
+
+  const panel =
+    document.getElementById(id);
+
+
+  if(panel){
+
+    panel.classList.remove('hidden');
+
+  }
+
+
+  document
+    .querySelectorAll('.tab')
+    .forEach(x =>
+      x.classList.remove('active')
+    );
+
+
+  if(btn){
+
+    btn.classList.add('active');
+
+  }
+
+}
+
+
+function showTabById(id){
+
+  const tabs =
+    [...document.querySelectorAll('.tab')];
+
+
+  const tab =
+    tabs.find(x => {
+
+      const click =
+        x.getAttribute('onclick') || '';
+
+      return click.includes(
+        "'" + id + "'"
+      );
+
+    });
+
+
+  showTab(id,tab);
+
+  closeSidebar();
+
+}
+
+
+function showDashboard(){
+
+  const firstTab =
+    document.querySelector('.tab');
+
+
+  showTab(
+    'products',
+    firstTab
+  );
+
+  closeSidebar();
+
+}
+
 
 
 /* =====================================================
@@ -1236,6 +1611,7 @@ async function load(){
   const user =
     await guard();
 
+
   if(!user)
     return;
 
@@ -1243,12 +1619,14 @@ async function load(){
   const [pr,pu] =
     await Promise.all([
 
+
       supabaseClient
         .from('products')
         .select('*')
         .order('id',{
           ascending:false
         }),
+
 
       supabaseClient
         .from('profiles')
@@ -1305,56 +1683,89 @@ async function load(){
 }
 
 
+
 /* =====================================================
    STATS
 ===================================================== */
 
 function updateStats(){
 
-  document.getElementById(
-    'productCount'
-  ).textContent =
-    products.length;
+  const productCount =
+    document.getElementById('productCount');
 
 
-  document.getElementById(
-    'sellerCount'
-  ).textContent =
-    profiles.filter(
-      x=>x.role==='seller'
-    ).length;
+  const sellerCount =
+    document.getElementById('sellerCount');
 
 
-  document.getElementById(
-    'userCount'
-  ).textContent =
-    profiles.filter(
-      x=>x.is_active===true
-    ).length;
+  const userCount =
+    document.getElementById('userCount');
 
 
-  document.getElementById(
-    'lowStock'
-  ).textContent =
-    products.filter(
-      x=>Number(x.stock||0)<=5
-    ).length;
+  const lowStock =
+    document.getElementById('lowStock');
+
+
+  const pendingBadge =
+    document.getElementById('pendingBadge');
+
+
+  if(productCount){
+
+    productCount.textContent =
+      products.length;
+
+  }
+
+
+  if(sellerCount){
+
+    sellerCount.textContent =
+      profiles.filter(
+        x => x.role === 'seller'
+      ).length;
+
+  }
+
+
+  if(userCount){
+
+    userCount.textContent =
+      profiles.filter(
+        x => x.is_active === true
+      ).length;
+
+  }
+
+
+  if(lowStock){
+
+    lowStock.textContent =
+      products.filter(
+        x => Number(x.stock || 0) <= 5
+      ).length;
+
+  }
 
 
   const pending =
-    (window.sellersData||[])
-      .filter(x=>
-        String(x.status||'')
-          .toLowerCase()==='pending'
-      ).length;
+    (window.sellersData || [])
+      .filter(x =>
+        String(x.status || '')
+          .toLowerCase() === 'pending'
+      )
+      .length;
 
 
-  document.getElementById(
-    'pendingBadge'
-  ).textContent =
-    pending;
+  if(pendingBadge){
+
+    pendingBadge.textContent =
+      pending;
+
+  }
 
 }
+
 
 
 /* =====================================================
@@ -1368,22 +1779,35 @@ function renderProducts(){
       document.getElementById(
         'productSearch'
       )?.value || ''
-    ).toLowerCase();
+    )
+    .toLowerCase();
 
 
   const list =
-    products.filter(p=>
+    products.filter(p =>
+
       String(
-        p.product_name||''
-      ).toLowerCase().includes(q)
+        p.product_name || ''
+      )
+      .toLowerCase()
+      .includes(q)
+
     );
+
+
+  const table =
+    document.getElementById(
+      'productTable'
+    );
+
+
+  if(!table)
+    return;
 
 
   if(!list.length){
 
-    document.getElementById(
-      'productTable'
-    ).innerHTML =
+    table.innerHTML =
       '<p class="muted">No products found.</p>';
 
     return;
@@ -1391,66 +1815,99 @@ function renderProducts(){
   }
 
 
-  document.getElementById(
-    'productTable'
-  ).innerHTML =
+  table.innerHTML = `
 
-  '<table class="table">'+
-  '<thead>'+
-  '<tr>'+
-  '<th>Image</th>'+
-  '<th>Product</th>'+
-  '<th>Price</th>'+
-  '<th>Stock</th>'+
-  '<th>Category</th>'+
-  '<th>Action</th>'+
-  '</tr>'+
-  '</thead>'+
-  '<tbody>'+
+    <table class="table">
 
-  list.map(p=>`
+      <thead>
 
-    <tr>
+        <tr>
 
-      <td>
-        <img
-          class="thumb"
-          src="${esc(p.image_url)}"
-          onerror="this.style.display='none'"
-        >
-      </td>
+          <th>Image</th>
+          <th>Product</th>
+          <th>Price</th>
+          <th>Stock</th>
+          <th>Category</th>
+          <th>Action</th>
 
-      <td>${esc(p.product_name)}</td>
+        </tr>
 
-      <td>
-        ₹${Number(p.price||0)}
-      </td>
+      </thead>
 
-      <td>
-        ${Number(p.stock||0)}
-      </td>
 
-      <td>
-        ${esc(p.category)}
-      </td>
+      <tbody>
 
-      <td>
+        ${
+          list.map(p => `
 
-        <button
-          class="danger"
-          onclick="deleteProduct('${esc(p.id)}')">
-          Delete
-        </button>
+            <tr>
 
-      </td>
+              <td>
 
-    </tr>
+                ${
+                  p.image_url
 
-  `).join('')+
+                  ?
 
-  '</tbody></table>';
+                  `<img
+                    class="thumb"
+                    src="${esc(p.image_url)}"
+                    onerror="this.style.display='none'"
+                  >`
+
+                  :
+
+                  '-'
+                }
+
+              </td>
+
+
+              <td>
+                ${esc(p.product_name)}
+              </td>
+
+
+              <td>
+                ₹${Number(p.price || 0)}
+              </td>
+
+
+              <td>
+                ${Number(p.stock || 0)}
+              </td>
+
+
+              <td>
+                ${esc(p.category)}
+              </td>
+
+
+              <td>
+
+                <button
+                  class="danger"
+                  onclick="deleteProduct('${esc(p.id)}')">
+
+                  Delete
+
+                </button>
+
+              </td>
+
+            </tr>
+
+          `).join('')
+        }
+
+      </tbody>
+
+    </table>
+
+  `;
 
 }
+
 
 
 /* =====================================================
@@ -1474,7 +1931,7 @@ async function loadSellers(){
   if(error){
 
     notice(
-      '⚠️ Sellers load nahi hue: '+
+      '⚠️ Sellers load nahi hue: ' +
       error.message
     );
 
@@ -1499,10 +1956,15 @@ function renderSellerManagement(){
   const list =
     window.sellersData || [];
 
+
   const el =
     document.getElementById(
       'sellerTable'
     );
+
+
+  if(!el)
+    return;
 
 
   if(!list.length){
@@ -1524,8 +1986,11 @@ function renderSellerManagement(){
       placeholder="🔎 Seller / business search..."
     >
 
+
     <div id="sellerRows">
+
       ${sellerRows(list)}
+
     </div>
 
   `;
@@ -1537,76 +2002,97 @@ function sellerRows(list){
 
   return `
 
-  <table class="table">
+    <table class="table">
 
-    <thead>
+      <thead>
 
-      <tr>
-        <th>Business</th>
-        <th>Owner</th>
-        <th>Status</th>
-        <th>Active</th>
-        <th>Created</th>
-        <th>Action</th>
-      </tr>
+        <tr>
 
-    </thead>
+          <th>Business</th>
+          <th>Owner</th>
+          <th>Status</th>
+          <th>Active</th>
+          <th>Created</th>
+          <th>Action</th>
 
-    <tbody>
+        </tr>
 
-      ${
-        list.map(x=>`
+      </thead>
 
-          <tr>
 
-            <td>
-              ${esc(x.business_name||'-')}
-            </td>
+      <tbody>
 
-            <td>
-              ${esc(x.owner_name||'-')}
-            </td>
+        ${
+          list.map(x => `
 
-            <td>
-              ${esc(x.status||'pending')}
-            </td>
+            <tr>
 
-            <td>
-              ${
-                x.is_active
-                ? '🟢 Active'
-                : '🔴 Inactive'
-              }
-            </td>
+              <td>
+                ${esc(x.business_name || '-')}
+              </td>
 
-            <td>
-              ${
-                x.created_at
-                ? new Date(
+
+              <td>
+                ${esc(x.owner_name || '-')}
+              </td>
+
+
+              <td>
+                ${esc(x.status || 'pending')}
+              </td>
+
+
+              <td>
+
+                ${
+                  x.is_active
+                  ? '🟢 Active'
+                  : '🔴 Inactive'
+                }
+
+              </td>
+
+
+              <td>
+
+                ${
+                  x.created_at
+
+                  ?
+
+                  new Date(
                     x.created_at
-                  ).toLocaleDateString('en-IN')
-                : '-'
-              }
-            </td>
+                  )
+                  .toLocaleDateString('en-IN')
 
-            <td>
+                  :
 
-              <button
-                class="small"
-                onclick="openSellerVerification('${esc(x.id)}')">
-                🛡️ Verification
-              </button>
+                  '-'
+                }
 
-            </td>
+              </td>
 
-          </tr>
 
-        `).join('')
-      }
+              <td>
 
-    </tbody>
+                <button
+                  class="small"
+                  onclick="openSellerVerification('${esc(x.id)}')">
 
-  </table>
+                  🛡️ Verification
+
+                </button>
+
+              </td>
+
+            </tr>
+
+          `).join('')
+        }
+
+      </tbody>
+
+    </table>
 
   `;
 
@@ -1620,33 +2106,51 @@ function filterSellerRows(){
       document.getElementById(
         'sellerSearch'
       )?.value || ''
-    ).toLowerCase();
+    )
+    .toLowerCase();
 
 
-  document.getElementById(
-    'sellerRows'
-  ).innerHTML =
+  const rows =
+    document.getElementById(
+      'sellerRows'
+    );
 
-  sellerRows(
-    (window.sellersData||[])
-      .filter(x=>
-        String(
-          x.business_name||''
-        ).toLowerCase().includes(q)
 
-        ||
+  if(!rows)
+    return;
 
-        String(
-          x.owner_name||''
-        ).toLowerCase().includes(q)
-      )
-  );
+
+  rows.innerHTML =
+
+    sellerRows(
+
+      (window.sellersData || [])
+        .filter(x =>
+
+          String(
+            x.business_name || ''
+          )
+          .toLowerCase()
+          .includes(q)
+
+          ||
+
+          String(
+            x.owner_name || ''
+          )
+          .toLowerCase()
+          .includes(q)
+
+        )
+
+    );
 
 }
 
 
+
 /* =====================================================
-   SELLER VERIFICATION LIST
+   VERIFICATION LIST
 ===================================================== */
 
 function showVerificationList(){
@@ -1660,14 +2164,22 @@ function showVerificationList(){
     );
 
 
+  if(!box)
+    return;
+
+
   const sellers =
     window.sellersData || [];
 
 
   const pending =
-    sellers.filter(x=>
-      String(x.status||'pending')
-        .toLowerCase()==='pending'
+    sellers.filter(x =>
+
+      String(
+        x.status || 'pending'
+      )
+      .toLowerCase() === 'pending'
+
     );
 
 
@@ -1687,8 +2199,12 @@ function showVerificationList(){
 
       </div>
 
+
       <div class="verification-status">
-        Pending: ${pending.length}
+
+        Pending:
+        ${pending.length}
+
       </div>
 
     </div>
@@ -1699,40 +2215,53 @@ function showVerificationList(){
 
       ?
 
-      `<div>
-        ${pending.map(x=>`
+      pending.map(x => `
 
-          <div
-            class="seller-profile"
-            style="cursor:pointer"
-            onclick="openSellerVerification('${esc(x.id)}')">
+        <div
+          class="seller-profile"
+          style="cursor:pointer"
+          onclick="openSellerVerification('${esc(x.id)}')">
 
-            <h3>
-              ${esc(
+          <h3>
+
+            ${
+              esc(
                 x.business_name ||
                 'Business Name not submitted'
-              )}
-            </h3>
+              )
+            }
 
-            <p>
-              <b>Owner:</b>
-              ${esc(x.owner_name||'-')}
-            </p>
+          </h3>
 
-            <p class="muted">
-              Status: Pending
-            </p>
 
-          </div>
+          <p>
 
-        `).join('')}
-      </div>`
+            <b>Owner:</b>
+            ${esc(x.owner_name || '-')}
+
+          </p>
+
+
+          <p class="muted">
+            Status: Pending
+          </p>
+
+        </div>
+
+      `).join('')
+
 
       :
 
-      `<div class="notice">
-        कोई pending seller verification नहीं है।
-      </div>`
+      `
+
+        <div class="notice">
+
+          कोई pending seller verification नहीं है।
+
+        </div>
+
+      `
 
     }
 
@@ -1740,51 +2269,76 @@ function showVerificationList(){
 
 }
 
- /* =====================================================
-   AUTOMATIC PRIVATE DOCUMENT PREVIEW
+
+
+/* =====================================================
+   PRIVATE DOCUMENT SIGNED URL
 ===================================================== */
 
 async function getDocumentSignedUrl(path){
 
-  if(!path) return null;
+  if(!path)
+    return null;
+
 
   const {
     data,
     error
-  } = await supabaseClient
+  } =
+  await supabaseClient
     .storage
     .from('seller-kyc')
-    .createSignedUrl(path, 300);
+    .createSignedUrl(
+      path,
+      300
+    );
+
 
   if(error){
+
     console.log(
       'Document preview error:',
       path,
       error.message
     );
+
     return null;
+
   }
 
+
   return data?.signedUrl || null;
+
 }
 
+
+
+/* =====================================================
+   AUTOMATIC DOCUMENT PREVIEW
+===================================================== */
 
 async function buildAutoDocumentPreview(paths){
 
   if(!paths || !paths.length){
 
     return `
+
       <div class="auto-doc-preview">
+
         <div class="auto-doc-empty">
+
           Document submitted nahi hai.
+
         </div>
+
       </div>
+
     `;
 
   }
 
 
-  const items=[];
+  const items = [];
 
 
   for(const path of paths){
@@ -1792,20 +2346,22 @@ async function buildAutoDocumentPreview(paths){
     const url =
       await getDocumentSignedUrl(path);
 
-    if(!url) continue;
+
+    if(!url)
+      continue;
 
 
     const lower =
       String(path).toLowerCase();
 
 
-    /* IMAGE */
-
     if(
+
       lower.endsWith('.jpg') ||
       lower.endsWith('.jpeg') ||
       lower.endsWith('.png') ||
       lower.endsWith('.webp')
+
     ){
 
       items.push(`
@@ -1823,9 +2379,10 @@ async function buildAutoDocumentPreview(paths){
 
     }
 
-    /* PDF */
 
-    else if(lower.endsWith('.pdf')){
+    else if(
+      lower.endsWith('.pdf')
+    ){
 
       items.push(`
 
@@ -1844,11 +2401,17 @@ async function buildAutoDocumentPreview(paths){
   if(!items.length){
 
     return `
+
       <div class="auto-doc-preview">
+
         <div class="auto-doc-empty">
+
           Document preview available nahi hai.
+
         </div>
+
       </div>
+
     `;
 
   }
@@ -1864,7 +2427,9 @@ async function buildAutoDocumentPreview(paths){
 
   `;
 
-  } 
+}
+
+
 
 /* =====================================================
    OPEN SELLER VERIFICATION
@@ -1879,6 +2444,10 @@ async function openSellerVerification(sellerId){
     document.getElementById(
       'verificationContent'
     );
+
+
+  if(!box)
+    return;
 
 
   box.innerHTML =
@@ -1898,11 +2467,16 @@ async function openSellerVerification(sellerId){
 
   if(error){
 
-    box.innerHTML =
-      `<div class="notice">
-        ❌ Seller load nahi hua:
+    box.innerHTML = `
+
+      <div class="notice">
+
+        ❌ Seller load nahi hua:<br>
         ${esc(error.message)}
-      </div>`;
+
+      </div>
+
+    `;
 
     return;
 
@@ -1911,10 +2485,15 @@ async function openSellerVerification(sellerId){
 
   if(!seller){
 
-    box.innerHTML =
-      `<div class="notice">
+    box.innerHTML = `
+
+      <div class="notice">
+
         ❌ Seller profile nahi mila.
-      </div>`;
+
+      </div>
+
+    `;
 
     return;
 
@@ -1925,16 +2504,23 @@ async function openSellerVerification(sellerId){
     seller;
 
 
-  /* ---------- documents ---------- */
 
-  const docs=[];
+  /* =====================================================
+     DOCUMENT LIST
+  ===================================================== */
+
+  const docs = [];
 
 
   if(seller.aadhaar_document_url){
 
     docs.push({
+
       title:'🪪 Aadhaar Front',
-      path:seller.aadhaar_document_url
+
+      path:
+        seller.aadhaar_document_url
+
     });
 
   }
@@ -1943,8 +2529,12 @@ async function openSellerVerification(sellerId){
   if(seller.aadhaar_back_document_url){
 
     docs.push({
+
       title:'🪪 Aadhaar Back',
-      path:seller.aadhaar_back_document_url
+
+      path:
+        seller.aadhaar_back_document_url
+
     });
 
   }
@@ -1953,8 +2543,12 @@ async function openSellerVerification(sellerId){
   if(seller.pan_document_url){
 
     docs.push({
+
       title:'💳 PAN Card',
-      path:seller.pan_document_url
+
+      path:
+        seller.pan_document_url
+
     });
 
   }
@@ -1963,14 +2557,22 @@ async function openSellerVerification(sellerId){
   if(seller.business_proof_url){
 
     docs.push({
+
       title:'📄 Business Proof',
-      path:seller.business_proof_url
+
+      path:
+        seller.business_proof_url
+
     });
 
   }
 
 
-  let businessProofs=[];
+
+  /* BUSINESS PROOF MULTIPLE */
+
+  let businessProofs = [];
+
 
   try{
 
@@ -1989,20 +2591,31 @@ async function openSellerVerification(sellerId){
 
     }
 
-  }catch(e){}
+  }catch(e){
+
+    businessProofs=[];
+
+  }
 
 
   if(businessProofs.length){
 
     docs.push({
+
       title:'📄 Business Proofs',
+
       paths:businessProofs
+
     });
 
   }
 
 
-  let shopPhotos=[];
+
+  /* SHOP PHOTOS */
+
+  let shopPhotos = [];
+
 
   try{
 
@@ -2021,14 +2634,21 @@ async function openSellerVerification(sellerId){
 
     }
 
-  }catch(e){}
+  }catch(e){
+
+    shopPhotos=[];
+
+  }
 
 
   if(shopPhotos.length){
 
     docs.push({
+
       title:'🏪 Shop Photos',
+
       paths:shopPhotos
+
     });
 
   }
@@ -2036,41 +2656,64 @@ async function openSellerVerification(sellerId){
   else if(seller.shop_photo_url){
 
     docs.push({
+
       title:'🏪 Shop Photo',
-      path:seller.shop_photo_url
+
+      path:
+        seller.shop_photo_url
+
     });
 
   }
 
+
+
+  /* GST */
 
   if(seller.gst_certificate_url){
 
     docs.push({
+
       title:'📋 GST Certificate',
-      path:seller.gst_certificate_url
+
+      path:
+        seller.gst_certificate_url
+
     });
 
   }
 
+
+
+  /* INVOICE */
 
   if(seller.invoice_document_url){
 
     docs.push({
+
       title:'🧾 Invoice / Bill',
-      path:seller.invoice_document_url
+
+      path:
+        seller.invoice_document_url
+
     });
 
   }
 
 
-  /* ---------- address ---------- */
+
+  /* =====================================================
+     ADDRESS
+  ===================================================== */
 
   const address =
     [
+
       seller.shop_address,
       seller.city,
       seller.state,
       seller.pincode
+
     ]
     .filter(Boolean)
     .join(', ');
@@ -2079,99 +2722,69 @@ async function openSellerVerification(sellerId){
   const lat =
     seller.latitude;
 
+
   const lng =
     seller.longitude;
 
 
-  /* ---------- automatic document previews ---------- */
 
-let docHtml = '';
+  /* =====================================================
+     BUILD DOCUMENT HTML
+  ===================================================== */
 
-for(const d of docs){
+  let docHtml = '';
 
-  let paths = [];
 
-  if(d.paths && d.paths.length){
+  for(const d of docs){
 
-    paths = d.paths;
+    let paths = [];
 
-  }else if(d.path){
 
-    paths = [d.path];
+    if(
+      d.paths &&
+      d.paths.length
+    ){
+
+      paths =
+        d.paths;
+
+    }
+
+    else if(d.path){
+
+      paths =
+        [d.path];
+
+    }
+
+
+    const preview =
+      await buildAutoDocumentPreview(
+        paths
+      );
+
+
+    docHtml += `
+
+      <div class="doc-card">
+
+        <h4>
+          ${esc(d.title)}
+        </h4>
+
+        ${preview}
+
+      </div>
+
+    `;
 
   }
 
-  const preview =
-    await buildAutoDocumentPreview(paths);
-
-  docHtml += `
-
-    <div class="doc-card">
-
-      <h4>
-        ${esc(d.title)}
-      </h4>
-
-      ${preview}
-
-    </div>
-
-  `;
-
-}
-
-      if(d.paths && d.paths.length){
-
-        return `
-
-          <div class="doc-card">
-
-            <h4>
-              ${esc(d.title)}
-            </h4>
-
-            <div class="doc-placeholder">
-              ${d.paths.length}
-              document(s) submitted
-            </div>
-
-            <button
-              class="doc-btn"
-              onclick="viewMultipleDocuments(${i})">
-              👁️ View All
-            </button>
-
-          </div>
-
-        `;
-
-      }
 
 
-      return `
-
-        <div class="doc-card">
-
-          <h4>
-            ${esc(d.title)}
-          </h4>
-
-          <div class="doc-placeholder">
-            Document submitted
-          </div>
-
-          <button
-            class="doc-btn"
-            onclick="viewVerificationDocument('${esc(d.path)}','${esc(d.title)}')">
-            👁️ View
-          </button>
-
-        </div>
-
-      `;
-
-    }).join('');
-
+  /* =====================================================
+     PAGE
+  ===================================================== */
 
   box.innerHTML = `
 
@@ -2184,17 +2797,24 @@ for(const d of docs){
         </h2>
 
         <p class="muted">
-          Review seller documents and approve or reject
+
+          Review seller documents
+          and approve or reject
+
         </p>
 
       </div>
 
+
       <div class="verification-status">
+
         Status:
-        ${esc(seller.status||'pending')}
+        ${esc(seller.status || 'pending')}
+
       </div>
 
     </div>
+
 
 
     <!-- SELLER PROFILE -->
@@ -2202,32 +2822,42 @@ for(const d of docs){
     <div class="seller-profile">
 
       <h3>
+
         ${
           esc(
             seller.business_name ||
             'Business Name not submitted'
           )
         }
+
       </h3>
 
+
       <p>
+
         <b>Owner:</b>
-        ${esc(seller.owner_name||'-')}
+        ${esc(seller.owner_name || '-')}
+
       </p>
 
 
       <div class="seller-info">
 
+
         <div class="info-box">
 
-          <b>Business Type</b>
+          <b>
+            Business Type
+          </b>
 
           <br>
 
           <span class="muted">
+
             ${esc(
-              seller.business_type||'-'
+              seller.business_type || '-'
             )}
+
           </span>
 
         </div>
@@ -2235,12 +2865,18 @@ for(const d of docs){
 
         <div class="info-box">
 
-          <b>Location</b>
+          <b>
+            Location
+          </b>
 
           <br>
 
           <span class="muted">
-            ${esc(address||'-')}
+
+            ${esc(
+              address || '-'
+            )}
+
           </span>
 
         </div>
@@ -2248,7 +2884,9 @@ for(const d of docs){
 
         <div class="info-box">
 
-          <b>Applied On</b>
+          <b>
+            Applied On
+          </b>
 
           <br>
 
@@ -2256,11 +2894,16 @@ for(const d of docs){
 
             ${
               seller.created_at
+
               ?
+
               new Date(
                 seller.created_at
-              ).toLocaleDateString('en-IN')
+              )
+              .toLocaleDateString('en-IN')
+
               :
+
               '-'
             }
 
@@ -2268,9 +2911,11 @@ for(const d of docs){
 
         </div>
 
+
       </div>
 
     </div>
+
 
 
     <!-- DOCUMENTS -->
@@ -2287,19 +2932,33 @@ for(const d of docs){
 
         ?
 
-        `<div class="verify-documents">
-          ${docHtml}
-        </div>`
+        `
+
+          <div class="verify-documents">
+
+            ${docHtml}
+
+          </div>
+
+        `
 
         :
 
-        `<div class="notice">
-          Seller ने अभी कोई document submit नहीं किया है।
-        </div>`
+        `
+
+          <div class="notice">
+
+            Seller ने अभी कोई
+            document submit नहीं किया है।
+
+          </div>
+
+        `
 
       }
 
     </div>
+
 
 
     <!-- ADDRESS -->
@@ -2313,20 +2972,25 @@ for(const d of docs){
 
       <div class="verify-info-grid">
 
+
         <div class="verify-info-item">
 
-          <b>Shop Address</b>
+          <b>
+            Shop Address
+          </b>
 
           <br><br>
 
-          ${esc(address||'-')}
+          ${esc(address || '-')}
 
         </div>
 
 
         <div class="verify-info-item">
 
-          <b>Coordinates</b>
+          <b>
+            Coordinates
+          </b>
 
           <br><br>
 
@@ -2335,14 +2999,18 @@ for(const d of docs){
 
             ?
 
-            esc(lat)+' , '+esc(lng)
+            esc(lat) +
+            ' , ' +
+            esc(lng)
 
             :
 
             'Location not submitted'
+
           }
 
         </div>
+
 
       </div>
 
@@ -2352,12 +3020,19 @@ for(const d of docs){
 
         ?
 
-        `<a
-          class="map-link"
-          target="_blank"
-          href="https://www.google.com/maps?q=${encodeURIComponent(lat+','+lng)}">
-          📍 View Location
-        </a>`
+        `
+
+          <a
+            class="map-link"
+            target="_blank"
+            rel="noopener"
+            href="https://www.google.com/maps?q=${encodeURIComponent(lat + ',' + lng)}">
+
+            📍 View Location
+
+          </a>
+
+        `
 
         :
 
@@ -2366,6 +3041,7 @@ for(const d of docs){
       }
 
     </div>
+
 
 
     <!-- BUSINESS DETAILS -->
@@ -2379,14 +3055,17 @@ for(const d of docs){
 
       <div class="verify-info-grid">
 
+
         <div class="verify-info-item">
 
-          <b>Business Name</b>
+          <b>
+            Business Name
+          </b>
 
           <br><br>
 
           ${esc(
-            seller.business_name||'-'
+            seller.business_name || '-'
           )}
 
         </div>
@@ -2394,12 +3073,14 @@ for(const d of docs){
 
         <div class="verify-info-item">
 
-          <b>Owner Name</b>
+          <b>
+            Owner Name
+          </b>
 
           <br><br>
 
           ${esc(
-            seller.owner_name||'-'
+            seller.owner_name || '-'
           )}
 
         </div>
@@ -2407,12 +3088,14 @@ for(const d of docs){
 
         <div class="verify-info-item">
 
-          <b>Business Type</b>
+          <b>
+            Business Type
+          </b>
 
           <br><br>
 
           ${esc(
-            seller.business_type||'-'
+            seller.business_type || '-'
           )}
 
         </div>
@@ -2420,12 +3103,14 @@ for(const d of docs){
 
         <div class="verify-info-item">
 
-          <b>Description</b>
+          <b>
+            Description
+          </b>
 
           <br><br>
 
           ${esc(
-            seller.description||'-'
+            seller.description || '-'
           )}
 
         </div>
@@ -2433,7 +3118,9 @@ for(const d of docs){
 
         <div class="verify-info-item">
 
-          <b>Year of Establishment</b>
+          <b>
+            Year of Establishment
+          </b>
 
           <br><br>
 
@@ -2445,12 +3132,14 @@ for(const d of docs){
 
         </div>
 
+
       </div>
 
     </div>
 
 
-    <!-- ADMIN -->
+
+    <!-- ADMIN ACTION -->
 
     <div class="verify-info">
 
@@ -2468,18 +3157,24 @@ for(const d of docs){
 
       <div class="verify-actions">
 
+
         <button
           class="approve-btn"
           onclick="verifySeller('approved')">
+
           ✅ Approve Seller
+
         </button>
 
 
         <button
           class="reject-btn"
           onclick="verifySeller('rejected')">
+
           ❌ Reject Seller
+
         </button>
+
 
       </div>
 
@@ -2490,83 +3185,131 @@ for(const d of docs){
 }
 
 
+
 /* =====================================================
    OPEN PRIVATE DOCUMENT
 ===================================================== */
 
-async function viewVerificationDocument(path, title){
+async function viewVerificationDocument(
+  path,
+  title
+){
 
   if(!path){
-    alert('Document available nahi hai.');
+
+    alert(
+      'Document available nahi hai.'
+    );
+
     return;
+
   }
+
 
   const {
     data,
     error
-  } = await supabaseClient
+  } =
+  await supabaseClient
     .storage
     .from('seller-kyc')
-    .createSignedUrl(path, 300);
+    .createSignedUrl(
+      path,
+      300
+    );
+
 
   if(error){
+
     alert(
       '❌ Document open nahi hua:\n' +
-      error.message +
-      '\n\nPath: ' + path
+      error.message
     );
+
     return;
+
   }
 
-  if(!data || !data.signedUrl){
-    alert('❌ Signed URL nahi mila.');
+
+  if(
+    !data ||
+    !data.signedUrl
+  ){
+
+    alert(
+      '❌ Signed URL nahi mila.'
+    );
+
     return;
+
   }
 
-  document.getElementById('modalTitle').textContent =
+
+  document.getElementById(
+    'modalTitle'
+  ).textContent =
     title || 'Document';
 
-  document.getElementById('modalBody').innerHTML = `
+
+  document.getElementById(
+    'modalBody'
+  ).innerHTML = `
+
     <img
       class="modal-image"
       src="${esc(data.signedUrl)}"
       onerror="this.style.display='none'"
     >
 
-    <p style="text-align:center;margin-top:15px">
+
+    <p
+      style="
+        text-align:center;
+        margin-top:15px;
+      ">
+
       <a
         href="${esc(data.signedUrl)}"
         target="_blank"
+        rel="noopener"
         class="map-link">
+
         📄 Open Document
+
       </a>
+
     </p>
+
   `;
 
-  document.getElementById('docModal')
-    .classList.add('show');
+
+  document.getElementById(
+    'docModal'
+  )
+  .classList.add('show');
+
 }
+
 
 
 /* =====================================================
    MULTIPLE DOCUMENTS
 ===================================================== */
 
-async function viewMultipleDocuments(index){
+async function viewMultipleDocuments(
+  index
+){
 
   const seller =
     window.currentVerificationSeller;
+
 
   if(!seller)
     return;
 
 
-  let list=[];
+  let list = [];
 
-
-  /*
-    First shop photos
-  */
 
   try{
 
@@ -2585,13 +3328,12 @@ async function viewMultipleDocuments(index){
 
     }
 
-  }catch(e){}
+  }catch(e){
 
+    list=[];
 
-  /*
-    If shop photos are empty,
-    try business proofs.
-  */
+  }
+
 
   if(!list.length){
 
@@ -2612,7 +3354,11 @@ async function viewMultipleDocuments(index){
 
       }
 
-    }catch(e){}
+    }catch(e){
+
+      list=[];
+
+    }
 
   }
 
@@ -2631,7 +3377,7 @@ async function viewMultipleDocuments(index){
   document.getElementById(
     'modalTitle'
   ).textContent =
-    '🏪 Submitted Photos';
+    'Submitted Photos';
 
 
   const body =
@@ -2662,7 +3408,10 @@ async function viewMultipleDocuments(index){
       );
 
 
-    if(!error && data?.signedUrl){
+    if(
+      !error &&
+      data?.signedUrl
+    ){
 
       urls.push(
         data.signedUrl
@@ -2680,7 +3429,8 @@ async function viewMultipleDocuments(index){
 
     document.getElementById(
       'docModal'
-    ).classList.add('show');
+    )
+    .classList.add('show');
 
     return;
 
@@ -2692,11 +3442,14 @@ async function viewMultipleDocuments(index){
     <div class="multiple-list">
 
       ${
-        urls.map(url=>`
+        urls.map(url => `
 
           <img
             src="${esc(url)}"
-            onclick="window.open('${esc(url)}','_blank')"
+            onclick="window.open(
+              '${esc(url)}',
+              '_blank'
+            )"
           >
 
         `).join('')
@@ -2709,25 +3462,29 @@ async function viewMultipleDocuments(index){
 
   document.getElementById(
     'docModal'
-  ).classList.add('show');
+  )
+  .classList.add('show');
 
 }
 
 
+
 /* =====================================================
-   CLOSE DOCUMENT MODAL
+   CLOSE MODAL
 ===================================================== */
 
 function closeDocModal(event){
 
   if(
     !event ||
-    event.target.id==='docModal'
+    event.target.id === 'docModal'
   ){
 
     document.getElementById(
       'docModal'
-    ).classList.remove('show');
+    )
+    .classList.remove('show');
+
 
     document.getElementById(
       'modalBody'
@@ -2738,8 +3495,9 @@ function closeDocModal(event){
 }
 
 
+
 /* =====================================================
-   APPROVE / REJECT SELLER
+   APPROVE / REJECT
 ===================================================== */
 
 async function verifySeller(status){
@@ -2766,7 +3524,7 @@ async function verifySeller(status){
 
 
   const question =
-    status==='approved'
+    status === 'approved'
 
     ?
 
@@ -2781,7 +3539,7 @@ async function verifySeller(status){
     return;
 
 
-  const updateData={
+  const updateData = {
 
     status:status,
 
@@ -2791,35 +3549,33 @@ async function verifySeller(status){
   };
 
 
-  if(status==='approved'){
+  if(status === 'approved'){
 
-    updateData.is_active=true;
+    updateData.is_active =
+      true;
 
-    updateData.verification_status=
+    updateData.verification_status =
       'verified';
 
-    updateData.application_status=
+    updateData.application_status =
       'approved';
 
   }
 
 
-  if(status==='rejected'){
+  if(status === 'rejected'){
 
-    updateData.is_active=false;
+    updateData.is_active =
+      false;
 
-    updateData.verification_status=
+    updateData.verification_status =
       'rejected';
 
-    updateData.application_status=
+    updateData.application_status =
       'rejected';
 
   }
 
-
-  /*
-    Main seller status update
-  */
 
   const {
     error
@@ -2833,7 +3589,7 @@ async function verifySeller(status){
   if(error){
 
     alert(
-      '❌ Verification update failed:\n'+
+      '❌ Verification update failed:\n' +
       error.message
     );
 
@@ -2841,13 +3597,6 @@ async function verifySeller(status){
 
   }
 
-
-  /*
-    Admin Remark:
-    Only save when the column exists.
-    If it doesn't exist, approval/rejection
-    still remains successful.
-  */
 
   if(remark){
 
@@ -2876,7 +3625,7 @@ async function verifySeller(status){
 
   alert(
 
-    status==='approved'
+    status === 'approved'
 
     ?
 
@@ -2893,17 +3642,17 @@ async function verifySeller(status){
 
 
   const updated =
-    (window.sellersData||[])
+    (window.sellersData || [])
       .find(
-        x=>
-          String(x.id)===
+        x =>
+          String(x.id) ===
           String(seller.id)
       );
 
 
   if(updated){
 
-    window.currentVerificationSeller=
+    window.currentVerificationSeller =
       updated;
 
   }
@@ -2914,25 +3663,42 @@ async function verifySeller(status){
 }
 
 
+
 /* =====================================================
    USERS
 ===================================================== */
 
 function renderProfiles(){
 
-  document.getElementById(
-    'userTable'
-  ).innerHTML =
-    makeProfileTable(profiles);
+  const el =
+    document.getElementById(
+      'userTable'
+    );
+
+
+  if(!el)
+    return;
+
+
+  el.innerHTML =
+    makeProfileTable(
+      profiles
+    );
 
 }
 
 
 function makeProfileTable(list){
 
-  if(!list.length)
+  if(!list.length){
 
-    return '<p class="muted">No records found.</p>';
+    return `
+      <p class="muted">
+        No records found.
+      </p>
+    `;
+
+  }
 
 
   return `
@@ -2942,48 +3708,58 @@ function makeProfileTable(list){
       <thead>
 
         <tr>
+
           <th>Name</th>
           <th>Phone</th>
           <th>Role</th>
           <th>Active</th>
           <th>Created</th>
+
         </tr>
 
       </thead>
 
+
       <tbody>
 
         ${
-          list.map(x=>`
+          list.map(x => `
 
             <tr>
 
               <td>
-                ${esc(x.full_name||'-')}
+                ${esc(x.full_name || '-')}
               </td>
 
               <td>
-                ${esc(x.phone||'-')}
+                ${esc(x.phone || '-')}
               </td>
 
               <td>
-                ${esc(x.role||'-')}
+                ${esc(x.role || '-')}
               </td>
 
               <td>
-                ${x.is_active?'✅':'❌'}
+                ${x.is_active ? '✅' : '❌'}
               </td>
 
               <td>
+
                 ${
                   x.created_at
+
                   ?
+
                   new Date(
                     x.created_at
-                  ).toLocaleDateString('en-IN')
+                  )
+                  .toLocaleDateString('en-IN')
+
                   :
+
                   '-'
                 }
+
               </td>
 
             </tr>
@@ -3000,6 +3776,7 @@ function makeProfileTable(list){
 }
 
 
+
 /* =====================================================
    ORDERS
 ===================================================== */
@@ -3011,8 +3788,10 @@ function orderNotice(t){
       'orderNotice'
     );
 
+
   if(!n)
     return;
+
 
   n.textContent=t;
 
@@ -3033,45 +3812,65 @@ function orderDate(v){
   if(!v)
     return '-';
 
+
   const d =
     new Date(v);
 
-  return isNaN(d.getTime())
-    ?
-    '-'
-    :
-    d.toLocaleString('en-IN');
+
+  return isNaN(
+    d.getTime()
+  )
+
+  ?
+
+  '-'
+
+  :
+
+  d.toLocaleString('en-IN');
 
 }
 
 
 function statusOptions(current){
 
-  const statuses=[
+  const statuses = [
+
     'pending',
     'confirmed',
     'shipped',
     'delivered',
     'cancelled'
+
   ];
 
 
   return `
 
     <select
-      onchange="setOrderStatus(this.dataset.id,this.value)"
+      onchange="
+        setOrderStatus(
+          this.dataset.id,
+          this.value
+        )
+      "
       data-id="${orderEsc(current.id)}"
-      style="padding:7px;border:1px solid #ddd;border-radius:7px">
+      style="
+        padding:7px;
+        border:1px solid #ddd;
+        border-radius:7px;
+      ">
+
 
       ${
-        statuses.map(s=>`
+        statuses.map(s => `
 
           <option
             value="${s}"
             ${
               String(
-                current.status||'pending'
-              ).toLowerCase()===s
+                current.status || 'pending'
+              ).toLowerCase() === s
               ?
               'selected'
               :
@@ -3079,7 +3878,7 @@ function statusOptions(current){
             }>
 
             ${
-              s.charAt(0).toUpperCase()+
+              s.charAt(0).toUpperCase() +
               s.slice(1)
             }
 
@@ -3087,6 +3886,7 @@ function statusOptions(current){
 
         `).join('')
       }
+
 
     </select>
 
@@ -3101,23 +3901,26 @@ function renderOrders(){
     (
       document.getElementById(
         'orderSearch'
-      )?.value||''
-    ).toLowerCase();
+      )?.value || ''
+    )
+    .toLowerCase();
 
 
   const sf =
     (
       document.getElementById(
         'orderStatusFilter'
-      )?.value||''
-    ).toLowerCase();
+      )?.value || ''
+    )
+    .toLowerCase();
 
 
   const list =
-    (orders||[])
-      .filter(o=>{
+    (orders || [])
+      .filter(o => {
 
-        const text=[
+
+        const text = [
 
           o.id,
           o.customer_id,
@@ -3136,7 +3939,7 @@ function renderOrders(){
         .toLowerCase();
 
 
-        return
+        return (
 
           (!q || text.includes(q))
 
@@ -3146,18 +3949,29 @@ function renderOrders(){
             !sf ||
 
             String(
-              o.status||'pending'
-            ).toLowerCase()===sf
-          );
+              o.status || 'pending'
+            )
+            .toLowerCase() === sf
+          )
+
+        );
 
       });
 
 
-  if(!list.length){
-
+  const el =
     document.getElementById(
       'orderTable'
-    ).innerHTML =
+    );
+
+
+  if(!el)
+    return;
+
+
+  if(!list.length){
+
+    el.innerHTML =
       '<p class="muted">No orders found.</p>';
 
     return;
@@ -3165,9 +3979,7 @@ function renderOrders(){
   }
 
 
-  document.getElementById(
-    'orderTable'
-  ).innerHTML = `
+  el.innerHTML = `
 
     <table class="table">
 
@@ -3188,12 +4000,14 @@ function renderOrders(){
 
       </thead>
 
+
       <tbody>
 
         ${
-          list.map(o=>{
+          list.map(o => {
 
-            const address=[
+
+            const address = [
 
               o.shipping_address,
               o.shipping_city,
@@ -3213,53 +4027,78 @@ function renderOrders(){
                   ${orderEsc(o.id)}
                 </td>
 
+
                 <td>
+
                   ${orderEsc(
-                    o.shipping_name||
-                    o.customer_id||
+                    o.shipping_name ||
+                    o.customer_id ||
                     '-'
                   )}
+
                 </td>
 
+
                 <td>
+
                   ${orderEsc(
-                    o.shipping_phone||'-'
+                    o.shipping_phone ||
+                    '-'
                   )}
+
                 </td>
 
+
                 <td>
+
                   ₹${Number(
-                    o.total_amount||0
+                    o.total_amount || 0
                   ).toFixed(2)}
+
                 </td>
 
+
                 <td>
+
                   ${orderEsc(
-                    o.payment_method||'-'
+                    o.payment_method || '-'
                   )}
+
                   /
+
                   ${orderEsc(
-                    o.payment_status||'-'
+                    o.payment_status || '-'
                   )}
+
                 </td>
 
-                <td>
-                  ${orderEsc(
-                    address||'-'
-                  )}
-                </td>
 
                 <td>
+
+                  ${orderEsc(
+                    address || '-'
+                  )}
+
+                </td>
+
+
+                <td>
+
                   ${orderEsc(
                     orderDate(
                       o.created_at
                     )
                   )}
+
                 </td>
 
+
                 <td>
+
                   ${statusOptions(o)}
+
                 </td>
+
 
               </tr>
 
@@ -3275,6 +4114,7 @@ function renderOrders(){
   `;
 
 }
+
 
 
 async function loadOrders(){
@@ -3308,7 +4148,7 @@ async function loadOrders(){
   if(error){
 
     orderNotice(
-      '⚠️ Orders load nahi hue: '+
+      '⚠️ Orders load nahi hue: ' +
       error.message
     );
 
@@ -3330,6 +4170,7 @@ async function loadOrders(){
 }
 
 
+
 async function setOrderStatus(
   id,
   status
@@ -3340,14 +4181,16 @@ async function setOrderStatus(
   } =
   await supabaseClient
     .from('orders')
-    .update({status})
+    .update({
+      status:status
+    })
     .eq('id',id);
 
 
   if(error){
 
     alert(
-      '❌ Order status update failed: '+
+      '❌ Order status update failed: ' +
       error.message
     );
 
@@ -3357,21 +4200,26 @@ async function setOrderStatus(
 
 
   const x =
-    (orders||[])
+    (orders || [])
       .find(
-        v=>
-          String(v.id)===
+        v =>
+          String(v.id) ===
           String(id)
       );
 
 
-  if(x)
-    x.status=status;
+  if(x){
+
+    x.status =
+      status;
+
+  }
 
 
   renderOrders();
 
 }
+
 
 
 /* =====================================================
@@ -3382,8 +4230,11 @@ async function deleteProduct(id){
 
   if(!confirm(
     'Product delete karein?'
-  ))
+  )){
+
     return;
+
+  }
 
 
   const {
@@ -3398,7 +4249,7 @@ async function deleteProduct(id){
   if(error){
 
     alert(
-      '❌ Delete failed: '+
+      '❌ Delete failed: ' +
       error.message
     );
 
@@ -3409,8 +4260,8 @@ async function deleteProduct(id){
 
   products =
     products.filter(
-      p=>
-        String(p.id)!==
+      p =>
+        String(p.id) !==
         String(id)
     );
 
@@ -3420,6 +4271,7 @@ async function deleteProduct(id){
   renderProducts();
 
 }
+
 
 
 /* =====================================================
@@ -3444,6 +4296,7 @@ async function logout(){
 }
 
 
+
 /* =====================================================
    START
 ===================================================== */
@@ -3451,22 +4304,77 @@ async function logout(){
 load();
 
 </script>
+
+
+
+<!-- =====================================================
+     MOBILE MENU - SEPARATE SAFE SCRIPT
+===================================================== -->
+
 <script>
-document.addEventListener("DOMContentLoaded", function(){
 
-  const btn = document.getElementById("adminMenuBtn");
-  const sidebar = document.getElementById("sidebar");
+document.addEventListener(
+  "DOMContentLoaded",
+  function(){
 
-  if(!btn || !sidebar) return;
+    const btn =
+      document.getElementById(
+        "adminMenuBtn"
+      );
 
-  btn.addEventListener("click", function(){
 
-    sidebar.classList.toggle("open");
+    const sidebar =
+      document.getElementById(
+        "sidebar"
+      );
 
-  });
 
-});
-  
+    if(!btn || !sidebar)
+      return;
+
+
+    btn.addEventListener(
+      "click",
+      function(){
+
+        sidebar.classList.toggle(
+          "open"
+        );
+
+      }
+    );
+
+
+    document
+      .querySelectorAll(
+        ".nav-item"
+      )
+      .forEach(function(item){
+
+        item.addEventListener(
+          "click",
+          function(){
+
+            if(
+              window.innerWidth <= 700
+            ){
+
+              sidebar.classList.remove(
+                "open"
+              );
+
+            }
+
+          }
+        );
+
+      });
+
+  }
+);
+
 </script>
+
+
 </body>
   </html>
