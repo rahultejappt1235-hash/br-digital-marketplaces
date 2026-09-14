@@ -1776,6 +1776,30 @@ body{
   }
 
   }
+
+/* =========================
+   MOBILE MENU FINAL FIX
+========================= */
+
+document.addEventListener("DOMContentLoaded", function(){
+
+  const menuBtn = document.getElementById("menuBtn");
+  const sidebar = document.getElementById("sidebar");
+
+  if(!menuBtn || !sidebar){
+    return;
+  }
+
+  menuBtn.addEventListener("click", function(e){
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    sidebar.classList.toggle("open");
+
+  });
+
+});
   
 </script>
 
