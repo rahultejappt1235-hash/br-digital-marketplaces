@@ -384,6 +384,43 @@ body{
     font-size:29px;
   }
 }
+html,
+body{
+  width:100%;
+  max-width:100%;
+  overflow-x:hidden;
+}
+
+@media(max-width:700px){
+
+  .menu-btn{
+    display:flex !important;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    z-index:9999;
+    width:45px;
+    height:45px;
+    pointer-events:auto;
+    touch-action:manipulation;
+  }
+
+  .sidebar{
+    position:fixed !important;
+    left:-270px !important;
+    top:70px;
+    bottom:0;
+    width:260px;
+    z-index:9998;
+    transition:left .3s ease;
+    overflow-y:auto;
+  }
+
+  .sidebar.open{
+    left:0 !important;
+  }
+}
+  
 </style>
 </head>
 
