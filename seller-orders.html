@@ -604,99 +604,124 @@ async function loadOrders(){
     return;
   }
 
-
-  currentUser = user;
-
-
-  /* ===================================
-     REAL SELLER ORDERS
-  =================================== */
-
-  const {
-    data,
-    error
-  } =
-  await db
-    .from("orders")
-    .select(`
-      id,
-      customer_id,
-      seller_id,
-      business_id,
-      status,
-      payment_method,
-      payment_status,
-      subtotal,
-      delivery_fee,
-      discount,
-      total_amount,
-      shipping_name,
-      shipping_phone,
-      shipping_address,
-      shipping_city,
-      shipping_state,
-      shipping_pincode,
-      created_at,
-      updated_at
-    `)
-    .eq("seller_id",user.id)
-    .order(
-      "created_at",
-      {
-        ascending:false
-      }
-    );
+currentUser = user;
 
 
-  if(error){
-
-    console.error(error);
-
-    showMessage(
-      "❌ Orders load नहीं हो सके: " +
-      esc(error.message),
-      "error"
-    );
-
-    return;
-  }
-
-
-  allOrders =
-    data || [];
-
-  document.getElementById(
-    "message"
-  ).style.display = "none";
-
-
-  renderOrders();
-}
-
-
-/* =====================================
-   FILTER
+/* ===================================
+   FIND CURRENT SELLER
 ===================================== */
 
-function setFilter(filter,button){
-
-  currentFilter =
-    filter;
-
-
-  document
-    .querySelectorAll(".filter-btn")
-    .forEach(btn => {
-
-      btn.classList.remove("active");
-
-    });
+const {
+  data: seller,
+  error: sellerError
+} = await db
+  .from("sellers")
+  .select("id,user_id,status,is_active")
+  .eq("user_id", user.id)
+  .maybeSingle();
 
 
-  button.classList.add("active");
+if(sellerError){
 
-  renderOrders();
+  console.error(sellerError);
+
+  showMessage(
+    "❌ Seller profile load नहीं हुआ: " +
+    esc(sellerError.message),
+    "error"
+  );
+
+  return;
 }
+
+
+if(!seller){
+
+  showMessage(
+    "❌ इस account का seller profile नहीं मिला।",
+    "error"
+  );
+
+  return;
+}
+
+
+if(
+  String(seller.status || "").toLowerCase() !== "approved" ||
+  seller.is_active !== true
+){
+
+  showMessage(
+    "⚠️ Seller account अभी approved/active नहीं है।",
+    "error"
+  );
+
+  return;
+}
+
+
+/* ===================================
+   REAL SELLER ORDERS
+===================================== */
+
+const {
+  data,
+  error
+} = await db
+  .from("orders")
+  .select(`
+    id,
+    customer_id,
+    seller_id,
+    business_id,
+    status,
+    payment_method,
+    payment_status,
+    subtotal,
+    delivery_fee,
+    discount,
+    total_amount,
+    shipping_name,
+    shipping_phone,
+    shipping_address,
+    shipping_city,
+    shipping_state,
+    shipping_pincode,
+    created_at,
+    updated_at
+  `)
+  .eq("seller_id", seller.id)
+  .order(
+    "created_at",
+    {
+      ascending:false
+    }
+  );
+
+
+if(error){
+
+  console.error(error);
+
+  showMessage(
+    "❌ Orders load नहीं हो सके: " +
+    esc(error.message),
+    "error"
+  );
+
+  return;
+}
+
+
+allOrders = data || [];
+
+
+document.getElementById(
+  "message"
+).style.display = "none";
+
+
+renderOrders();
 
 
 /* =====================================
