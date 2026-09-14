@@ -477,32 +477,40 @@
   </a>
 
 
-  <a href="#topCategories">
+ <!-- ================= BOTTOM NAV ================= -->
 
+<nav class="bottomNav">
+
+  <a
+    class="active"
+    href="index.html"
+  >
+    <span>⌂</span>
+    Home
+  </a>
+
+  <button
+    type="button"
+    class="bottomCategoryBtn"
+    id="bottomCategories"
+  >
     <span>▦</span>
-
     Categories
+  </button>
 
-  </a>
-
-
-  <a href="#products">
-
+  <a
+    href="orders.html"
+  >
     <span>☷</span>
-
     Orders
-
   </a>
 
-
-  <a href="seller-dashboard.html">
-
+  <a
+    href="account.html"
+  >
     <span>♙</span>
-
     Account
-
   </a>
-
 
   <button
     id="bottomCart"
@@ -510,20 +518,41 @@
   >
 
     <span>
-
       🛒
-
-      <i id="bottomCartCount">
-        0
-      </i>
-
+      <i id="bottomCartCount">0</i>
     </span>
 
     Cart
 
   </button>
 
-</nav>
+</nav> 
+
+  /* Bottom Categories */
+
+const bottomCategories =
+  document.getElementById("bottomCategories");
+
+if(bottomCategories){
+
+  bottomCategories.onclick =
+    function(){
+
+      const categories =
+        document.getElementById("topCategories");
+
+      if(categories){
+
+        categories.scrollIntoView({
+          behavior:"smooth",
+          block:"start"
+        });
+
+      }
+
+    };
+
+}
 
 
 <!-- ================= CART MODAL ================= -->
