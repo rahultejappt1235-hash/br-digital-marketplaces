@@ -355,4 +355,320 @@ function money(value){
       {
         minimumFractionDigits:2,
         maximumFractionDigits:2
-     
+      }
+    );
+
+}
+
+
+/* ================================
+   LOAD EARNINGS
+================================ */
+
+async function loadEarnings(){
+
+  const message =
+    document.getElementById("message");
+
+  const list =
+    document.getElementById("ordersList");
+
+  try{
+
+    message.className =
+      "message loading";
+
+    message.innerText =
+      "⏳ Real earnings load हो रही हैं...";
+
+
+    /* ============================
+       LOGIN
+    ============================ */
+
+    const {
+      data:{user},
+      error:userError
+    } =
+    await db.auth.getUser();
+
+
+    if(userError){
+      throw new Error(userError.message);
+    }
+
+
+    if(!user){
+
+      window.location.href =
+        "seller-login.html";
+
+      return;
+
+    }
+
+
+    /* ============================
+       SELLER CHECK
+    ============================ */
+
+    const {
+      data:seller,
+      error:sellerError
+    } =
+    await db
+      .from("sellers")
+      .select(
+        "id,user_id,business_name,owner_name,status,is_active"
+      )
+      .eq("user_id",user.id)
+      .maybeSingle();
+
+
+    if(sellerError){
+      throw new Error(
+        "Seller check failed: " +
+        sellerError.message
+      );
+    }
+
+
+    if(!seller){
+
+      throw new Error(
+        "Seller profile नहीं मिला।"
+      );
+
+    }
+
+
+    /* ============================
+       REAL ORDERS
+    ============================ */
+
+    const {
+      data:orders,
+      error:ordersError
+    } =
+    await db
+      .from("orders")
+      .select(`
+        id,
+        seller_id,
+        status,
+        payment_status,
+        subtotal,
+        delivery_fee,
+        discount,
+        total_amount,
+        created_at
+      `)
+      .eq("seller_id",user.id)
+      .order(
+        "created_at",
+        {ascending:false}
+      );
+
+
+    if(ordersError){
+
+      throw new Error(
+        "Orders load failed: " +
+        ordersError.message
+      );
+
+    }
+
+
+    const realOrders =
+      orders || [];
+
+
+    /* ============================
+       CALCULATE SALES
+    ============================ */
+
+    let totalSales = 0;
+    let delivered = 0;
+
+
+    realOrders.forEach(order => {
+
+      const amount =
+        Number(order.total_amount || 0);
+
+      totalSales += amount;
+
+
+      if(
+        String(order.status || "")
+          .toLowerCase() === "delivered"
+      ){
+
+        delivered++;
+
+      }
+
+    });
+
+
+    document.getElementById(
+      "totalSales"
+    ).innerText =
+      money(totalSales);
+
+
+    document.getElementById(
+      "totalOrders"
+    ).innerText =
+      realOrders.length;
+
+
+    document.getElementById(
+      "deliveredOrders"
+    ).innerText =
+      delivered;
+
+
+    /* ============================
+       NO ORDERS
+    ============================ */
+
+    if(realOrders.length === 0){
+
+      list.innerHTML = `
+        <div class="empty">
+
+          <div class="empty-icon">
+            💰
+          </div>
+
+          <h2>
+            अभी कोई earning नहीं है
+          </h2>
+
+          <p>
+            जब customer आपका product
+            order करेगा, तब real earning
+            यहाँ दिखाई जाएगी।
+          </p>
+
+        </div>
+      `;
+
+      message.className = "";
+      message.innerText = "";
+
+      return;
+
+    }
+
+
+    /* ============================
+       ORDER LIST
+    ============================ */
+
+    list.innerHTML =
+      realOrders.map(order => {
+
+        const amount =
+          Number(order.total_amount || 0);
+
+        const status =
+          order.status ||
+          "pending";
+
+        const date =
+          order.created_at
+          ? new Date(
+              order.created_at
+            ).toLocaleString("en-IN")
+          : "—";
+
+
+        return `
+
+          <div class="order">
+
+            <div class="order-top">
+
+              <div>
+
+                <div>
+                  Order #${order.id}
+                </div>
+
+                <div class="amount">
+                  ${money(amount)}
+                </div>
+
+              </div>
+
+              <div class="status">
+                ${status}
+              </div>
+
+            </div>
+
+            <div class="order-info">
+
+              📅 Order Date:
+              ${date}
+
+              <br>
+
+              💳 Payment:
+              ${order.payment_status || "—"}
+
+            </div>
+
+          </div>
+
+        `;
+
+      }).join("");
+
+
+    message.className = "";
+    message.innerText = "";
+
+
+  }catch(error){
+
+    console.error(
+      "EARNINGS ERROR:",
+      error
+    );
+
+    message.className =
+      "message error";
+
+    message.innerText =
+      "❌ " +
+      (
+        error.message ||
+        "Earnings load नहीं हो सकीं।"
+      );
+
+  }
+
+}
+
+
+/* ================================
+   START
+================================ */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function(){
+
+    loadEarnings();
+
+  }
+);
+
+</script>
+
+</body>
+</html>
