@@ -760,8 +760,11 @@ a{
 
   <div class="header-row">
 
-    <button class="menuBtn" onclick="openDrawer()">☰</button>
-      ☰
+    <button
+  class="menu-btn"
+  type="button"
+  onclick="openDrawer()">
+  ☰
     </button>
 
     <div class="logo">
@@ -796,7 +799,95 @@ a{
   </div>
 
 </header>
+<!-- ================= SIDE MENU ================= -->
 
+<div
+  id="menuOverlay"
+  class="menu-overlay"
+  onclick="closeDrawer(event)">
+
+  <aside
+    class="side-menu"
+    onclick="event.stopPropagation()">
+
+    <div class="side-menu-header">
+
+      <div>
+        <strong>BR Digital Marketplace</strong>
+        <small>Shop Local • Support Bihar ❤️</small>
+      </div>
+
+      <button
+        type="button"
+        class="close-menu"
+        onclick="closeDrawer()">
+        ✕
+      </button>
+
+    </div>
+
+
+    <button
+      type="button"
+      class="menu-item"
+      onclick="goHome(); closeDrawer();">
+      🏠 Home
+    </button>
+
+
+    <button
+      type="button"
+      class="menu-item"
+      onclick="showCategories(); closeDrawer();">
+      ▦ Categories
+    </button>
+
+
+    <button
+      type="button"
+      class="menu-item"
+      onclick="scrollToMarket(); closeDrawer();">
+      🏪 Market
+    </button>
+
+
+    <button
+      type="button"
+      class="menu-item"
+      onclick="openOrders();">
+      📦 My Orders
+    </button>
+
+
+    <button
+      type="button"
+      class="menu-item"
+      onclick="openAccount();">
+      👤 My Account
+    </button>
+
+
+    <div class="menu-divider"></div>
+
+
+    <button
+      type="button"
+      class="menu-item"
+      onclick="window.location.href='seller-login.html';">
+      🏬 Seller Login
+    </button>
+
+
+    <button
+      type="button"
+      class="menu-item"
+      onclick="window.location.href='admin-login.html';">
+      🔐 Admin Login
+    </button>
+
+  </aside>
+
+</div>
 
 <!-- ================= DELIVERY ================= -->
 
@@ -2063,11 +2154,36 @@ function openAccount(){
 }
 
 
-function openMenu(){
+function openDrawer(){
 
-  alert(
-    "Menu"
-  );
+  const overlay =
+    document.getElementById("menuOverlay");
+
+  if(overlay){
+    overlay.classList.add("show");
+    document.body.style.overflow = "hidden";
+  }
+
+}
+
+
+function closeDrawer(event){
+
+  if(
+    event &&
+    event.target &&
+    event.target.id !== "menuOverlay"
+  ){
+    return;
+  }
+
+  const overlay =
+    document.getElementById("menuOverlay");
+
+  if(overlay){
+    overlay.classList.remove("show");
+    document.body.style.overflow = "";
+  }
 
 }
 
