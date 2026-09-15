@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>My Orders - BR Digital Marketplace</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  background:#f6f7f9;
+  color:#17202a;
+  padding-bottom:80px;
+}
+
+.header{
+  background:#fff;
+  height:65px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:0 15px;
+  position:sticky;
+  top:0;
+  z-index:100;
+  border-bottom:1px solid #e8e8e8;
+}
+
+.back{
+  width:40px;
+  height:40px;
+  border:0;
+  border-radius:12px;
+  background:#f1f3f5;
+  font-size:23px;
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+
+.logoCircle{
+  width:39px;
+  height:39px;
+  border:3px solid #087f3f;
+  border-right-color:#ff6500;
+  border-radius:50%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-weight:900;
+  color:#087f3f;
+}
+
+.logoText{
+  font-weight:900;
+  font-size:17px;
+}
+
+.logoText span{
+  color:#ff6500;
+}
+
+.container{
+  max-width:850px;
+  margin:auto;
+  padding:18px 13px;
+}
+
+.pageTitle{
+  margin-bottom:15px;
+}
+
+.pageTitle h1{
+  font-size:24px;
+}
+
+.pageTitle p{
+  color:#687079;
+  font-size:13px;
+  margin-top:5px;
+}
+
+/* FILTER */
+.filters{
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  margin-bottom:15px;
+  scrollbar-width:none;
+}
+
+.filters::-webkit-scrollbar{
+  display:none;
+}
+
+.filter{
+  white-space:nowrap;
+  padding:9px 15px;
+  border:1px solid #ddd;
+  background:#fff;
+  border-radius:20px;
+  font-size:13px;
+  font-weight:bold;
+}
+
+.filter.active{
+  background:#087f3f;
+  color:#fff;
+  border-color:#087f3f;
+}
+
+/* ORDER */
+.orderCard{
+  background:#fff;
+  border-radius:17px;
+  border:1px solid #e5e7eb;
+  margin-bottom:14px;
+  overflow:hidden;
+  box-shadow:0 3px 12px rgba(0,0,0,.04);
+}
+
+.orderTop{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px;
+  border-bottom:1px solid #eee;
+}
+
+.orderId{
+  font-size:13px;
+  font-weight:bold;
+}
+
+.date{
+  color:#777;
+  font-size:11px;
+  margin-top:4px;
+}
+
+.status{
+  padding:6px 10px;
+  border-radius:15px;
+  font-size:11px;
+  font-weight:bold;
+  background:#eaf7ee;
+  color:#087f3f;
+}
+
+.orderBody{
+  padding:14px;
+}
+
+.infoRow{
+  display:flex;
+  justify-content:space-between;
+  padding:7px 0;
+  font-size:13px;
+}
+
+.infoRow span:first-child{
+  color:#6b7280;
+}
+
+.total{
+  font-size:17px;
+  font-weight:900;
+  color:#e43d1b;
+}
+
+.address{
+  margin-top:9px;
+  padding:11px;
+  background:#f8f9fa;
+  border-radius:10px;
+  font-size:12px;
+  line-height:1.5;
+}
+
+.payment{
+  margin-top:9px;
+  font-size:12px;
+}
+
+.orderBottom{
+  display:flex;
+  gap:8px;
+  padding:12px 14px;
+  border-top:1px solid #eee;
+}
+
+.action{
+  flex:1;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid #087f3f;
+  background:#fff;
+  color:#087f3f;
+  font-weight:bold;
+  font-size:12px;
+}
+
+.action.primary{
+  background:#087f3f;
+  color:#fff;
+}
+
+/* LOADING */
+.loading{
+  text-align:center;
+  padding:45px 10px;
+  color:#687079;
+}
+
+.empty{
+  background:#fff;
+  border-radius:17px;
+  padding:45px 20px;
+  text-align:center;
+  box-shadow:0 3px 12px rgba(0,0,0,.04);
+}
+
+.emptyIcon{
+  font-size:55px;
+  margin-bottom:12px;
+}
+
+.empty h2{
+  font-size:19px;
+}
+
+.empty p{
+  color:#687079;
+  font-size:13px;
+  margin-top:7px;
+}
+
+/* MOBILE */
+@media(max-width:600px){
+
+  .header{
+    height:60px;
+    padding:0 10px;
+  }
+
+  .logoText{
+    font-size:15px;
+  }
+
+  .logoCircle{
+    width:36px;
+    height:36px;
+    font-size:14px;
+  }
+
+  .container{
+    padding:15px 10px;
+  }
+
+  .pageTitle h1{
+    font-size:22px;
+  }
+
+  .orderTop{
+    padding:12px;
+  }
+
+  .orderBody{
+    padding:12px;
+  }
+
+  .orderBottom{
+    padding:10px 12px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+
+  <button class="back" onclick="goBack()">←</button>
+
+  <div class="logo">
+
+    <div class="logoCircle">
+      BR
+    </div>
+
+    <div class="logoText">
+      <span>BR</span> Digital Marketplace
+    </div>
+
+  </div>
+
+</header>
+
+
+<main class="container">
+
+  <div class="pageTitle">
+    <h1>📦 My Orders</h1>
+    <p>आपके सभी orders यहाँ दिखाई देंगे।</p>
+  </div>
+
+
+  <div class="filters">
+
+    <button
+      class="filter active"
+      onclick="filterOrders('all',this)">
+      All
+    </button>
+
+    <button
+      class="filter"
+      onclick="filterOrders('pending',this)">
+      Pending
+    </button>
+
+    <button
+      class="filter"
+      onclick="filterOrders('confirmed',this)">
+      Confirmed
+    </button>
+
+    <button
+      class="filter"
+      onclick="filterOrders('shipped',this)">
+      Shipped
+    </button>
+
+    <button
+      class="filter"
+      onclick="filterOrders('delivered',this)">
+      Delivered
+    </button>
+
+    <button
+      class="filter"
+      onclick="filterOrders('cancelled',this)">
+      Cancelled
+    </button>
+
+  </div>
+
+
+  <div id="orders">
+
+    <div class="loading">
+      ⏳ आपके real orders load हो रहे हैं...
+    </div>
+
+  </div>
+
+</main>
+
+
+<script>
+
+/* =========================
+   SUPABASE
+========================= */
+
+const SUPABASE_URL =
+  "https://uryjmibcdfjfxoljrigt.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_uYbJw0ARCCkCpQ9QB6FxaQ_JrIxtOOp";
+
+const supabaseClient =
+  supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+let allOrders = [];
+
+
+/* =========================
+   AUTH + ORDERS
+========================= */
+
+async function loadOrders(){
+
+  const box =
+    document.getElementById("orders");
+
+  try{
+
+    const {
+      data:{session},
+      error:sessionError
+    } =
+      await supabaseClient.auth.getSession();
+
+    if(sessionError)
+      throw sessionError;
+
+    if(!session){
+
+      box.innerHTML = `
+        <div class="empty">
+
+          <div class="emptyIcon">🔐</div>
+
+          <h2>Login Required</h2>
+
+          <p>
+            अपने orders देखने के लिए
+            पहले login करें।
+          </p>
+
+          <br>
+
+          <button
+            class="action primary"
+            onclick="window.location.href='account.html'">
+            Login / Account
+          </button>
+
+        </div>
+      `;
+
+      return;
+    }
+
+
+    const user =
+      session.user;
+
+
+    /*
+      केवल current logged-in customer
+      के orders लिए जाएंगे।
+      */
+
+    const {data,error} =
+      await supabaseClient
+
+      .from("orders")
+
+      .select(`
+        id,
+        customer_id,
+        seller_id,
+        business_id,
+        status,
+        payment_method,
+        payment_status,
+        subtotal,
+        delivery_fee,
+        discount,
+        total_amount,
+        shipping_name,
+        shipping_phone,
+        shipping_address,
+        shipping_city,
+        shipping_state,
+        shipping_pincode,
+        created_at,
+        updated_at
+      `)
+
+      .eq("customer_id",user.id)
+
+      .order(
+        "created_at",
+        {ascending:false}
+      );
+
+
+    if(error){
+
+      console.error(error);
+
+      box.innerHTML = `
+        <div class="empty">
+          <div class="emptyIcon">⚠️</div>
+          <h2>Orders load नहीं हुए</h2>
+          <p>
+            ${escapeHtml(error.message)}
+          </p>
+        </div>
+      `;
+
+      return;
+    }
+
+
+    allOrders =
+      data || [];
+
+
+    renderOrders(allOrders);
+
+
+  }catch(error){
+
+    console.error(error);
+
+    box.innerHTML = `
+      <div class="empty">
+
+        <div class="emptyIcon">⚠️</div>
+
+        <h2>कुछ समस्या हुई</h2>
+
+        <p>
+          Orders load नहीं हो पाए।
+        </p>
+
+      </div>
+    `;
+  }
+}
+
+
+/* =========================
+   RENDER
+========================= */
+
+function renderOrders(orders){
+
+  const box =
+    document.getElementById("orders");
+
+
+  if(!orders.length){
+
+    box.innerHTML = `
+      <div class="empty">
+
+        <div class="emptyIcon">📦</div>
+
+        <h2>अभी कोई Order नहीं है</h2>
+
+        <p>
+          जब आप BR Digital Marketplace से
+          order करेंगे, वह यहाँ दिखाई देगा।
+        </p>
+
+        <br>
+
+        <button
+          class="action primary"
+          onclick="window.location.href='index.html'">
+          🛍️ Shopping शुरू करें
+        </button>
+
+      </div>
+    `;
+
+    return;
+  }
+
+
+  box.innerHTML =
+    orders.map(renderOrder).join("");
+}
+
+
+/* =========================
+   ORDER CARD
+========================= */
+
+function renderOrder(order){
+
+  const status =
+    String(order.status || "pending")
+    .toLowerCase();
+
+
+  const statusText =
+    formatStatus(status);
+
+
+  const created =
+    order.created_at
+    ? new Date(order.created_at)
+        .toLocaleString(
+          "en-IN",
+          {
+            day:"2-digit",
+            month:"short",
+            year:"numeric",
+            hour:"2-digit",
+            minute:"2-digit"
+          }
+        )
+    : "-";
+
+
+  const total =
+    Number(order.total_amount || 0);
+
+
+  const subtotal =
+    Number(order.subtotal || 0);
+
+
+  const delivery =
+    Number(order.delivery_fee || 0);
+
+
+  const discount =
+    Number(order.discount || 0);
+
+
+  const payment =
+    order.payment_method ||
+    "Not specified";
+
+
+  const paymentStatus =
+    order.payment_status ||
+    "pending";
+
+
+  const address = [
+
+    order.shipping_address,
+
+    order.shipping_city,
+
+    order.shipping_state,
+
+    order.shipping_pincode
+
+  ]
+  .filter(Boolean)
+  .join(", ");
+
+
+  return `
+
+    <div
+      class="orderCard"
+      data-status="${escapeHtml(status)}"
+    >
+
+      <div class="orderTop">
+
+        <div>
+
+          <div class="orderId">
+            Order #${escapeHtml(String(order.id))}
+          </div>
+
+          <div class="date">
+            ${escapeHtml(created)}
+          </div>
+
+        </div>
+
+        <div class="status">
+          ${escapeHtml(statusText)}
+        </div>
+
+      </div>
+
+
+      <div class="orderBody">
+
+        <div class="infoRow">
+          <span>Customer</span>
+          <strong>
+            ${escapeHtml(order.shipping_name || "-")}
+          </strong>
+        </div>
+
+
+        <div class="infoRow">
+          <span>Phone</span>
+          <strong>
+            ${escapeHtml(order.shipping_phone || "-")}
+          </strong>
+        </div>
+
+
+        <div class="infoRow">
+          <span>Subtotal</span>
+          <strong>
+            ₹${subtotal.toLocaleString("en-IN")}
+          </strong>
+        </div>
+
+
+        <div class="infoRow">
+          <span>Delivery</span>
+          <strong>
+            ₹${delivery.toLocaleString("en-IN")}
+          </strong>
+        </div>
+
+
+        <div class="infoRow">
+          <span>Discount</span>
+          <strong>
+            ₹${discount.toLocaleString("en-IN")}
+          </strong>
+        </div>
+
+
+        <div class="infoRow">
+
+          <span>Total Amount</span>
+
+          <strong class="total">
+            ₹${total.toLocaleString("en-IN")}
+          </strong>
+
+        </div>
+
+
+        <div class="payment">
+
+          💳 Payment:
+          <strong>
+            ${escapeHtml(payment)}
+          </strong>
+
+          &nbsp; • &nbsp;
+
+          Status:
+          <strong>
+            ${escapeHtml(paymentStatus)}
+          </strong>
+
+        </div>
+
+
+        ${
+          address
+          ? `
+            <div class="address">
+              📍 <strong>Delivery Address</strong><br>
+              ${escapeHtml(address)}
+            </div>
+          `
+          : ""
+        }
+
+      </div>
+
+
+      <div class="orderBottom">
+
+        <button
+          class="action"
+          onclick='showOrderDetails(${JSON.stringify(order).replace(/'/g,"&#039;")})'>
+          View Details
+        </button>
+
+        ${
+          status === "delivered"
+          ? `
+            <button
+              class="action primary"
+              onclick="alert('Review feature जल्द जोड़ा जाएगा।')">
+              ⭐ Review
+            </button>
+          `
+          : ""
+        }
+
+      </div>
+
+    </div>
+  `;
+}
+
+
+/* =========================
+   FILTER
+========================= */
+
+function filterOrders(status,button){
+
+  document
+    .querySelectorAll(".filter")
+    .forEach(btn =>
+      btn.classList.remove("active")
+    );
+
+
+  button.classList.add("active");
+
+
+  if(status === "all"){
+
+    renderOrders(allOrders);
+
+    return;
+  }
+
+
+  const filtered =
+    allOrders.filter(order =>
+      String(order.status || "")
+      .toLowerCase() === status
+    );
+
+
+  renderOrders(filtered);
+}
+
+
+/* =========================
+   STATUS
+========================= */
+
+function formatStatus(status){
+
+  const map = {
+
+    pending:"⏳ Pending",
+
+    confirmed:"✅ Confirmed",
+
+    processing:"⚙️ Processing",
+
+    shipped:"🚚 Shipped",
+
+    delivered:"🎉 Delivered",
+
+    cancelled:"❌ Cancelled",
+
+    rejected:"❌ Rejected",
+
+    returned:"↩️ Returned"
+
+  };
+
+
+  return map[status] ||
+    status.charAt(0).toUpperCase() +
+    status.slice(1);
+}
+
+
+/* =========================
+   DETAILS
+========================= */
+
+function showOrderDetails(order){
+
+  const text = `
+
+Order #${order.id}
+
+Status:
+${formatStatus(String(order.status || "").toLowerCase())}
+
+Customer:
+${order.shipping_name || "-"}
+
+Phone:
+${order.shipping_phone || "-"}
+
+Address:
+${[
+  order.shipping_address,
+  order.shipping_city,
+  order.shipping_state,
+  order.shipping_pincode
+].filter(Boolean).join(", ") || "-"}
+
+Payment:
+${order.payment_method || "-"}
+
+Payment Status:
+${order.payment_status || "-"}
+
+Subtotal:
+₹${Number(order.subtotal || 0).toLocaleString("en-IN")}
+
+Delivery:
+₹${Number(order.delivery_fee || 0).toLocaleString("en-IN")}
+
+Discount:
+₹${Number(order.discount || 0).toLocaleString("en-IN")}
+
+Total:
+₹${Number(order.total_amount || 0).toLocaleString("en-IN")}
+`;
+
+  alert(text);
+}
+
+
+/* =========================
+   BACK
+========================= */
+
+function goBack(){
+
+  if(document.referrer){
+
+    history.back();
+
+  }else{
+
+    window.location.href =
+      "index.html";
+  }
+}
+
+
+/* =========================
+   SECURITY DISPLAY
+========================= */
+
+function escapeHtml(value){
+
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+
+
+/* =========================
+   START
+========================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  loadOrders
+);
+
+</script>
+
+</body>
+</html>
