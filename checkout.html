@@ -497,9 +497,47 @@
 
   async function startCheckout(){
 
+  try{
+
     const {
-      data:{user}
-    } = await supabaseClient.auth.getUser();
+      data:{user},
+      error
+    } =
+    await supabaseClient.auth.getUser();
+
+    if(error){
+      throw error;
+    }
+
+    if(!user){
+
+      showError(
+        "कृपया पहले Customer Login करें।"
+      );
+
+      return;
+    }
+
+    currentUser = user;
+
+    /* पहले Cart दिखाएँ */
+    loadCart();
+
+    /* फिर Address load करें */
+    await loadAddress();
+
+  }catch(error){
+
+    console.error("startCheckout error:",error);
+
+    showError(
+      "❌ Checkout load नहीं हो पाया: " +
+      (error.message || "Unknown error")
+    );
+
+  }
+
+  }
 
 
     if(!user){
@@ -1616,9 +1654,17 @@ placeBtn.innerText = "🛍️ Place Order";
   }
 
 
-  startCheckout();
+  window.addEventListener("DOMContentLoaded", () => {
+  startCheckout().catch(error => {
+    console.error("Checkout Error:", error);
 
-</script>
+    showError(
+      "❌ Checkout load नहीं हो पाया: " +
+      (error.message || "Unknown error")
+    );
+  });
+});
+
 
 </body>
 </html>
