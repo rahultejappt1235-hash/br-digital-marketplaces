@@ -1258,23 +1258,78 @@ placeBtn.innerText = "🛍️ Place Order";
           item.seller_id;
 
 
-        if(!sellerId){
+       for(const item of cart){
 
-          throw new Error(
-            "Product seller information missing."
-          );
-
-        }
+  let sellerId = item.seller_id;
 
 
-        if(!sellerGroups[sellerId]){
-          sellerGroups[sellerId] = [];
-        }
+  /*
+    अगर पुराने Cart item में seller_id नहीं है,
+    तो Products table से real seller_id लिया जाएगा।
+  */
+
+  if(!sellerId){
+
+    const {
+      data:product,
+      error:productError
+    } =
+    await supabaseClient
+      .from("products")
+      .select(`
+        id,
+        seller_id,
+        status,
+        stock
+      `)
+      .eq("id",item.id)
+      .eq("status","approved")
+      .maybeSingle();
 
 
-        sellerGroups[sellerId].push(item);
+    if(productError){
 
-      }
+      console.error(productError);
+
+      throw new Error(
+        "Product seller information load नहीं हो पाई।"
+      );
+
+    }
+
+
+    if(!product || !product.seller_id){
+
+      throw new Error(
+        "इस product का Seller नहीं मिला।"
+      );
+
+    }
+
+
+    sellerId =
+      product.seller_id;
+
+
+    /*
+      Cart में भी seller_id रख दें
+      ताकि अगली बार दोबारा query न करनी पड़े।
+    */
+
+    item.seller_id =
+      sellerId;
+
+  }
+
+
+  if(!sellerGroups[sellerId]){
+    sellerGroups[sellerId] = [];
+  }
+
+
+  sellerGroups[sellerId].push(item);
+
+       } 
 
 
       const createdOrders = [];
