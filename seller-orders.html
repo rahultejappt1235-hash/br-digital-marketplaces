@@ -314,6 +314,68 @@ body{
     gap:10px;
   }
 }
+/* =====================================
+   ORDER ACTION BUTTONS
+===================================== */
+
+.order-actions{
+  margin-top:20px;
+  padding-top:18px;
+  border-top:1px solid #eee;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.action-btn{
+  border:0;
+  padding:12px 18px;
+  border-radius:12px;
+  font-weight:800;
+  cursor:pointer;
+  font-size:14px;
+}
+
+.confirm-btn{
+  background:#16a34a;
+  color:#fff;
+}
+
+.reject-btn{
+  background:#dc2626;
+  color:#fff;
+}
+
+.process-btn{
+  background:#2563eb;
+  color:#fff;
+}
+
+.ship-btn{
+  background:#7c3aed;
+  color:#fff;
+}
+
+.deliver-btn{
+  background:#059669;
+  color:#fff;
+}
+
+.action-btn:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+
+@media(max-width:600px){
+  .order-actions{
+    flex-direction:column;
+  }
+
+  .action-btn{
+    width:100%;
+  }
+}
+  
 </style>
 </head>
 
@@ -981,6 +1043,67 @@ function renderOrders(){
 
           </div>
 
+          <div class="order-actions">
+
+  ${
+    status.toLowerCase() === "pending"
+    ? `
+      <button
+        class="action-btn confirm-btn"
+        onclick="updateOrderStatus('${esc(order.id)}','confirmed')">
+        ✅ Confirm Order
+      </button>
+
+      <button
+        class="action-btn reject-btn"
+        onclick="updateOrderStatus('${esc(order.id)}','rejected')">
+        ❌ Reject Order
+      </button>
+    `
+    : ""
+  }
+
+
+  ${
+    status.toLowerCase() === "confirmed"
+    ? `
+      <button
+        class="action-btn process-btn"
+        onclick="updateOrderStatus('${esc(order.id)}','processing')">
+        📦 Start Processing
+      </button>
+    `
+    : ""
+  }
+
+
+  ${
+    status.toLowerCase() === "processing"
+    ? `
+      <button
+        class="action-btn ship-btn"
+        onclick="updateOrderStatus('${esc(order.id)}','shipped')">
+        🚚 Mark Shipped
+      </button>
+    `
+    : ""
+  }
+
+
+  ${
+    status.toLowerCase() === "shipped"
+    ? `
+      <button
+        class="action-btn deliver-btn"
+        onclick="updateOrderStatus('${esc(order.id)}','delivered')">
+        ✅ Mark Delivered
+      </button>
+    `
+    : ""
+  }
+
+</div>
+
         </article>
 
       `;
@@ -1002,6 +1125,154 @@ document.addEventListener(
 
   }
 );
+
+  /* =====================================
+   UPDATE ORDER STATUS
+===================================== */
+
+async function updateOrderStatus(orderId,newStatus){
+
+  const statusNames = {
+    confirmed:"Confirm Order",
+    rejected:"Reject Order",
+    processing:"Start Processing",
+    shipped:"Mark Shipped",
+    delivered:"Mark Delivered"
+  };
+
+  const actionName =
+    statusNames[newStatus] || "Update Order";
+
+
+  let confirmText =
+    `क्या आप इस order को "${actionName}" करना चाहते हैं?`;
+
+  if(!confirm(confirmText)){
+    return;
+  }
+
+
+  showMessage(
+    "⏳ Order status update हो रहा है...",
+    "loading"
+  );
+
+
+  /* ================================
+     CHECK LOGIN
+  ================================= */
+
+  const {
+    data:{
+      user
+    },
+    error:userError
+  } =
+  await db.auth.getUser();
+
+
+  if(userError || !user){
+
+    alert("कृपया पहले Seller Login करें।");
+
+    window.location.href =
+      "seller-login.html";
+
+    return;
+  }
+
+
+  /* ================================
+     FIND SELLER
+  ================================= */
+
+  const {
+    data:seller,
+    error:sellerError
+  } =
+  await db
+    .from("sellers")
+    .select("id,user_id,status,is_active")
+    .eq("user_id",user.id)
+    .maybeSingle();
+
+
+  if(
+    sellerError ||
+    !seller ||
+    String(seller.status || "").toLowerCase() !== "approved" ||
+    seller.is_active !== true
+  ){
+
+    showMessage(
+      "❌ Seller account authorized नहीं है।",
+      "error"
+    );
+
+    return;
+  }
+
+
+  /* ================================
+     UPDATE ONLY OWN ORDER
+  ================================= */
+
+  const {
+    data,
+    error
+  } =
+  await db
+    .from("orders")
+    .update({
+      status:newStatus,
+      updated_at:new Date().toISOString()
+    })
+    .eq("id",orderId)
+    .eq("seller_id",seller.id)
+    .select()
+    .maybeSingle();
+
+
+  if(error){
+
+    console.error(error);
+
+    showMessage(
+      "❌ Order status update नहीं हुआ: " +
+      esc(error.message),
+      "error"
+    );
+
+    return;
+  }
+
+
+  if(!data){
+
+    showMessage(
+      "❌ यह order आपके seller account से जुड़ा नहीं मिला।",
+      "error"
+    );
+
+    return;
+  }
+
+
+  showMessage(
+    "✅ Order successfully " +
+    esc(statusNames[newStatus] || newStatus) +
+    " हो गया।",
+    "loading"
+  );
+
+
+  /* ================================
+     REFRESH ORDERS
+  ================================= */
+
+  await loadOrders();
+
+}
 
 </script>
 
