@@ -435,11 +435,12 @@
     <br>
 
     <button
-      id="placeOrderBtn"
-      class="place-order"
-      onclick="placeOrder()">
+  id="placeOrderBtn"
+  class="place-order"
+  onclick="placeOrder()"
+  disabled>
 
-      🛍️ Place Order
+  📍 पहले Delivery Address जोड़ें
 
     </button>
 
@@ -735,10 +736,15 @@
 
 
     selectedAddress =
-      data[0];
+  data[0];
 
+renderSelectedAddress();
 
-    renderSelectedAddress();
+const placeBtn =
+  document.getElementById("placeOrderBtn");
+
+placeBtn.disabled = false;
+placeBtn.innerText = "🛍️ Place Order";
 
   }
 
@@ -1197,13 +1203,13 @@
 
     if(!selectedAddress){
 
-      alert(
-        "पहले Delivery Address चुनें।"
-      );
+  alert(
+    "📍 Order करने से पहले Delivery Address जोड़ना जरूरी है।"
+  );
 
-      showAddressForm();
+  showAddressForm();
 
-      return;
+  return;
     }
 
 
