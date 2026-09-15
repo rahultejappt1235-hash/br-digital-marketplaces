@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>My Cart | BR Digital Marketplace</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  font-family:Arial,sans-serif;
+  background:#f5f6f7;
+  color:#202124;
+  padding-bottom:30px;
+}
+
+.header{
+  position:sticky;
+  top:0;
+  z-index:1000;
+  background:#fff;
+  padding:14px 15px;
+  box-shadow:0 2px 10px rgba(0,0,0,.08);
+}
+
+.top{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.back{
+  width:42px;
+  height:42px;
+  border:0;
+  border-radius:12px;
+  background:#f1f3f4;
+  font-size:22px;
+  cursor:pointer;
+}
+
+.brand{
+  flex:1;
+}
+
+.brand h1{
+  font-size:18px;
+  color:#087f45;
+  font-weight:900;
+}
+
+.brand p{
+  font-size:11px;
+  color:#777;
+  margin-top:3px;
+}
+
+.container{
+  max-width:800px;
+  margin:auto;
+  padding:15px;
+}
+
+.title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:14px;
+}
+
+.title h2{
+  font-size:21px;
+}
+
+.title span{
+  font-size:12px;
+  color:#777;
+}
+
+/* CART ITEM */
+
+.cart-item{
+  background:#fff;
+  border-radius:16px;
+  padding:13px;
+  margin-bottom:10px;
+  display:flex;
+  gap:12px;
+  box-shadow:0 2px 9px rgba(0,0,0,.06);
+}
+
+.product-image{
+  width:90px;
+  height:90px;
+  border-radius:12px;
+  object-fit:cover;
+  background:#f1f3f4;
+  flex-shrink:0;
+}
+
+.item-info{
+  flex:1;
+  min-width:0;
+}
+
+.product-name{
+  font-size:15px;
+  font-weight:900;
+  line-height:1.35;
+}
+
+.seller{
+  color:#777;
+  font-size:11px;
+  margin-top:5px;
+}
+
+.price{
+  font-size:17px;
+  font-weight:900;
+  margin-top:7px;
+}
+
+.actions{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-top:10px;
+}
+
+.quantity{
+  display:flex;
+  align-items:center;
+  border:1px solid #ddd;
+  border-radius:9px;
+  overflow:hidden;
+}
+
+.quantity button{
+  width:32px;
+  height:32px;
+  border:0;
+  background:#f1f3f4;
+  font-size:18px;
+  cursor:pointer;
+}
+
+.quantity span{
+  width:35px;
+  text-align:center;
+  font-size:13px;
+  font-weight:900;
+}
+
+.remove{
+  border:0;
+  background:#fff0f0;
+  color:#d93025;
+  border-radius:8px;
+  padding:8px 10px;
+  font-size:11px;
+  font-weight:800;
+}
+
+/* SUMMARY */
+
+.summary{
+  background:#fff;
+  border-radius:17px;
+  padding:17px;
+  margin-top:15px;
+  box-shadow:0 2px 9px rgba(0,0,0,.06);
+}
+
+.summary h2{
+  font-size:18px;
+  margin-bottom:13px;
+}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  margin:10px 0;
+  font-size:13px;
+}
+
+.total{
+  border-top:1px solid #eee;
+  padding-top:13px;
+  font-size:19px;
+  font-weight:900;
+}
+
+.checkout{
+  width:100%;
+  height:50px;
+  border:0;
+  border-radius:13px;
+  background:#087f45;
+  color:#fff;
+  font-size:16px;
+  font-weight:900;
+  margin-top:12px;
+  cursor:pointer;
+}
+
+.checkout:active{
+  transform:scale(.99);
+}
+
+/* EMPTY */
+
+.empty{
+  background:#fff;
+  border-radius:18px;
+  text-align:center;
+  padding:55px 20px;
+  box-shadow:0 2px 9px rgba(0,0,0,.06);
+}
+
+.empty-icon{
+  font-size:55px;
+  margin-bottom:12px;
+}
+
+.empty h2{
+  font-size:20px;
+  margin-bottom:7px;
+}
+
+.empty p{
+  color:#777;
+  font-size:13px;
+}
+
+.shop-btn{
+  border:0;
+  background:#087f45;
+  color:#fff;
+  height:44px;
+  padding:0 25px;
+  border-radius:11px;
+  font-weight:900;
+  margin-top:17px;
+}
+
+/* MOBILE */
+
+@media(max-width:500px){
+
+  .container{
+    padding:11px 10px;
+  }
+
+  .cart-item{
+    padding:10px;
+  }
+
+  .product-image{
+    width:78px;
+    height:78px;
+  }
+
+  .product-name{
+    font-size:13px;
+  }
+
+  .price{
+    font-size:15px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+
+  <div class="top">
+
+    <button
+      class="back"
+      onclick="goBack()">
+      ←
+    </button>
+
+    <div class="brand">
+      <h1>BR Digital Marketplace</h1>
+      <p>🛒 My Shopping Cart</p>
+    </div>
+
+  </div>
+
+</header>
+
+
+<main class="container">
+
+  <div class="title">
+    <h2>🛒 My Cart</h2>
+    <span id="itemCount">0 Items</span>
+  </div>
+
+  <div id="cartArea"></div>
+
+</main>
+
+
+<script>
+
+/* =========================
+   CART
+========================= */
+
+let cart = [];
+
+
+/* =========================
+   LOAD CART
+========================= */
+
+function loadCart(){
+
+  try{
+
+    cart =
+      JSON.parse(
+        localStorage.getItem("br_cart") || "[]"
+      );
+
+  }catch(error){
+
+    console.error(error);
+
+    cart = [];
+
+  }
+
+  if(!Array.isArray(cart)){
+    cart = [];
+  }
+
+  renderCart();
+}
+
+
+/* =========================
+   RENDER
+========================= */
+
+function renderCart(){
+
+  const area =
+    document.getElementById("cartArea");
+
+  const count =
+    cart.reduce(
+      (total,item) =>
+        total + Number(item.quantity || 1),
+      0
+    );
+
+  document.getElementById("itemCount").innerText =
+    count + (count === 1 ? " Item" : " Items");
+
+
+  if(!cart.length){
+
+    area.innerHTML = `
+
+      <div class="empty">
+
+        <div class="empty-icon">
+          🛒
+        </div>
+
+        <h2>
+          Your Cart is Empty
+        </h2>
+
+        <p>
+          अभी आपके cart में कोई product नहीं है।
+        </p>
+
+        <button
+          class="shop-btn"
+          onclick="openMarket()">
+
+          🏪 Continue Shopping
+
+        </button>
+
+      </div>
+
+    `;
+
+    return;
+  }
+
+
+  let subtotal = 0;
+
+
+  const itemsHTML =
+    cart.map((item,index) => {
+
+      const quantity =
+        Number(item.quantity || 1);
+
+      const price =
+        Number(item.price || 0);
+
+      const lineTotal =
+        quantity * price;
+
+      subtotal += lineTotal;
+
+
+      return `
+
+        <div class="cart-item">
+
+          ${
+            item.image_url
+            ?
+            `
+            <img
+              class="product-image"
+              src="${escapeHtml(item.image_url)}"
+              alt="Product"
+              onerror="this.style.display='none'">
+            `
+            :
+            `
+            <div class="product-image"></div>
+            `
+          }
+
+          <div class="item-info">
+
+            <div class="product-name">
+              ${escapeHtml(
+                item.product_name || "Product"
+              )}
+            </div>
+
+            ${
+              item.seller_name
+              ?
+              `
+              <div class="seller">
+                🏪 Seller:
+                ${escapeHtml(item.seller_name)}
+              </div>
+              `
+              :
+              ""
+            }
+
+            <div class="price">
+              ₹${formatPrice(price)}
+            </div>
+
+            <div class="actions">
+
+              <div class="quantity">
+
+                <button
+                  onclick="changeQuantity(${index},-1)">
+                  −
+                </button>
+
+                <span>
+                  ${quantity}
+                </span>
+
+                <button
+                  onclick="changeQuantity(${index},1)">
+                  +
+                </button>
+
+              </div>
+
+              <button
+                class="remove"
+                onclick="removeItem(${index})">
+
+                🗑 Remove
+
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      `;
+
+    }).join("");
+
+
+  const deliveryFee = 0;
+
+  const total =
+    subtotal + deliveryFee;
+
+
+  area.innerHTML = `
+
+    ${itemsHTML}
+
+    <section class="summary">
+
+      <h2>
+        🧾 Price Details
+      </h2>
+
+      <div class="row">
+        <span>Subtotal</span>
+        <strong>
+          ₹${formatPrice(subtotal)}
+        </strong>
+      </div>
+
+      <div class="row">
+        <span>Delivery Fee</span>
+        <strong>
+          ₹${formatPrice(deliveryFee)}
+        </strong>
+      </div>
+
+      <div class="row total">
+        <span>Total Amount</span>
+        <strong>
+          ₹${formatPrice(total)}
+        </strong>
+      </div>
+
+      <button
+        class="checkout"
+        onclick="goCheckout()">
+
+        Proceed to Checkout →
+
+      </button>
+
+    </section>
+
+  `;
+
+}
+
+
+/* =========================
+   QUANTITY
+========================= */
+
+function changeQuantity(index,change){
+
+  const item =
+    cart[index];
+
+  if(!item) return;
+
+
+  let quantity =
+    Number(item.quantity || 1);
+
+
+  quantity += change;
+
+
+  if(quantity <= 0){
+
+    removeItem(index);
+
+    return;
+  }
+
+
+  cart[index].quantity =
+    quantity;
+
+
+  saveCart();
+
+  renderCart();
+
+}
+
+
+/* =========================
+   REMOVE
+========================= */
+
+function removeItem(index){
+
+  if(!cart[index]) return;
+
+
+  const productName =
+    cart[index].product_name ||
+    "Product";
+
+
+  const confirmRemove =
+    confirm(
+      `"${productName}" को Cart से हटाना चाहते हैं?`
+    );
+
+
+  if(!confirmRemove) return;
+
+
+  cart.splice(index,1);
+
+  saveCart();
+
+  renderCart();
+
+}
+
+
+/* =========================
+   SAVE
+========================= */
+
+function saveCart(){
+
+  localStorage.setItem(
+    "br_cart",
+    JSON.stringify(cart)
+  );
+
+}
+
+
+/* =========================
+   CHECKOUT
+========================= */
+
+function goCheckout(){
+
+  if(!cart.length){
+
+    alert(
+      "🛒 आपका Cart खाली है।"
+    );
+
+    return;
+  }
+
+
+  window.location.href =
+    "checkout.html";
+
+}
+
+
+/* =========================
+   NAVIGATION
+========================= */
+
+function openMarket(){
+
+  window.location.href =
+    "market.html";
+
+}
+
+
+function goBack(){
+
+  if(
+    document.referrer &&
+    document.referrer.includes(
+      window.location.hostname
+    )
+  ){
+
+    history.back();
+
+  }else{
+
+    window.location.href =
+      "market.html";
+
+  }
+
+}
+
+
+/* =========================
+   HELPERS
+========================= */
+
+function formatPrice(value){
+
+  return Number(
+    value || 0
+  ).toLocaleString(
+    "en-IN",
+    {
+      maximumFractionDigits:2
+    }
+  );
+
+}
+
+
+function escapeHtml(value){
+
+  return String(
+    value ?? ""
+  )
+  .replace(/&/g,"&amp;")
+  .replace(/</g,"&lt;")
+  .replace(/>/g,"&gt;")
+  .replace(/"/g,"&quot;")
+  .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+loadCart();
+
+</script>
+
+</body>
+</html>
