@@ -2585,10 +2585,232 @@ async function openProductVerification(productId){
    VERIFY PRODUCT
 ===================================================== */
 
-async function verifyProduct(
-  productId,
-  status
-){
+async function verifyProduct(productId, status){
+
+  const product = products.find(
+    p => String(p.id) === String(productId)
+  );
+
+  if(!product){
+    alert('Product नहीं मिला।');
+    return;
+  }
+
+  if(status === 'rejected'){
+
+    if(!confirm(
+      'क्या आप इस product को REJECT करना चाहते हैं?'
+    )){
+      return;
+    }
+
+    const { error } = await supabaseClient
+      .from('products')
+      .update({
+        status:'rejected'
+      })
+      .eq('id', product.id);
+
+    if(error){
+      alert(
+        '❌ Product reject failed:\n' +
+        error.message
+      );
+      return;
+    }
+
+    product.status = 'rejected';
+
+    updateStats();
+    renderProducts();
+    closeDocModal();
+
+    alert('❌ Product rejected.');
+
+    return;
+  }
+
+
+  /* =========================================
+     APPROVE + AI IMAGE
+  ========================================= */
+
+  if(!confirm(
+    '✅ Product approve करने पर AI product image generate होगी।\n\nक्या आप जारी रखना चाहते हैं?'
+  )){
+    return;
+  }
+
+
+  /* पहले AI image generate होगी */
+
+  try{
+
+    document.getElementById('modalBody').innerHTML = `
+
+      <div style="
+        text-align:center;
+        padding:40px 20px;
+      ">
+
+        <div style="font-size:55px;">
+          🤖
+        </div>
+
+        <h2>
+          AI Product Image बन रही है...
+        </h2>
+
+        <p class="muted">
+          कृपया इस window को बंद न करें।
+        </p>
+
+      </div>
+
+    `;
+
+
+    /*
+      Supabase Edge Function
+      नाम:
+      generate-product-image
+    */
+
+    const {
+      data:sessionData
+    } = await supabaseClient.auth.getSession();
+
+
+    const accessToken =
+      sessionData?.session?.access_token;
+
+
+    if(!accessToken){
+      throw new Error(
+        'Admin session नहीं मिली।'
+      );
+    }
+
+
+    const response =
+      await fetch(
+        `${SUPABASE_URL}/functions/v1/generate-product-image`,
+        {
+          method:'POST',
+
+          headers:{
+            'Content-Type':'application/json',
+            'Authorization':
+              `Bearer ${accessToken}`
+          },
+
+          body:JSON.stringify({
+            product_id:product.id
+          })
+        }
+      );
+
+
+    const result =
+      await response.json();
+
+
+    if(
+      !response.ok ||
+      !result.success ||
+      !result.ai_image_url
+    ){
+
+      throw new Error(
+        result.error ||
+        'AI image generate नहीं हुई।'
+      );
+
+    }
+
+
+    /* =========================================
+       AI IMAGE मिलने के बाद ही APPROVE
+    ========================================= */
+
+    const {
+      error:updateError
+    } =
+    await supabaseClient
+      .from('products')
+      .update({
+        ai_image_url:
+          result.ai_image_url,
+
+        status:
+          'approved'
+      })
+      .eq('id',product.id);
+
+
+    if(updateError){
+
+      throw new Error(
+        updateError.message
+      );
+
+    }
+
+
+    product.ai_image_url =
+      result.ai_image_url;
+
+    product.status =
+      'approved';
+
+
+    updateStats();
+    renderProducts();
+    closeDocModal();
+
+
+    alert(
+      '✅ Product approved!\n\n🤖 AI image successfully generated.'
+    );
+
+
+  }catch(error){
+
+    console.error(
+      'AI image generation error:',
+      error
+    );
+
+
+    /*
+      AI image नहीं बनी तो product
+      approved नहीं होगा।
+    */
+
+    await supabaseClient
+      .from('products')
+      .update({
+        status:'pending'
+      })
+      .eq('id',product.id);
+
+
+    product.status =
+      'pending';
+
+
+    alert(
+      '❌ Product approve नहीं हुआ।\n\n' +
+      'AI image generate नहीं हो पाई:\n' +
+      error.message
+    );
+
+
+    renderProducts();
+
+  }
+
+}
 
   const product =
     products.find(
