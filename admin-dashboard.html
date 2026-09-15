@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="hi">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1.0"
+>
+
+<title>Admin Dashboard - BR Digital Marketplace</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f5f7fa;
+  color:#17202a;
+}
+
+button,
+input,
+select,
+textarea{
+  font-family:inherit;
+}
+
+
+/* ================= SIDEBAR ================= */
+
+.sidebar{
+  position:fixed;
+  left:0;
+  top:0;
+  width:280px;
+  height:100vh;
+  background:#10233b;
+  color:#fff;
+  padding:20px 15px;
+  z-index:1000;
+  overflow-y:auto;
+}
+
+.sidebar-brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:5px 8px 20px;
+  border-bottom:1px solid #ffffff20;
+  margin-bottom:18px;
+}
+
+.sidebar-logo{
+  width:48px;
+  height:48px;
+  background:#1677ff;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:23px;
+  font-weight:900;
+}
+
+.sidebar-title{
+  font-size:20px;
+  font-weight:800;
+  line-height:1.05;
+}
+
+.sidebar-subtitle{
+  font-size:12px;
+  margin-top:6px;
+  color:#d8e2ef;
+}
+
+.nav-item{
+  width:100%;
+  border:0;
+  background:transparent;
+  color:#fff;
+  padding:14px 12px;
+  border-radius:9px;
+  margin:3px 0;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  font-size:16px;
+  cursor:pointer;
+  text-align:left;
+}
+
+.nav-item:hover{
+  background:#ffffff12;
+}
+
+.nav-item.active{
+  background:#1677ff;
+}
+
+.nav-icon{
+  width:25px;
+  text-align:center;
+  font-size:21px;
+}
+
+.verify-badge{
+  margin-left:auto;
+  background:#ef3340;
+  padding:4px 9px;
+  border-radius:12px;
+  font-size:13px;
+  font-weight:800;
+}
+
+.local-card{
+  position:absolute;
+  left:15px;
+  right:15px;
+  bottom:18px;
+  background:#0b1b2f;
+  border-radius:15px;
+  padding:18px 10px;
+  text-align:center;
+}
+
+.local-icon{
+  font-size:55px;
+}
+
+.local-card b{
+  display:block;
+  font-size:20px;
+  margin:5px 0;
+}
+
+.local-card span{
+  color:#dbe5f0;
+  font-size:14px;
+}
+
+
+/* ================= MAIN ================= */
+
+.main-wrap{
+  margin-left:280px;
+  min-height:100vh;
+}
+
+.top{
+  background:#fff;
+  box-shadow:0 2px 10px #0001;
+  padding:14px 22px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  position:sticky;
+  top:0;
+  z-index:900;
+}
+
+.search-top{
+  width:min(650px,70%);
+  padding:13px 15px;
+  border:1px solid #ddd;
+  border-radius:10px;
+  font-size:15px;
+}
+
+.admin-top{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:700;
+}
+
+.admin-avatar{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  background:#e5e7eb;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.main{
+  max-width:1250px;
+  margin:25px auto;
+  padding:0 20px;
+}
+
+.welcome{
+  margin-bottom:20px;
+}
+
+.welcome h1{
+  margin:0 0 8px;
+  font-size:38px;
+}
+
+.muted{
+  color:#667085;
+}
+
+.mobile-menu{
+  display:none;
+  border:0;
+  background:#10233b;
+  color:#fff;
+  padding:8px 12px;
+  border-radius:8px;
+  font-size:21px;
+}
+
+
+/* ================= STATS ================= */
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:15px;
+}
+
+.stat{
+  background:#fff;
+  border-radius:16px;
+  box-shadow:0 3px 15px #0000000d;
+  padding:20px;
+}
+
+.stat b{
+  font-size:28px;
+}
+
+
+/* ================= TABS ================= */
+
+.tabs{
+  display:flex;
+  gap:8px;
+  margin:20px 0;
+  overflow:auto;
+}
+
+.tab{
+  border:1px solid #ddd;
+  border-radius:9px;
+  padding:10px 13px;
+  font-weight:700;
+  cursor:pointer;
+  background:#fff;
+  white-space:nowrap;
+}
+
+.tab.active{
+  background:#ff7a00;
+  color:#fff;
+  border-color:#ff7a00;
+}
+
+
+/* ================= PANELS ================= */
+
+.panel{
+  background:#fff;
+  border-radius:16px;
+  box-shadow:0 3px 15px #0000000d;
+  padding:20px;
+  overflow:auto;
+}
+
+.hidden{
+  display:none!important;
+}
+
+.search{
+  width:100%;
+  padding:12px;
+  border:1px solid #ddd;
+  border-radius:9px;
+  margin-bottom:15px;
+}
+
+.notice{
+  padding:12px;
+  border-radius:10px;
+  margin-bottom:15px;
+  background:#fff7ed;
+  border:1px solid #fed7aa;
+}
+
+
+/* ================= TABLE ================= */
+
+.table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:900px;
+}
+
+.table th,
+.table td{
+  padding:11px;
+  border-bottom:1px solid #eee;
+  text-align:left;
+  vertical-align:middle;
+}
+
+.thumb{
+  width:60px;
+  height:50px;
+  object-fit:cover;
+  border-radius:8px;
+  border:1px solid #ddd;
+}
+
+
+/* ================= BUTTONS ================= */
+
+.danger{
+  background:#fee2e2;
+  color:#991b1b;
+  border:0;
+  border-radius:7px;
+  padding:7px 9px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.small,
+.view-product-btn{
+  background:#eef2ff;
+  color:#3730a3;
+  border:0;
+  border-radius:7px;
+  padding:7px 9px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.approve-product-btn{
+  background:#dcfce7;
+  color:#166534;
+  border:0;
+  border-radius:7px;
+  padding:7px 9px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.reject-product-btn{
+  background:#fee2e2;
+  color:#991b1b;
+  border:0;
+  border-radius:7px;
+  padding:7px 9px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.product-actions{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+}
+
+
+/* ================= STATUS ================= */
+
+.status-badge{
+  display:inline-block;
+  padding:6px 10px;
+  border-radius:15px;
+  font-size:13px;
+  font-weight:800;
+}
+
+.status-pending{
+  background:#fff7d6;
+  color:#8a6500;
+}
+
+.status-approved{
+  background:#dcfce7;
+  color:#166534;
+}
+
+.status-rejected{
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+
+/* ================= PRODUCT VERIFY ================= */
+
+.product-verify-card{
+  border:1px solid #e5e7eb;
+  border-radius:16px;
+  padding:18px;
+  background:#fff;
+}
+
+.product-verify-head{
+  display:flex;
+  gap:18px;
+  align-items:flex-start;
+  margin-bottom:20px;
+}
+
+.product-large-image{
+  width:180px;
+  height:160px;
+  object-fit:cover;
+  border-radius:12px;
+  border:1px solid #ddd;
+  background:#f8fafc;
+}
+
+.product-verify-title{
+  margin:0 0 8px;
+  font-size:27px;
+}
+
+.product-detail-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+  margin-top:18px;
+}
+
+.product-detail-box{
+  background:#f8fafc;
+  padding:13px;
+  border-radius:10px;
+}
+
+.product-detail-box b{
+  display:block;
+  margin-bottom:5px;
+}
+
+.product-invoice-box{
+  margin-top:18px;
+  padding:16px;
+  border-radius:12px;
+  background:#f8fafc;
+  border:1px solid #e5e7eb;
+}
+
+.invoice-available{
+  color:#166534;
+  font-weight:700;
+}
+
+.invoice-not-available{
+  color:#667085;
+  font-weight:700;
+}
+
+.product-verify-actions{
+  display:flex;
+  gap:12px;
+  margin-top:20px;
+}
+
+.product-approve-large{
+  flex:1;
+  background:#16a34a;
+  color:#fff;
+  border:0;
+  border-radius:10px;
+  padding:14px;
+  font-weight:800;
+  font-size:16px;
+  cursor:pointer;
+}
+
+.product-reject-large{
+  flex:1;
+  background:#dc2626;
+  color:#fff;
+  border:0;
+  border-radius:10px;
+  padding:14px;
+  font-weight:800;
+  font-size:16px;
+  cursor:pointer;
+}
+
+.ai-box{
+  margin-top:18px;
+  padding:16px;
+  background:#eff6ff;
+  border:1px solid #bfdbfe;
+  border-radius:12px;
+}
+
+.ai-preview{
+  width:100%;
+  max-width:330px;
+  max-height:280px;
+  object-fit:contain;
+  border-radius:12px;
+  border:1px solid #ddd;
+  background:#fff;
+  margin-top:10px;
+}
+
+
+/* ================= SELLER ================= */
+
+.verification-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin-bottom:18px;
+  flex-wrap:wrap;
+}
+
+.verification-head h2{
+  margin:0 0 5px;
+  font-size:30px;
+}
+
+.verification-status{
+  background:#fff7ed;
+  color:#9a3412;
+  border:1px solid #fed7aa;
+  padding:9px 14px;
+  border-radius:20px;
+  font-weight:700;
+}
+
+.seller-profile{
+  background:#fff;
+  border:1px solid #e5e7eb;
+  border-radius:16px;
+  padding:18px;
+  margin-bottom:18px;
+}
+
+.seller-profile h3{
+  margin:0 0 8px;
+  font-size:25px;
+}
+
+.seller-info{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin-top:15px;
+}
+
+.info-box{
+  background:#f8fafc;
+  border-radius:10px;
+  padding:12px;
+}
+
+.verify-info{
+  background:#fff;
+  border:1px solid #e5e7eb;
+  border-radius:16px;
+  padding:18px;
+  margin-top:18px;
+}
+
+.verify-info h2{
+  margin-top:0;
+}
+
+.verify-info-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+}
+
+
+/* ================= DOCUMENTS ================= */
+
+.verify-documents{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+}
+
+.doc-card{
+  border:1px solid #e5e7eb;
+  border-radius:14px;
+  padding:14px;
+  background:#fff;
+}
+
+.doc-card h4{
+  margin:0 0 10px;
+}
+
+.auto-doc-preview{
+  min-height:110px;
+  padding:8px;
+  border-radius:10px;
+  background:#f8fafc;
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  align-items:center;
+}
+
+.auto-doc-preview img{
+  width:90px;
+  height:70px;
+  object-fit:cover;
+  border-radius:7px;
+  cursor:pointer;
+  border:1px solid #ddd;
+}
+
+.auto-doc-preview iframe{
+  width:90px;
+  height:70px;
+  border:1px solid #ddd;
+  border-radius:7px;
+}
+
+.auto-doc-empty{
+  width:100%;
+  text-align:center;
+  color:#667085;
+  padding:20px 5px;
+}
+
+.doc-btn{
+  width:100%;
+  background:#1677ff;
+  color:#fff;
+  border:0;
+  border-radius:8px;
+  padding:10px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.map-link{
+  display:inline-block;
+  margin-top:12px;
+  background:#1677ff;
+  color:#fff;
+  padding:9px 13px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:700;
+}
+
+
+/* ================= ADMIN ACTION ================= */
+
+.remark-box{
+  width:100%;
+  min-height:100px;
+  padding:12px;
+  border:1px solid #ddd;
+  border-radius:10px;
+  resize:vertical;
+}
+
+.verify-actions{
+  display:flex;
+  gap:12px;
+  margin-top:15px;
+}
+
+.approve-btn,
+.reject-btn{
+  flex:1;
+  color:#fff;
+  border:0;
+  border-radius:10px;
+  padding:14px;
+  font-weight:800;
+  cursor:pointer;
+  font-size:16px;
+}
+
+.approve-btn{
+  background:#16a34a;
+}
+
+.reject-btn{
+  background:#dc2626;
+}
+
+
+/* ================= MODAL ================= */
+
+.doc-modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:#000b;
+  z-index:2000;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.doc-modal.show{
+  display:flex;
+}
+
+.doc-modal-box{
+  background:#fff;
+  border-radius:15px;
+  max-width:950px;
+  width:100%;
+  max-height:90vh;
+  overflow:auto;
+  padding:18px;
+  position:relative;
+}
+
+.modal-close{
+  position:absolute;
+  right:15px;
+  top:10px;
+  border:0;
+  background:#fee2e2;
+  color:#991b1b;
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  font-size:22px;
+  cursor:pointer;
+}
+
+.modal-title{
+  margin:0 45px 15px 0;
+}
+
+.modal-image{
+  max-width:100%;
+  max-height:70vh;
+  display:block;
+  margin:auto;
+  border-radius:10px;
+}
+
+.modal-pdf{
+  width:100%;
+  height:70vh;
+  border:1px solid #ddd;
+  border-radius:10px;
+}
+
+.multiple-list{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+
+.multiple-list img{
+  width:100%;
+  height:180px;
+  object-fit:cover;
+  border-radius:10px;
+}
+
+
+/* ================= MOBILE ================= */
+
+@media(max-width:1000px){
+
+  .sidebar{
+    width:235px;
+  }
+
+  .main-wrap{
+    margin-left:235px;
+  }
+
+  .stats{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .verify-documents{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+}
+
+@media(max-width:700px){
+
+  .sidebar{
+    transform:translateX(-100%);
+    transition:transform .25s ease;
+  }
+
+  .sidebar.open{
+    transform:translateX(0);
+  }
+
+  .main-wrap{
+    margin-left:0;
+  }
+
+  .mobile-menu{
+    display:block;
+  }
+
+  .top{
+    padding:10px;
+  }
+
+  .search-top{
+    width:52%;
+  }
+
+  .admin-top span{
+    display:none;
+  }
+
+  .main{
+    padding:0 12px;
+  }
+
+  .welcome h1{
+    font-size:30px;
+  }
+
+  .stats{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .verify-documents{
+    grid-template-columns:1fr;
+  }
+
+  .seller-info,
+  .verify-info-grid,
+  .product-detail-grid{
+    grid-template-columns:1fr;
+  }
+
+  .verify-actions,
+  .product-verify-actions{
+    flex-direction:column;
+  }
+
+  .multiple-list{
+    grid-template-columns:1fr;
+  }
+
+  .local-card{
+    position:static;
+    margin-top:20px;
+  }
+
+  .product-verify-head{
+    flex-direction:column;
+  }
+
+  .product-large-image{
+    width:100%;
+    height:220px;
+  }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- ================= SIDEBAR ================= -->
+
+<aside class="sidebar" id="sidebar">
+
+  <div class="sidebar-brand">
+
+    <div class="sidebar-logo">
+      BR
+    </div>
+
+    <div>
+
+      <div class="sidebar-title">
+        BR Digital<br>
+        Marketplace
+      </div>
+
+      <div class="sidebar-subtitle">
+        Shop Local, Support Bihar 🇮🇳
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <button
+    class="nav-item active"
+    onclick="showDashboard()">
+
+    <span class="nav-icon">🏠</span>
+    Dashboard
+
+  </button>
+
+
+  <button
+    class="nav-item"
+    onclick="showVerificationList()">
+
+    <span class="nav-icon">🛡️</span>
+    Seller Verification
+
+    <span
+      class="verify-badge"
+      id="pendingBadge">
+
+      0
+
+    </span>
+
+  </button>
+
+
+  <button
+    class="nav-item"
+    onclick="showTabById('sellers')">
+
+    <span class="nav-icon">👥</span>
+    Sellers
+
+  </button>
+
+
+  <button
+    class="nav-item"
+    onclick="showTabById('info')">
+
+    <span class="nav-icon">📦</span>
+    Orders
+
+  </button>
+
+
+  <button
+    class="nav-item"
+    onclick="showTabById('products')">
+
+    <span class="nav-icon">📦</span>
+    Products
+
+  </button>
+
+
+  <button
+    class="nav-item"
+    onclick="showTabById('users')">
+
+    <span class="nav-icon">👤</span>
+    Customers
+
+  </button>
+
+
+  <button
+    class="nav-item"
+    type="button">
+
+    <span class="nav-icon">📈</span>
+    Reports
+
+  </button>
+
+
+  <button
+    class="nav-item"
+    type="button">
+
+    <span class="nav-icon">⚙️</span>
+    Settings
+
+  </button>
+
+
+  <div class="local-card">
+
+    <div class="local-icon">
+      🛍️
+    </div>
+
+    <b>Grow Local</b>
+    <b>Support Bihar</b>
+
+    <span>
+      BR Digital Marketplace ❤️
+    </span>
+
+  </div>
+
+</aside>
+
+
+
+<!-- ================= MAIN ================= -->
+
+<div class="main-wrap">
+
+
+<header class="top">
+
+  <button
+    class="mobile-menu"
+    id="adminMenuBtn"
+    type="button">
+
+    ☰
+
+  </button>
+
+
+  <input
+    class="search-top"
+    placeholder="🔎 Search sellers, orders, products..."
+  >
+
+
+  <div class="admin-top">
+
+    <div class="admin-avatar">
+      👨‍💼
+    </div>
+
+    <span>
+      Admin
+    </span>
+
+
+    <button
+      onclick="logout()"
+      style="
+        border:0;
+        border-radius:8px;
+        padding:9px 12px;
+        background:#17202a;
+        color:#fff;
+        font-weight:700;
+        cursor:pointer;
+      ">
+
+      Logout
+
+    </button>
+
+  </div>
+
+</header>
+
+
+
+<main class="main">
+
+
+<div class="welcome">
+
+  <h1>
+    👋 Main Admin
+  </h1>
+
+  <p
+    id="adminName"
+    class="muted">
+
+    Checking access...
+
+  </p>
+
+</div>
+
+
+<div
+  id="notice"
+  class="notice hidden">
+</div>
+
+
+
+<!-- ================= STATS ================= -->
+
+<section class="stats">
+
+  <div class="stat">
+
+    <div class="muted">
+      Products
+    </div>
+
+    <b id="productCount">
+      0
+    </b>
+
+  </div>
+
+
+  <div class="stat">
+
+    <div class="muted">
+      Sellers
+    </div>
+
+    <b id="sellerCount">
+      0
+    </b>
+
+  </div>
+
+
+  <div class="stat">
+
+    <div class="muted">
+      Active Users
+    </div>
+
+    <b id="userCount">
+      0
+    </b>
+
+  </div>
+
+
+  <div class="stat">
+
+    <div class="muted">
+      Low Stock
+    </div>
+
+    <b id="lowStock">
+      0
+    </b>
+
+  </div>
+
+</section>
+
+
+
+<!-- ================= TABS ================= -->
+
+<div class="tabs">
+
+  <button
+    class="tab active"
+    onclick="showTab('products',this)">
+
+    📦 Products
+
+  </button>
+
+
+  <button
+    class="tab"
+    onclick="showTab('sellers',this)">
+
+    👨‍💼 Sellers
+
+  </button>
+
+
+  <button
+    class="tab"
+    onclick="showTab('verification',this)">
+
+    🛡️ Seller Verification
+
+  </button>
+
+
+  <button
+    class="tab"
+    onclick="showTab('users',this)">
+
+    👥 Users
+
+  </button>
+
+
+  <button
+    class="tab"
+    onclick="showTab('info',this)">
+
+    📦 Orders
+
+  </button>
+
+</div>
+
+
+
+<!-- ================= PRODUCTS ================= -->
+
+<section
+  id="products"
+  class="panel">
+
+  <h2>
+    Product Management
+  </h2>
+
+  <p class="muted">
+
+    Seller की Original Image केवल Admin verification के लिए है।
+    Approve होने के बाद Marketplace में AI image दिखाई जाएगी।
+
+  </p>
+
+
+  <input
+    class="search"
+    id="productSearch"
+    oninput="renderProducts()"
+    placeholder="🔎 Product search..."
+  >
+
+
+  <div id="productTable"></div>
+
+</section>
+
+
+
+<!-- ================= SELLERS ================= -->
+
+<section
+  id="sellers"
+  class="panel hidden">
+
+  <h2>
+    Seller Management
+  </h2>
+
+  <div id="sellerTable"></div>
+
+</section>
+
+
+
+<!-- ================= VERIFICATION ================= -->
+
+<section
+  id="verification"
+  class="panel hidden">
+
+  <button
+    class="small"
+    onclick="showVerificationList()">
+
+    ← Back to Seller Verification
+
+  </button>
+
+
+  <div id="verificationContent">
+
+    <h2>
+      🛡️ Seller Verification
+    </h2>
+
+    <p class="muted">
+      Pending seller verification select करें।
+    </p>
+
+  </div>
+
+</section>
+
+
+
+<!-- ================= USERS ================= -->
+
+<section
+  id="users"
+  class="panel hidden">
+
+  <h2>
+    User Management
+  </h2>
+
+  <div id="userTable"></div>
+
+</section>
+
+
+
+<!-- ================= ORDERS ================= -->
+
+<section
+  id="info"
+  class="panel hidden">
+
+  <h2>
+    📦 Order Management
+  </h2>
+
+
+  <div
+    id="orderNotice"
+    class="notice hidden">
+  </div>
+
+
+  <div
+    style="
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-bottom:12px;
+    ">
+
+    <button
+      class="small"
+      onclick="loadOrders()">
+
+      🔄 Refresh Orders
+
+    </button>
+
+
+    <select
+      id="orderStatusFilter"
+      onchange="renderOrders()"
+      style="
+        padding:10px;
+        border:1px solid #ddd;
+        border-radius:9px;
+      ">
+
+      <option value="">
+        All Status
+      </option>
+
+      <option value="pending">
+        Pending
+      </option>
+
+      <option value="confirmed">
+        Confirmed
+      </option>
+
+      <option value="shipped">
+        Shipped
+      </option>
+
+      <option value="delivered">
+        Delivered
+      </option>
+
+      <option value="cancelled">
+        Cancelled
+      </option>
+
+    </select>
+
+  </div>
+
+
+  <input
+    class="search"
+    id="orderSearch"
+    oninput="renderOrders()"
+    placeholder="🔎 Order ID / customer / seller search..."
+  >
+
+
+  <div id="orderTable">
+
+    <p class="muted">
+      Orders load karne ke liye Orders tab open karein.
+    </p>
+
+  </div>
+
+</section>
+
+
+</main>
+
+</div>
+
+
+
+<!-- ================= MODAL ================= -->
+
+<div
+  class="doc-modal"
+  id="docModal"
+  onclick="closeDocModal(event)">
+
+
+  <div
+    class="doc-modal-box"
+    onclick="event.stopPropagation()">
+
+
+    <button
+      class="modal-close"
+      onclick="closeDocModal()">
+
+      ×
+
+    </button>
+
+
+    <h2
+      class="modal-title"
+      id="modalTitle">
+
+      Document
+
+    </h2>
+
+
+    <div id="modalBody"></div>
+
+  </div>
+
+</div>
+
+
+
+<script>
+
+
+/* =====================================================
+   SUPAB
