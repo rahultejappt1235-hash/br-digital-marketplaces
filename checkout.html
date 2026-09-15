@@ -1,0 +1,2808 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
+  <title>Checkout | BR Digital Marketplace</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
+
+    body{
+      font-family:Arial,sans-serif;
+      background:#f5f6f7;
+      color:#202124;
+      padding-bottom:30px;
+    }
+
+    /* =========================
+       HEADER
+    ========================= */
+
+    .header{
+      position:sticky;
+      top:0;
+      z-index:1000;
+      background:#fff;
+      padding:14px 15px;
+      box-shadow:0 2px 10px rgba(0,0,0,.08);
+    }
+
+    .top{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .back{
+      width:42px;
+      height:42px;
+      border:0;
+      border-radius:12px;
+      background:#f1f3f4;
+      font-size:22px;
+      cursor:pointer;
+    }
+
+    .brand{
+      flex:1;
+    }
+
+    .brand h1{
+      font-size:18px;
+      color:#087f45;
+      font-weight:900;
+    }
+
+    .brand p{
+      font-size:11px;
+      color:#777;
+      margin-top:3px;
+    }
+
+    /* =========================
+       CONTAINER
+    ========================= */
+
+    .container{
+      max-width:750px;
+      margin:auto;
+      padding:15px;
+    }
+
+    .section{
+      background:#fff;
+      border-radius:17px;
+      padding:17px;
+      margin-bottom:13px;
+      box-shadow:0 2px 9px rgba(0,0,0,.06);
+    }
+
+    .section h2{
+      font-size:18px;
+      margin-bottom:14px;
+    }
+
+    /* =========================
+       ERROR
+    ========================= */
+
+    .error{
+      background:#fff0f0;
+      color:#d93025;
+      padding:13px;
+      border-radius:10px;
+      font-size:13px;
+      margin-bottom:12px;
+      display:none;
+      line-height:1.5;
+      word-break:break-word;
+    }
+
+    /* =========================
+       LOADING
+    ========================= */
+
+    .loading{
+      text-align:center;
+      padding:35px;
+      color:#777;
+    }
+
+    /* =========================
+       ADDRESS
+    ========================= */
+
+    .address-card{
+      border:2px solid #087f45;
+      border-radius:13px;
+      padding:14px;
+      background:#f8fffb;
+    }
+
+    .address-name{
+      font-weight:900;
+      font-size:15px;
+    }
+
+    .address-phone{
+      font-size:12px;
+      color:#555;
+      margin-top:4px;
+    }
+
+    .address-text{
+      font-size:13px;
+      line-height:1.5;
+      margin-top:8px;
+    }
+
+    .change-btn{
+      border:0;
+      background:transparent;
+      color:#087f45;
+      font-weight:900;
+      margin-top:9px;
+      cursor:pointer;
+      font-size:14px;
+    }
+
+    .no-address{
+      text-align:center;
+      padding:15px;
+      background:#fff7e8;
+      border-radius:12px;
+      color:#666;
+      font-size:13px;
+      line-height:1.5;
+    }
+
+    .address-form{
+      display:none;
+      margin-top:14px;
+    }
+
+    .field{
+      margin-bottom:11px;
+    }
+
+    .field label{
+      display:block;
+      font-size:12px;
+      font-weight:800;
+      margin-bottom:5px;
+    }
+
+    .field input,
+    .field textarea{
+      width:100%;
+      border:1px solid #ddd;
+      border-radius:10px;
+      padding:11px;
+      outline:none;
+      font-size:14px;
+      font-family:Arial,sans-serif;
+    }
+
+    .field input:focus,
+    .field textarea:focus{
+      border-color:#087f45;
+    }
+
+    .field textarea{
+      min-height:75px;
+      resize:vertical;
+    }
+
+    .location-btn{
+      width:100%;
+      height:43px;
+      border:0;
+      border-radius:10px;
+      background:#1769aa;
+      color:#fff;
+      font-weight:900;
+      margin-bottom:12px;
+      cursor:pointer;
+    }
+
+    .save-address-btn{
+      width:100%;
+      height:50px;
+      border:0;
+      border-radius:13px;
+      background:#087f45;
+      color:#fff;
+      font-size:16px;
+      font-weight:900;
+      cursor:pointer;
+      margin-top:4px;
+      box-shadow:0 4px 12px rgba(8,127,69,.18);
+    }
+
+    .save-address-btn:disabled{
+      opacity:.65;
+      cursor:not-allowed;
+    }
+
+    .save-address-btn:active{
+      transform:scale(.98);
+    }
+
+    /* =========================
+       PRODUCTS
+    ========================= */
+
+    .item{
+      display:flex;
+      gap:12px;
+      padding:11px 0;
+      border-bottom:1px solid #eee;
+    }
+
+    .item:last-child{
+      border-bottom:0;
+    }
+
+    .item img,
+    .item-image{
+      width:65px;
+      height:65px;
+      border-radius:10px;
+      object-fit:cover;
+      background:#f1f3f4;
+      flex-shrink:0;
+    }
+
+    .item-info{
+      flex:1;
+      min-width:0;
+    }
+
+    .item-name{
+      font-size:13px;
+      font-weight:800;
+      line-height:1.35;
+    }
+
+    .item-qty{
+      font-size:11px;
+      color:#777;
+      margin-top:5px;
+    }
+
+    .item-price{
+      font-weight:900;
+      font-size:14px;
+      margin-top:5px;
+    }
+
+    .item-seller{
+      font-size:11px;
+      color:#777;
+      margin-top:4px;
+    }
+
+    /* =========================
+       PAYMENT
+    ========================= */
+
+    .payment-option{
+      display:flex;
+      align-items:center;
+      gap:11px;
+      border:2px solid #087f45;
+      border-radius:12px;
+      padding:13px;
+      background:#f8fffb;
+    }
+
+    .payment-option input{
+      width:18px;
+      height:18px;
+    }
+
+    .payment-option strong{
+      font-size:14px;
+    }
+
+    .payment-option span{
+      display:block;
+      color:#777;
+      font-size:11px;
+      margin-top:3px;
+    }
+
+    /* =========================
+       SUMMARY
+    ========================= */
+
+    .summary-row{
+      display:flex;
+      justify-content:space-between;
+      margin:10px 0;
+      font-size:13px;
+    }
+
+    .summary-row.total{
+      border-top:1px solid #eee;
+      padding-top:13px;
+      font-size:18px;
+      font-weight:900;
+    }
+
+    .place-order{
+      width:100%;
+      height:50px;
+      border:0;
+      border-radius:13px;
+      background:#087f45;
+      color:#fff;
+      font-size:16px;
+      font-weight:900;
+      cursor:pointer;
+    }
+
+    .place-order:disabled{
+      background:#999;
+      cursor:not-allowed;
+    }
+
+    /* =========================
+       SUCCESS
+    ========================= */
+
+    .success{
+      text-align:center;
+      padding:35px 15px;
+      background:#fff;
+      border-radius:17px;
+      box-shadow:0 2px 9px rgba(0,0,0,.06);
+    }
+
+    .success-icon{
+      font-size:55px;
+    }
+
+    .success h2{
+      margin:12px 0 7px;
+      color:#087f45;
+    }
+
+    .success p{
+      color:#666;
+      font-size:13px;
+      line-height:1.5;
+    }
+
+    .success button{
+      margin-top:18px;
+      width:100%;
+      height:45px;
+      border:0;
+      border-radius:11px;
+      background:#087f45;
+      color:#fff;
+      font-weight:900;
+      cursor:pointer;
+    }
+
+    /* =========================
+       MOBILE
+    ========================= */
+
+    @media(max-width:500px){
+
+      .container{
+        padding:10px;
+      }
+
+      .section{
+        padding:14px;
+      }
+
+      .brand h1{
+        font-size:18px;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+<header class="header">
+
+  <div class="top">
+
+    <button
+      class="back"
+      type="button"
+      onclick="goCart()">
+
+      ←
+
+    </button>
+
+    <div class="brand">
+
+      <h1>
+        BR Digital Marketplace
+      </h1>
+
+      <p>
+        Secure Checkout
+      </p>
+
+    </div>
+
+  </div>
+
+</header>
+
+
+<main
+  class="container"
+  id="checkoutContainer">
+
+
+  <div
+    id="errorBox"
+    class="error">
+  </div>
+
+
+  <!-- =========================
+       ADDRESS
+  ========================= -->
+
+  <section class="section">
+
+    <h2>
+      📍 Delivery Address
+    </h2>
+
+    <div id="addressArea">
+
+      <div class="loading">
+        ⏳ Address loading...
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       ORDER ITEMS
+  ========================= -->
+
+  <section class="section">
+
+    <h2>
+      🛒 Your Order
+    </h2>
+
+    <div id="cartItems">
+
+      <div class="loading">
+        ⏳ Cart loading...
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       PAYMENT
+  ========================= -->
+
+  <section class="section">
+
+    <h2>
+      💳 Payment Method
+    </h2>
+
+    <label class="payment-option">
+
+      <input
+        type="radio"
+        name="payment"
+        value="cod"
+        checked>
+
+      <div>
+
+        <strong>
+          💵 Cash on Delivery
+        </strong>
+
+        <span>
+          Pay when your order is delivered
+        </span>
+
+      </div>
+
+    </label>
+
+  </section>
+
+
+  <!-- =========================
+       SUMMARY
+  ========================= -->
+
+  <section class="section">
+
+    <h2>
+      🧾 Order Summary
+    </h2>
+
+
+    <div class="summary-row">
+
+      <span>
+        Subtotal
+      </span>
+
+      <strong id="subtotal">
+        ₹0
+      </strong>
+
+    </div>
+
+
+    <div class="summary-row">
+
+      <span>
+        Delivery Fee
+      </span>
+
+      <strong id="deliveryFee">
+        ₹0
+      </strong>
+
+    </div>
+
+
+    <div class="summary-row total">
+
+      <span>
+        Total
+      </span>
+
+      <strong id="total">
+        ₹0
+      </strong>
+
+    </div>
+
+
+    <br>
+
+
+    <button
+      id="placeOrderBtn"
+      class="place-order"
+      type="button"
+      onclick="placeOrder()"
+      disabled>
+
+      📍 पहले Delivery Address जोड़ें
+
+    </button>
+
+  </section>
+
+
+</main>
+
+
+<script>
+
+
+/* =====================================================
+   SUPABASE
+===================================================== */
+
+const SUPABASE_URL =
+  "https://uryjmibcdfjfxoljrigt.supabase.co";
+
+
+const SUPABASE_KEY =
+  "sb_publishable_uYbJw0ARCCkCpQ9QB6FxaQ_JrIxtOOp";
+
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+/* =====================================================
+   GLOBAL
+===================================================== */
+
+let currentUser = null;
+
+let cart = [];
+
+let selectedAddress = null;
+
+
+/* =====================================================
+   START CHECKOUT
+===================================================== */
+
+async function startCheckout(){
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+    await supabaseClient.auth.getUser();
+
+
+    if(error){
+
+      throw error;
+
+    }
+
+
+    const user =
+      data?.user;
+
+
+    if(!user){
+
+      showError(
+        "कृपया पहले Customer Login करें।"
+      );
+
+      disablePlaceOrder();
+
+      return;
+
+    }
+
+
+    currentUser =
+      user;
+
+
+    /* Cart */
+
+    loadCart();
+
+
+    /* Address */
+
+    await loadAddress();
+
+
+  }catch(error){
+
+    console.error(
+      "startCheckout error:",
+      error
+    );
+
+
+    showError(
+      "❌ Checkout load नहीं हो पाया: " +
+      (error.message || "Unknown error")
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   CART LOAD
+===================================================== */
+
+function loadCart(){
+
+  try{
+
+    cart =
+      JSON.parse(
+        localStorage.getItem(
+          "br_cart"
+        ) || "[]"
+      );
+
+  }catch(error){
+
+    console.error(
+      "Cart parse error:",
+      error
+    );
+
+    cart = [];
+
+  }
+
+
+  cart =
+    Array.isArray(cart)
+      ? cart
+      : [];
+
+
+  renderCart();
+
+}
+
+
+/* =====================================================
+   CART RENDER
+===================================================== */
+
+function renderCart(){
+
+  const box =
+    document.getElementById(
+      "cartItems"
+    );
+
+
+  if(!box){
+
+    return;
+
+  }
+
+
+  if(!cart.length){
+
+    box.innerHTML = `
+
+      <div class="no-address">
+
+        🛒 आपका Cart खाली है।
+
+      </div>
+
+    `;
+
+
+    document.getElementById(
+      "subtotal"
+    ).innerText = "₹0";
+
+
+    document.getElementById(
+      "deliveryFee"
+    ).innerText = "₹0";
+
+
+    document.getElementById(
+      "total"
+    ).innerText = "₹0";
+
+
+    const button =
+      document.getElementById(
+        "placeOrderBtn"
+      );
+
+
+    if(button){
+
+      button.disabled = true;
+
+      button.innerText =
+        "🛒 Cart खाली है";
+
+    }
+
+
+    return;
+
+  }
+
+
+  let subtotal = 0;
+
+
+  box.innerHTML =
+    cart.map(item => {
+
+
+      const quantity =
+        Number(
+          item.quantity || 1
+        );
+
+
+      const price =
+        Number(
+          item.price || 0
+        );
+
+
+      const lineTotal =
+        price * quantity;
+
+
+      subtotal +=
+        lineTotal;
+
+
+      return `
+
+        <div class="item">
+
+          ${
+            item.image_url
+            ?
+            `
+              <img
+                src="${escapeHtml(item.image_url)}"
+                class="item-image"
+                alt="Product">
+            `
+            :
+            `
+              <div class="item-image"></div>
+            `
+          }
+
+
+          <div class="item-info">
+
+            <div class="item-name">
+
+              ${escapeHtml(
+                item.product_name ||
+                "Product"
+              )}
+
+            </div>
+
+
+            ${
+              item.seller_name
+              ?
+              `
+                <div class="item-seller">
+                  Seller:
+                  ${escapeHtml(item.seller_name)}
+                </div>
+              `
+              :
+              ""
+            }
+
+
+            <div class="item-qty">
+
+              Quantity:
+              ${quantity}
+
+            </div>
+
+
+            <div class="item-price">
+
+              ₹${formatPrice(
+                lineTotal
+              )}
+
+            </div>
+
+          </div>
+
+        </div>
+
+      `;
+
+    }).join("");
+
+
+  document.getElementById(
+    "subtotal"
+  ).innerText =
+    "₹" +
+    formatPrice(
+      subtotal
+    );
+
+
+  /* अभी Delivery Fee ₹0 */
+
+  const deliveryFee =
+    0;
+
+
+  document.getElementById(
+    "deliveryFee"
+  ).innerText =
+    "₹" +
+    formatPrice(
+      deliveryFee
+    );
+
+
+  document.getElementById(
+    "total"
+  ).innerText =
+    "₹" +
+    formatPrice(
+      subtotal +
+      deliveryFee
+    );
+
+}
+
+
+/* =====================================================
+   LOAD CUSTOMER ADDRESS
+===================================================== */
+
+async function loadAddress(){
+
+  const box =
+    document.getElementById(
+      "addressArea"
+    );
+
+
+  if(!currentUser){
+
+    disablePlaceOrder();
+
+    return;
+
+  }
+
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+    await supabaseClient
+      .from("customer_addresses")
+      .select(`
+        id,
+        full_name,
+        phone,
+        address,
+        city,
+        state,
+        pincode,
+        latitude,
+        longitude,
+        is_default,
+        created_at
+      `)
+      .eq(
+        "customer_id",
+        currentUser.id
+      )
+      .order(
+        "is_default",
+        {
+          ascending:false
+        }
+      )
+      .order(
+        "created_at",
+        {
+          ascending:false
+        }
+      );
+
+
+    if(error){
+
+      console.error(
+        "Address error:",
+        error
+      );
+
+
+      box.innerHTML = `
+
+        <div class="no-address">
+
+          ❌ Address load नहीं हो पाया।
+
+          <br>
+
+          कृपया page refresh करें।
+
+        </div>
+
+      `;
+
+
+      disablePlaceOrder();
+
+      return;
+
+    }
+
+
+    if(
+      !data ||
+      !data.length
+    ){
+
+      selectedAddress =
+        null;
+
+
+      box.innerHTML = `
+
+        <div class="no-address">
+
+          📍 अभी कोई delivery address
+          saved नहीं है।
+
+          <br><br>
+
+          <button
+            class="change-btn"
+            type="button"
+            onclick="showAddressForm()">
+
+            + Add Delivery Address
+
+          </button>
+
+        </div>
+
+
+        <div
+          id="addressForm"
+          class="address-form">
+
+          ${addressFormHtml()}
+
+        </div>
+
+      `;
+
+
+      disablePlaceOrder();
+
+      return;
+
+    }
+
+
+    selectedAddress =
+      data[0];
+
+
+    renderSelectedAddress();
+
+
+    enablePlaceOrder();
+
+
+  }catch(error){
+
+    console.error(
+      "loadAddress error:",
+      error
+    );
+
+
+    box.innerHTML = `
+
+      <div class="no-address">
+
+        ❌ Address load नहीं हो पाया।
+
+      </div>
+
+    `;
+
+
+    disablePlaceOrder();
+
+  }
+
+}
+
+
+/* =====================================================
+   ENABLE PLACE ORDER
+===================================================== */
+
+function enablePlaceOrder(){
+
+  const button =
+    document.getElementById(
+      "placeOrderBtn"
+    );
+
+
+  if(!button){
+
+    return;
+
+  }
+
+
+  if(
+    selectedAddress &&
+    cart.length
+  ){
+
+    button.disabled =
+      false;
+
+    button.innerText =
+      "🛍️ Place Order";
+
+  }
+
+}
+
+
+/* =====================================================
+   DISABLE PLACE ORDER
+===================================================== */
+
+function disablePlaceOrder(){
+
+  const button =
+    document.getElementById(
+      "placeOrderBtn"
+    );
+
+
+  if(!button){
+
+    return;
+
+  }
+
+
+  button.disabled =
+    true;
+
+  button.innerText =
+    "📍 पहले Delivery Address जोड़ें";
+
+}
+
+
+/* =====================================================
+   RENDER ADDRESS
+===================================================== */
+
+function renderSelectedAddress(){
+
+  const box =
+    document.getElementById(
+      "addressArea"
+    );
+
+
+  if(
+    !box ||
+    !selectedAddress
+  ){
+
+    return;
+
+  }
+
+
+  box.innerHTML = `
+
+    <div class="address-card">
+
+      <div class="address-name">
+
+        ${escapeHtml(
+          selectedAddress.full_name
+        )}
+
+      </div>
+
+
+      <div class="address-phone">
+
+        📱
+        ${escapeHtml(
+          selectedAddress.phone
+        )}
+
+      </div>
+
+
+      <div class="address-text">
+
+        ${escapeHtml(
+          selectedAddress.address
+        )}
+
+        <br>
+
+        ${escapeHtml(
+          selectedAddress.city
+        )},
+
+        ${escapeHtml(
+          selectedAddress.state
+        )}
+
+        -
+
+        ${escapeHtml(
+          selectedAddress.pincode
+        )}
+
+      </div>
+
+
+      ${
+        selectedAddress.latitude !== null &&
+        selectedAddress.longitude !== null
+        ?
+        `
+          <div
+            style="
+              font-size:10px;
+              color:#777;
+              margin-top:7px;
+            ">
+
+            📍 GPS Location saved
+
+          </div>
+        `
+        :
+        ""
+      }
+
+
+      <button
+        class="change-btn"
+        type="button"
+        onclick="showAddressForm()">
+
+        Change / Add Address
+
+      </button>
+
+    </div>
+
+
+    <div
+      id="addressForm"
+      class="address-form">
+
+      ${addressFormHtml()}
+
+    </div>
+
+  `;
+
+}
+
+
+/* =====================================================
+   ADDRESS FORM
+===================================================== */
+
+function addressFormHtml(){
+
+  return `
+
+    <button
+      type="button"
+      class="location-btn"
+      onclick="getCurrentLocation()">
+
+      📍 Use Current Location
+
+    </button>
+
+
+    <div class="field">
+
+      <label>
+        Full Name *
+      </label>
+
+      <input
+        id="addressName"
+        value="${escapeHtml(
+          selectedAddress?.full_name || ""
+        )}"
+        placeholder="Customer name">
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        Mobile Number *
+      </label>
+
+      <input
+        id="addressPhone"
+        type="tel"
+        inputmode="numeric"
+        maxlength="10"
+        value="${escapeHtml(
+          selectedAddress?.phone || ""
+        )}"
+        placeholder="Mobile number">
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        House / Street / Village *
+      </label>
+
+      <textarea
+        id="addressText"
+        placeholder="Complete delivery address">${escapeHtml(
+          selectedAddress?.address || ""
+        )}</textarea>
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        City *
+      </label>
+
+      <input
+        id="addressCity"
+        value="${escapeHtml(
+          selectedAddress?.city || ""
+        )}"
+        placeholder="City">
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        State *
+      </label>
+
+      <input
+        id="addressState"
+        value="${escapeHtml(
+          selectedAddress?.state || ""
+        )}"
+        placeholder="State">
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        PIN Code *
+      </label>
+
+      <input
+        id="addressPincode"
+        type="text"
+        inputmode="numeric"
+        maxlength="6"
+        value="${escapeHtml(
+          selectedAddress?.pincode || ""
+        )}"
+        placeholder="PIN Code">
+
+    </div>
+
+
+    <input
+      type="hidden"
+      id="latitude"
+      value="${selectedAddress?.latitude ?? ""}">
+
+
+    <input
+      type="hidden"
+      id="longitude"
+      value="${selectedAddress?.longitude ?? ""}">
+
+
+    <button
+      type="button"
+      class="save-address-btn"
+      onclick="saveAddress()">
+
+      💾 Save Delivery Address
+
+    </button>
+
+  `;
+
+}
+
+
+/* =====================================================
+   SHOW ADDRESS FORM
+===================================================== */
+
+function showAddressForm(){
+
+  const form =
+    document.getElementById(
+      "addressForm"
+    );
+
+
+  if(form){
+
+    form.style.display =
+      "block";
+
+
+    form.scrollIntoView({
+      behavior:"smooth",
+      block:"center"
+    });
+
+  }
+
+}
+
+
+/* =====================================================
+   GPS
+===================================================== */
+
+function getCurrentLocation(){
+
+  if(!navigator.geolocation){
+
+    alert(
+      "इस device में GPS उपलब्ध नहीं है।"
+    );
+
+    return;
+
+  }
+
+
+  navigator.geolocation.getCurrentPosition(
+
+    async position => {
+
+      const lat =
+        position.coords.latitude;
+
+
+      const lng =
+        position.coords.longitude;
+
+
+      const latitudeField =
+        document.getElementById(
+          "latitude"
+        );
+
+
+      const longitudeField =
+        document.getElementById(
+          "longitude"
+        );
+
+
+      if(latitudeField){
+
+        latitudeField.value =
+          lat;
+
+      }
+
+
+      if(longitudeField){
+
+        longitudeField.value =
+          lng;
+
+      }
+
+
+      try{
+
+        const response =
+          await fetch(
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`
+          );
+
+
+        if(!response.ok){
+
+          throw new Error(
+            "Reverse geocoding failed"
+          );
+
+        }
+
+
+        const data =
+          await response.json();
+
+
+        const city =
+          data.city ||
+          data.locality ||
+          "";
+
+
+        const state =
+          data.principalSubdivision ||
+          "";
+
+
+        const pincode =
+          data.postcode ||
+          "";
+
+
+        const cityField =
+          document.getElementById(
+            "addressCity"
+          );
+
+
+        const stateField =
+          document.getElementById(
+            "addressState"
+          );
+
+
+        const pincodeField =
+          document.getElementById(
+            "addressPincode"
+          );
+
+
+        if(
+          city &&
+          cityField
+        ){
+
+          cityField.value =
+            city;
+
+        }
+
+
+        if(
+          state &&
+          stateField
+        ){
+
+          stateField.value =
+            state;
+
+        }
+
+
+        if(
+          pincode &&
+          pincodeField
+        ){
+
+          pincodeField.value =
+            pincode;
+
+        }
+
+
+        alert(
+          "✅ Current location प्राप्त हो गई।"
+        );
+
+
+      }catch(error){
+
+        console.error(
+          "Reverse geocode error:",
+          error
+        );
+
+
+        alert(
+          "GPS मिल गया है। Address fields manually भरें।"
+        );
+
+      }
+
+    },
+
+
+    error => {
+
+      console.error(
+        "GPS error:",
+        error
+      );
+
+
+      alert(
+        "📍 Location permission Allow करें और फिर दोबारा कोशिश करें।"
+      );
+
+    },
+
+
+    {
+      enableHighAccuracy:true,
+      timeout:15000,
+      maximumAge:0
+    }
+
+  );
+
+}
+
+
+/* =====================================================
+   SAVE ADDRESS
+===================================================== */
+
+async function saveAddress(){
+
+  if(!currentUser){
+
+    alert(
+      "Customer login required."
+    );
+
+    return;
+
+  }
+
+
+  const nameField =
+    document.getElementById(
+      "addressName"
+    );
+
+
+  const phoneField =
+    document.getElementById(
+      "addressPhone"
+    );
+
+
+  const addressField =
+    document.getElementById(
+      "addressText"
+    );
+
+
+  const cityField =
+    document.getElementById(
+      "addressCity"
+    );
+
+
+  const stateField =
+    document.getElementById(
+      "addressState"
+    );
+
+
+  const pincodeField =
+    document.getElementById(
+      "addressPincode"
+    );
+
+
+  if(
+    !nameField ||
+    !phoneField ||
+    !addressField ||
+    !cityField ||
+    !stateField ||
+    !pincodeField
+  ){
+
+    alert(
+      "Address form उपलब्ध नहीं है।"
+    );
+
+    return;
+
+  }
+
+
+  const full_name =
+    nameField.value.trim();
+
+
+  const phone =
+    phoneField.value.trim();
+
+
+  const address =
+    addressField.value.trim();
+
+
+  const city =
+    cityField.value.trim();
+
+
+  const state =
+    stateField.value.trim();
+
+
+  const pincode =
+    pincodeField.value.trim();
+
+
+  const latitude =
+    document.getElementById(
+      "latitude"
+    )?.value || null;
+
+
+  const longitude =
+    document.getElementById(
+      "longitude"
+    )?.value || null;
+
+
+  if(
+    !full_name ||
+    !phone ||
+    !address ||
+    !city ||
+    !state ||
+    !pincode
+  ){
+
+    alert(
+      "कृपया सभी required address details भरें।"
+    );
+
+    return;
+
+  }
+
+
+  if(
+    !/^[0-9]{10}$/.test(phone)
+  ){
+
+    alert(
+      "कृपया सही 10 digit mobile number डालें।"
+    );
+
+    return;
+
+  }
+
+
+  if(
+    !/^[0-9]{6}$/.test(pincode)
+  ){
+
+    alert(
+      "कृपया सही 6 digit PIN Code डालें।"
+    );
+
+    return;
+
+  }
+
+
+  const saveButton =
+    document.querySelector(
+      ".save-address-btn"
+    );
+
+
+  if(saveButton){
+
+    saveButton.disabled =
+      true;
+
+    saveButton.innerText =
+      "⏳ Saving Address...";
+
+  }
+
+
+  try{
+
+    /*
+      अगर नया address default बन रहा है,
+      तो पुराने default को false करें।
+    */
+
+    const {
+      error:defaultError
+    } =
+    await supabaseClient
+      .from("customer_addresses")
+      .update({
+        is_default:false
+      })
+      .eq(
+        "customer_id",
+        currentUser.id
+      )
+      .eq(
+        "is_default",
+        true
+      );
+
+
+    if(defaultError){
+
+      console.warn(
+        "Old default address update warning:",
+        defaultError
+      );
+
+    }
+
+
+    const {
+      data,
+      error
+    } =
+    await supabaseClient
+      .from("customer_addresses")
+      .insert({
+
+        customer_id:
+          currentUser.id,
+
+        full_name,
+
+        phone,
+
+        address,
+
+        city,
+
+        state,
+
+        pincode,
+
+        latitude:
+          latitude
+            ? Number(latitude)
+            : null,
+
+        longitude:
+          longitude
+            ? Number(longitude)
+            : null,
+
+        is_default:true
+
+      })
+      .select()
+      .single();
+
+
+    if(error){
+
+      throw error;
+
+    }
+
+
+    selectedAddress =
+      data;
+
+
+    alert(
+      "✅ Delivery Address saved."
+    );
+
+
+    await loadAddress();
+
+
+  }catch(error){
+
+    console.error(
+      "Save address error:",
+      error
+    );
+
+
+    alert(
+      "❌ Address save नहीं हो पाया: " +
+      (error.message || "Unknown error")
+    );
+
+
+    if(saveButton){
+
+      saveButton.disabled =
+        false;
+
+      saveButton.innerText =
+        "💾 Save Delivery Address";
+
+    }
+
+  }
+
+}
+
+
+/* =====================================================
+   PLACE ORDER
+===================================================== */
+
+async function placeOrder(){
+
+  if(!currentUser){
+
+    alert(
+      "कृपया Customer Login करें।"
+    );
+
+    return;
+
+  }
+
+
+  if(!cart.length){
+
+    alert(
+      "Cart खाली है।"
+    );
+
+    return;
+
+  }
+
+
+  if(!selectedAddress){
+
+    alert(
+      "📍 Order करने से पहले Delivery Address जोड़ना जरूरी है।"
+    );
+
+    showAddressForm();
+
+    return;
+
+  }
+
+
+  const button =
+    document.getElementById(
+      "placeOrderBtn"
+    );
+
+
+  if(!button){
+
+    return;
+
+  }
+
+
+  button.disabled =
+    true;
+
+
+  button.innerText =
+    "⏳ Product verify हो रहा है...";
+
+
+  try{
+
+    /* =================================================
+       VERIFY REAL PRODUCTS FROM SUPABASE
+    ================================================= */
+
+    const verifiedCart = [];
+
+
+    for(const item of cart){
+
+      let product = null;
+
+
+      /* -----------------------------------------------
+         STEP 1
+         Cart में मौजूद ID से product खोजें
+      ------------------------------------------------ */
+
+      if(
+        item.id !== undefined &&
+        item.id !== null &&
+        String(item.id).trim() !== ""
+      ){
+
+        const {
+          data,
+          error
+        } =
+        await supabaseClient
+          .from("products")
+          .select(`
+            id,
+            product_name,
+            seller_id,
+            price,
+            stock,
+            image_url,
+            seller_name,
+            status
+          `)
+          .eq(
+            "id",
+            item.id
+          )
+          .eq(
+            "status",
+            "approved"
+          )
+          .maybeSingle();
+
+
+        if(error){
+
+          console.error(
+            "Product ID lookup:",
+            error
+          );
+
+        }
+
+
+        if(data){
+
+          product =
+            data;
+
+        }
+
+      }
+
+
+      /* -----------------------------------------------
+         STEP 2
+         अगर Cart ID गलत है,
+         Product Name से real product खोजें
+      ------------------------------------------------ */
+
+      if(
+        !product &&
+        item.product_name
+      ){
+
+        const {
+          data,
+          error
+        } =
+        await supabaseClient
+          .from("products")
+          .select(`
+            id,
+            product_name,
+            seller_id,
+            price,
+            stock,
+            image_url,
+            seller_name,
+            status
+          `)
+          .eq(
+            "product_name",
+            item.product_name
+          )
+          .eq(
+            "status",
+            "approved"
+          )
+          .limit(20);
+
+
+        if(error){
+
+          console.error(
+            "Product name lookup:",
+            error
+          );
+
+
+          throw error;
+
+        }
+
+
+        if(
+          data &&
+          data.length
+        ){
+
+          /*
+            अगर Cart में seller_id है,
+            तो उसी seller का product चुनें।
+          */
+
+          if(item.seller_id){
+
+            product =
+              data.find(
+                p =>
+                  String(p.seller_id) ===
+                  String(item.seller_id)
+              ) || null;
+
+          }
+
+
+          /*
+            Seller match न मिले तो
+            केवल तभी पहला result लें
+            जब सिर्फ एक product मिला हो।
+          */
+
+          if(
+            !product &&
+            data.length === 1
+          ){
+
+            product =
+              data[0];
+
+          }
+
+        }
+
+      }
+
+
+      /* -----------------------------------------------
+         PRODUCT NOT FOUND
+      ------------------------------------------------ */
+
+      if(!product){
+
+        throw new Error(
+          "❌ Product database में नहीं मिला: " +
+          (item.product_name || "Unknown Product")
+        );
+
+      }
+
+
+      /* -----------------------------------------------
+         SELLER CHECK
+      ------------------------------------------------ */
+
+      if(!product.seller_id){
+
+        throw new Error(
+          "❌ इस product का Seller नहीं मिला: " +
+          product.product_name
+        );
+
+      }
+
+
+      /* -----------------------------------------------
+         STOCK CHECK
+      ------------------------------------------------ */
+
+      const quantity =
+        Number(
+          item.quantity || 1
+        );
+
+
+      if(
+        !Number.isInteger(quantity) ||
+        quantity <= 0
+      ){
+
+        throw new Error(
+          "❌ Product quantity सही नहीं है: " +
+          product.product_name
+        );
+
+      }
+
+
+      const stock =
+        Number(
+          product.stock || 0
+        );
+
+
+      if(
+        stock < quantity
+      ){
+
+        throw new Error(
+          `❌ ${product.product_name} का stock केवल ${stock} है।`
+        );
+
+      }
+
+
+      /* -----------------------------------------------
+         REAL PRODUCT DATA
+      ------------------------------------------------ */
+
+      verifiedCart.push({
+
+        originalCartItem:
+          item,
+
+        id:
+          product.id,
+
+        product_name:
+          product.product_name,
+
+        seller_id:
+          product.seller_id,
+
+        seller_name:
+          product.seller_name ||
+          item.seller_name ||
+          "",
+
+        price:
+          Number(
+            product.price || 0
+          ),
+
+        stock,
+
+        image_url:
+          product.image_url ||
+          item.image_url ||
+          null,
+
+        quantity
+
+      });
+
+    }
+
+
+    /* =================================================
+       REAL VERIFIED CART
+    ================================================= */
+
+    if(!verifiedCart.length){
+
+      throw new Error(
+        "❌ कोई valid product नहीं मिला।"
+      );
+
+    }
+
+
+    /* =================================================
+       GROUP PRODUCTS BY SELLER
+    ================================================= */
+
+    const sellerGroups = {};
+
+
+    for(
+      const item of verifiedCart
+    ){
+
+      const sellerId =
+        item.seller_id;
+
+
+      if(!sellerId){
+
+        throw new Error(
+          "❌ Product Seller ID missing है।"
+        );
+
+      }
+
+
+      if(
+        !sellerGroups[sellerId]
+      ){
+
+        sellerGroups[sellerId] =
+          [];
+
+      }
+
+
+      sellerGroups[sellerId].push(
+        item
+      );
+
+    }
+
+
+    /* =================================================
+       CREATE ORDERS
+    ================================================= */
+
+    const createdOrders =
+      [];
+
+
+    for(
+      const sellerId of
+      Object.keys(sellerGroups)
+    ){
+
+      const sellerItems =
+        sellerGroups[sellerId];
+
+
+      let subtotal =
+        0;
+
+
+      sellerItems.forEach(
+        item => {
+
+          subtotal +=
+            Number(
+              item.price || 0
+            ) *
+            Number(
+              item.quantity || 1
+            );
+
+        }
+      );
+
+
+      const deliveryFee =
+        0;
+
+
+      const total =
+        subtotal +
+        deliveryFee;
+
+
+      /* -----------------------------------------------
+         CREATE MAIN ORDER
+      ------------------------------------------------ */
+
+      button.innerText =
+        "⏳ Order बनाया जा रहा है...";
+
+
+      const {
+        data:order,
+        error:orderError
+      } =
+      await supabaseClient
+        .from("orders")
+        .insert({
+
+          customer_id:
+            currentUser.id,
+
+          seller_id:
+            sellerId,
+
+          business_id:
+            null,
+
+          status:
+            "pending",
+
+          payment_method:
+            "cod",
+
+          payment_status:
+            "pending",
+
+          subtotal,
+
+          delivery_fee:
+            deliveryFee,
+
+          discount:
+            0,
+
+          total_amount:
+            total,
+
+          shipping_name:
+            selectedAddress.full_name,
+
+          shipping_phone:
+            selectedAddress.phone,
+
+          shipping_address:
+            selectedAddress.address,
+
+          shipping_city:
+            selectedAddress.city,
+
+          shipping_state:
+            selectedAddress.state,
+
+          shipping_pincode:
+            selectedAddress.pincode
+
+        })
+        .select()
+        .single();
+
+
+      if(orderError){
+
+        console.error(
+          "Order insert error:",
+          orderError
+        );
+
+
+        throw orderError;
+
+      }
+
+
+      /* -----------------------------------------------
+         CREATE ORDER ITEMS
+      ------------------------------------------------ */
+
+      for(
+        const item of sellerItems
+      ){
+
+        button.innerText =
+          "⏳ Order items save हो रहे हैं...";
+
+
+        /*
+          IMPORTANT:
+          item.id अब Cart का पुराना ID नहीं है।
+          यह Supabase products.id है।
+        */
+
+        const {
+          error:itemError
+        } =
+        await supabaseClient
+          .from("order_items")
+          .insert({
+
+            order_id:
+              order.id,
+
+            product_id:
+              item.id,
+
+            seller_id:
+              sellerId,
+
+            product_name:
+              item.product_name,
+
+            product_image_url:
+              item.image_url ||
+              null,
+
+            quantity:
+              Number(
+                item.quantity
+              ),
+
+            price:
+              Number(
+                item.price
+              )
+
+          });
+
+
+        if(itemError){
+
+          console.error(
+            "Order item insert error:",
+            itemError
+          );
+
+
+          throw itemError;
+
+        }
+
+      }
+
+
+      createdOrders.push(
+        order
+      );
+
+    }
+
+
+    /* =================================================
+       ORDER SUCCESS
+    ================================================= */
+
+    localStorage.removeItem(
+      "br_cart"
+    );
+
+
+    cart = [];
+
+
+    showSuccess(
+      createdOrders
+    );
+
+
+  }catch(error){
+
+    console.error(
+      "Place order error:",
+      error
+    );
+
+
+    button.disabled =
+      false;
+
+
+    button.innerText =
+      "🛍️ Place Order";
+
+
+    showError(
+      "❌ Order place नहीं हुआ: " +
+      (
+        error.message ||
+        "Unknown error"
+      )
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   SUCCESS
+===================================================== */
+
+function showSuccess(
+  orders
+){
+
+  document.getElementById(
+    "checkoutContainer"
+  ).innerHTML = `
+
+    <div class="success">
+
+      <div class="success-icon">
+        ✅
+      </div>
+
+
+      <h2>
+        Order Placed Successfully!
+      </h2>
+
+
+      <p>
+        आपका order successfully
+        place हो गया है।
+      </p>
+
+
+      <p style="margin-top:8px;">
+
+        Order:
+        ${orders.length}
+        seller${orders.length > 1 ? "s" : ""}
+
+      </p>
+
+
+      <p style="margin-top:8px;">
+
+        ⏳ Order अभी Pending है।
+        Seller बाद में confirm करेगा।
+
+      </p>
+
+
+      <button
+        type="button"
+        onclick="openOrders()">
+
+        📦 My Orders देखें
+
+      </button>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =====================================================
+   FORMAT PRICE
+===================================================== */
+
+function formatPrice(
+  value
+){
+
+  return Number(
+    value || 0
+  ).toLocaleString(
+    "en-IN",
+    {
+      maximumFractionDigits:2
+    }
+  );
+
+}
+
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHtml(
+  value
+){
+
+  return String(
+    value ?? ""
+  )
+  .replace(
+    /&/g,
+    "&amp;"
+  )
+  .replace(
+    /</g,
+    "&lt;"
+  )
+  .replace(
+    />/g,
+    "&gt;"
+  )
+  .replace(
+    /"/g,
+    "&quot;"
+  )
+  .replace(
+    /'/g,
+    "&#039;"
+  );
+
+}
+
+
+/* =====================================================
+   SHOW ERROR
+===================================================== */
+
+function showError(
+  message
+){
+
+  const box =
+    document.getElementById(
+      "errorBox"
+    );
+
+
+  if(!box){
+
+    return;
+
+  }
+
+
+  box.innerText =
+    message;
+
+
+  box.style.display =
+    "block";
+
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
+}
+
+
+/* =====================================================
+   GO CART
+===================================================== */
+
+function goCart(){
+
+  window.location.href =
+    "cart.html";
+
+}
+
+
+/* =====================================================
+   OPEN ORDERS
+===================================================== */
+
+function openOrders(){
+
+  window.location.href =
+    "orders.html";
+
+}
+
+
+/* =====================================================
+   START
+===================================================== */
+
+window.addEventListener(
+  "DOMContentLoaded",
+  function(){
+
+    startCheckout();
+
+  }
+);
+
+
+</script>
+
+
+</body>
+  </html>
