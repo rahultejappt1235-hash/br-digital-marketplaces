@@ -1900,7 +1900,6 @@ async function placeOrder(){
     );
 
     return;
-
   }
 
 
@@ -1911,7 +1910,6 @@ async function placeOrder(){
     );
 
     return;
-
   }
 
 
@@ -1924,7 +1922,6 @@ async function placeOrder(){
     showAddressForm();
 
     return;
-
   }
 
 
@@ -1934,9 +1931,7 @@ async function placeOrder(){
     );
 
 
-  button.disabled =
-    true;
-
+  button.disabled = true;
 
   button.innerText =
     "⏳ Order Processing...";
@@ -1945,94 +1940,159 @@ async function placeOrder(){
   try{
 
     /*
-      Cart को Seller के अनुसार अलग किया जाएगा।
-      अगर Cart में seller_id नहीं है,
-      तो Products table से real seller_id लिया जाएगा।
+      =========================================
+      STEP 1
+      हर Cart item का REAL product
+      Supabase products table से लिया जाएगा।
+      =========================================
+    */
+
+    const verifiedItems = [];
+
+
+    for(const item of cart){
+
+      if(!item.id){
+
+        throw new Error(
+          "Cart में Product ID missing है।"
+        );
+
+      }
+
+
+      const {
+        data:product,
+        error:productError
+      } =
+      await supabaseClient
+        .from("products")
+        .select(`
+          id,
+          product_name,
+          seller_id,
+          status,
+          stock,
+          price,
+          image_url
+        `)
+        .eq(
+          "id",
+          item.id
+        )
+        .eq(
+          "status",
+          "approved"
+        )
+        .maybeSingle();
+
+
+      if(productError){
+
+        console.error(
+          "Product lookup error:",
+          productError
+        );
+
+        throw new Error(
+          "Product information load नहीं हो पाई।"
+        );
+
+      }
+
+
+      if(!product){
+
+        throw new Error(
+          "यह Product अब उपलब्ध नहीं है या Approved नहीं है।"
+        );
+
+      }
+
+
+      if(!product.seller_id){
+
+        throw new Error(
+          "इस Product का Seller नहीं मिला।"
+        );
+
+      }
+
+
+      /*
+        Stock check
+      */
+
+      const quantity =
+        Number(
+          item.quantity || 1
+        );
+
+
+      const stock =
+        Number(
+          product.stock || 0
+        );
+
+
+      if(quantity <= 0){
+
+        throw new Error(
+          "Product quantity सही नहीं है।"
+        );
+
+      }
+
+
+      if(stock < quantity){
+
+        throw new Error(
+          `${product.product_name} का पर्याप्त stock उपलब्ध नहीं है।`
+        );
+
+      }
+
+
+      /*
+        REAL DATABASE PRODUCT ID
+        इस्तेमाल होगा।
+      */
+
+      verifiedItems.push({
+
+        cartItem:item,
+
+        product:product,
+
+        sellerId:
+          product.seller_id,
+
+        quantity:quantity
+
+      });
+
+    }
+
+
+    /*
+      =========================================
+      STEP 2
+      Seller के अनुसार products group
+      =========================================
     */
 
     const sellerGroups = {};
 
 
-    for(const item of cart){
+    for(
+      const verified of verifiedItems
+    ){
 
-      let sellerId =
-        item.seller_id;
-
-
-      /* =========================
-         GET REAL SELLER ID
-      ========================= */
-
-      if(!sellerId){
-
-        const {
-          data:product,
-          error:productError
-        } =
-        await supabaseClient
-          .from("products")
-          .select(`
-            id,
-            seller_id,
-            status,
-            stock
-          `)
-          .eq(
-            "id",
-            item.id
-          )
-          .eq(
-            "status",
-            "approved"
-          )
-          .maybeSingle();
+      const sellerId =
+        verified.sellerId;
 
 
-        if(productError){
-
-          console.error(
-            "Product lookup error:",
-            productError
-          );
-
-
-          throw new Error(
-            "Product seller information load नहीं हो पाई।"
-          );
-
-        }
-
-
-        if(
-          !product ||
-          !product.seller_id
-        ){
-
-          throw new Error(
-            "इस product का Seller नहीं मिला।"
-          );
-
-        }
-
-
-        sellerId =
-          product.seller_id;
-
-
-        /*
-          Cart में real seller_id save
-          कर दिया जाएगा।
-        */
-
-        item.seller_id =
-          sellerId;
-
-      }
-
-
-      if(
-        !sellerGroups[sellerId]
-      ){
+      if(!sellerGroups[sellerId]){
 
         sellerGroups[sellerId] =
           [];
@@ -2041,22 +2101,20 @@ async function placeOrder(){
 
 
       sellerGroups[sellerId]
-        .push(item);
+        .push(verified);
 
     }
 
 
     /*
-      Created orders
+      =========================================
+      STEP 3
+      हर Seller के लिए अलग Order
+      =========================================
     */
 
-    const createdOrders =
-      [];
+    const createdOrders = [];
 
-
-    /* =========================
-       CREATE ORDER PER SELLER
-    ========================= */
 
     for(
       const sellerId of
@@ -2070,19 +2128,21 @@ async function placeOrder(){
       let subtotal = 0;
 
 
-      sellerItems.forEach(
-        item => {
+      for(
+        const verified of sellerItems
+      ){
 
-          subtotal +=
-            Number(
-              item.price || 0
-            ) *
-            Number(
-              item.quantity || 1
-            );
+        const price =
+          Number(
+            verified.product.price || 0
+          );
 
-        }
-      );
+
+        subtotal +=
+          price *
+          verified.quantity;
+
+      }
 
 
       const deliveryFee =
@@ -2095,8 +2155,9 @@ async function placeOrder(){
 
 
       /*
-        Customer Order
-        हमेशा पहले Pending रहेगा।
+        =====================================
+        CREATE ORDER
+        =====================================
       */
 
       const {
@@ -2125,7 +2186,8 @@ async function placeOrder(){
           payment_status:
             "pending",
 
-          subtotal,
+          subtotal:
+            subtotal,
 
           delivery_fee:
             deliveryFee,
@@ -2166,19 +2228,26 @@ async function placeOrder(){
           orderError
         );
 
-
         throw orderError;
 
       }
 
 
-      /* =========================
-         ORDER ITEMS
-      ========================= */
+      /*
+        =====================================
+        STEP 4
+        ORDER ITEMS
+        REAL products.id इस्तेमाल होगा
+        =====================================
+      */
 
       for(
-        const item of sellerItems
+        const verified of sellerItems
       ){
+
+        const product =
+          verified.product;
+
 
         const {
           error:itemError
@@ -2190,27 +2259,32 @@ async function placeOrder(){
             order_id:
               order.id,
 
+            /*
+              सबसे महत्वपूर्ण:
+              Cart का item.id नहीं,
+              Supabase products table का
+              REAL product.id
+            */
+
             product_id:
-              item.id,
+              product.id,
 
             seller_id:
-              sellerId,
+              product.seller_id,
 
             product_name:
-              item.product_name,
+              product.product_name,
 
             product_image_url:
-              item.image_url ||
+              product.image_url ||
               null,
 
             quantity:
-              Number(
-                item.quantity || 1
-              ),
+              verified.quantity,
 
             price:
               Number(
-                item.price || 0
+                product.price || 0
               )
 
           });
@@ -2219,10 +2293,9 @@ async function placeOrder(){
         if(itemError){
 
           console.error(
-            "Order item error:",
+            "Order item insert error:",
             itemError
           );
-
 
           throw itemError;
 
@@ -2239,8 +2312,10 @@ async function placeOrder(){
 
 
     /*
-      Order सफल होने के बाद
-      Cart खाली।
+      =====================================
+      STEP 5
+      Order सफल होने के बाद Cart खाली
+      =====================================
     */
 
     localStorage.removeItem(
@@ -2274,8 +2349,10 @@ async function placeOrder(){
 
     showError(
       "❌ Order place नहीं हुआ: " +
-      (error.message ||
-       "Unknown error")
+      (
+        error.message ||
+        "Unknown error"
+      )
     );
 
   }
