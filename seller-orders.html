@@ -626,6 +626,26 @@ function statusText(status){
     esc(status || "Unknown");
 
 }
+  /* =====================================
+   FILTER ORDERS
+===================================== */
+
+function setFilter(filter,button){
+
+  currentFilter = filter;
+
+  document
+    .querySelectorAll(".filter-btn")
+    .forEach(btn => {
+      btn.classList.remove("active");
+    });
+
+  if(button){
+    button.classList.add("active");
+  }
+
+  renderOrders();
+}
 
 
 /* =====================================
