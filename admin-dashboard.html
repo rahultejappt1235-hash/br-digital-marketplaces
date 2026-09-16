@@ -2852,25 +2852,18 @@ async function openProductVerification(
 
             </div>
           `
-      }
-
-    </div>
-
-  `;
-
-}
-
-
-/* =====================================================
-   APPROVE PRODUCT + MIGRATE ORIGINAL + AI
+      }/* =====================================================
+   APPROVE PRODUCT + AUTO MIGRATION + AI IMAGE
 ===================================================== */
 
 async function verifyProduct(productId){
 
   const product =
     products.find(
-      p => String(p.id) === String(productId)
+      p => String(p.id) ===
+      String(productId)
     );
+
 
   if(!product){
 
@@ -2883,12 +2876,10 @@ async function verifyProduct(productId){
   }
 
 
-  if(
-    product.status !== "pending"
-  ){
+  if(product.status !== "pending"){
 
     showNotice(
-      "यह product pending नहीं है।",
+      "यह product पहले से process हो चुका है।",
       "error"
     );
 
@@ -2899,10 +2890,9 @@ async function verifyProduct(productId){
   const confirmed =
     confirm(
       "क्या आप इस product को approve करना चाहते हैं?\n\n" +
-      "1. Original image private storage में जाएगी\n" +
-      "2. AI image generate होगी\n" +
-      "3. उसके बाद product approved होगा\n\n" +
-      "Continue करें?"
+      "Original image पहले private storage में जाएगी।\n" +
+      "फिर AI image generate होगी।\n" +
+      "इसके बाद product approve होगा।"
     );
 
 
@@ -2913,15 +2903,15 @@ async function verifyProduct(productId){
 
   try{
 
+    /* =========================================
+       STEP 1 — GET ADMIN SESSION
+    ========================================= */
+
     showNotice(
-      "🔐 Original product image secure storage में migrate हो रही है...",
+      "🔐 Admin session check हो रही है...",
       "loading"
     );
 
-
-    /* =================================================
-       CURRENT ADMIN SESSION
-    ================================================= */
 
     const {
       data:{
@@ -2943,48 +2933,72 @@ async function verifyProduct(productId){
     }
 
 
-    /* =================================================
-       STEP 1
-       MIGRATE ORIGINAL IMAGE
-    ================================================= */
+    const accessToken =
+      session.access_token;
 
-    const response =
-  await fetch(
-    `${SUPABASE_URL}/functions/v1/generate-product-image`,
-    {
-      method:"POST",
 
-      headers:{
-        "Content-Type":"application/json",
+    /* =========================================
+       STEP 2 — MIGRATE ORIGINAL IMAGE
+    ========================================= */
 
-        "Authorization":
-          `Bearer ${session.access_token}`,
+    showNotice(
+      "🔒 Original product image private storage में सुरक्षित की जा रही है...",
+      "loading"
+    );
 
-        "apikey":
-          SUPABASE_ANON_KEY
-      },
 
-      body:JSON.stringify({
-        product_id:product.id
-      })
-    }
-  );
+    const migrationResponse =
+      await fetch(
+        `${SUPABASE_URL}/functions/v1/migrate-product-original-`,
+        {
+          method:"POST",
 
+          headers:{
+            "Content-Type":
+              "application/json",
+
+            "Authorization":
+              `Bearer ${accessToken}`,
+
+            "apikey":
+              SUPABASE_ANON_KEY
+          },
+
+          body:JSON.stringify({
+            product_id:
+              product.id
+          })
+        }
+      );
+
+
+    /* =========================================
+       IMPORTANT:
+       migrationResponse के तुरंत बाद
+       migrationResult बनाया गया है।
+    ========================================= */
 
     const migrationResult =
-      await migrationResponse.json()
+      await migrationResponse
+        .json()
         .catch(
           () => ({
             success:false,
             error:
-              "Invalid migration response"
+              "Migration function ने valid JSON response नहीं दिया।"
           })
         );
 
 
+    console.log(
+      "Migration response:",
+      migrationResult
+    );
+
+
     if(
       !migrationResponse.ok ||
-      migrationResult.success === false
+      !migrationResult.success
     ){
 
       throw new Error(
@@ -2995,16 +3009,29 @@ async function verifyProduct(productId){
     }
 
 
+    /* =========================================
+       SAVE PRIVATE PATH LOCALLY
+    ========================================= */
+
+    if(
+      migrationResult.original_image_path
+    ){
+
+      product.original_image_path =
+        migrationResult.original_image_path;
+
+    }
+
+
+    /* =========================================
+       STEP 3 — GENERATE AI IMAGE
+    ========================================= */
+
     showNotice(
-      "✅ Original image secure हो गई। अब AI image generate हो रही है...",
+      "🤖 Original image सुरक्षित है। अब AI product image generate हो रही है...",
       "loading"
     );
 
-
-    /* =================================================
-       STEP 2
-       GENERATE AI IMAGE
-    ================================================= */
 
     const aiResponse =
       await fetch(
@@ -3017,28 +3044,36 @@ async function verifyProduct(productId){
               "application/json",
 
             "Authorization":
-              `Bearer ${session.access_token}`,
+              `Bearer ${accessToken}`,
 
             "apikey":
               SUPABASE_ANON_KEY
           },
 
           body:JSON.stringify({
-            product_id:product.id
+            product_id:
+              product.id
           })
         }
       );
 
 
     const aiResult =
-      await aiResponse.json()
+      await aiResponse
+        .json()
         .catch(
           () => ({
             success:false,
             error:
-              "Invalid AI function response"
+              "AI function ने valid JSON response नहीं दिया।"
           })
         );
+
+
+    console.log(
+      "AI response:",
+      aiResult
+    );
 
 
     if(
@@ -3055,13 +3090,12 @@ async function verifyProduct(productId){
     }
 
 
-    /* =================================================
-       STEP 3
-       APPROVE PRODUCT
-    ================================================= */
+    /* =========================================
+       STEP 4 — APPROVE PRODUCT
+    ========================================= */
 
     showNotice(
-      "🤖 AI image तैयार हो गई। Product approve किया जा रहा है...",
+      "🤖 AI image तैयार हो गई। अब product approve किया जा रहा है...",
       "loading"
     );
 
@@ -3089,12 +3123,396 @@ async function verifyProduct(productId){
     if(updateError){
 
       throw new Error(
-        "AI image बनी लेकिन product approval save नहीं हुआ: " +
+        "AI image बन गई लेकिन product approval save नहीं हुआ: " +
         updateError.message
       );
 
     }
 
+
+    /* =========================================
+       STEP 5 — LOCAL DATA UPDATE
+    ========================================= */
+
+    product.ai_image_url =
+      aiResult.ai_image_url;
+
+
+    product.status =
+      "approved";
+
+
+    /* =========================================
+       SUCCESS
+    ========================================= */
+
+    showNotice(
+      "🎉 Product successfully approved! Original image private है और Marketplace में AI image दिखाई जाएगी।",
+      "success"
+    );
+
+
+    await loadProducts();
+
+
+    await openProductVerification(
+      product.id
+    );
+
+
+  }catch(error){
+
+    console.error(
+      "verifyProduct error:",
+      error
+    );
+
+
+    showNotice(
+      "❌ Product approve नहीं हुआ: " +
+      (
+        error?.message ||
+        "Unknown error"
+      ),
+      "error"
+    );
+
+  }
+
+    </div>
+
+  `;
+
+}
+
+/* =====================================================
+   APPROVE PRODUCT + AUTO MIGRATION + AI IMAGE
+===================================================== */
+
+async function verifyProduct(productId){
+
+  const product =
+    products.find(
+      p => String(p.id) ===
+      String(productId)
+    );
+
+
+  if(!product){
+
+    showNotice(
+      "Product नहीं मिला।",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if(product.status !== "pending"){
+
+    showNotice(
+      "यह product पहले से process हो चुका है।",
+      "error"
+    );
+
+    return;
+  }
+
+
+  const confirmed =
+    confirm(
+      "क्या आप इस product को approve करना चाहते हैं?\n\n" +
+      "Original image पहले private storage में जाएगी।\n" +
+      "फिर AI image generate होगी।\n" +
+      "इसके बाद product approve होगा।"
+    );
+
+
+  if(!confirmed){
+    return;
+  }
+
+
+  try{
+
+    /* =========================================
+       STEP 1 — GET ADMIN SESSION
+    ========================================= */
+
+    showNotice(
+      "🔐 Admin session check हो रही है...",
+      "loading"
+    );
+
+
+    const {
+      data:{
+        session
+      }
+    } =
+      await supabaseClient.auth.getSession();
+
+
+    if(
+      !session ||
+      !session.access_token
+    ){
+
+      throw new Error(
+        "Admin login session नहीं मिली।"
+      );
+
+    }
+
+
+    const accessToken =
+      session.access_token;
+
+
+    /* =========================================
+       STEP 2 — MIGRATE ORIGINAL IMAGE
+    ========================================= */
+
+    showNotice(
+      "🔒 Original product image private storage में सुरक्षित की जा रही है...",
+      "loading"
+    );
+
+
+    const migrationResponse =
+      await fetch(
+        `${SUPABASE_URL}/functions/v1/migrate-product-original-`,
+        {
+          method:"POST",
+
+          headers:{
+            "Content-Type":
+              "application/json",
+
+            "Authorization":
+              `Bearer ${accessToken}`,
+
+            "apikey":
+              SUPABASE_ANON_KEY
+          },
+
+          body:JSON.stringify({
+            product_id:
+              product.id
+          })
+        }
+      );
+
+
+    /* =========================================
+       IMPORTANT:
+       migrationResponse के तुरंत बाद
+       migrationResult बनाया गया है।
+    ========================================= */
+
+    const migrationResult =
+      await migrationResponse
+        .json()
+        .catch(
+          () => ({
+            success:false,
+            error:
+              "Migration function ने valid JSON response नहीं दिया।"
+          })
+        );
+
+
+    console.log(
+      "Migration response:",
+      migrationResult
+    );
+
+
+    if(
+      !migrationResponse.ok ||
+      !migrationResult.success
+    ){
+
+      throw new Error(
+        migrationResult.error ||
+        "Original image migration failed."
+      );
+
+    }
+
+
+    /* =========================================
+       SAVE PRIVATE PATH LOCALLY
+    ========================================= */
+
+    if(
+      migrationResult.original_image_path
+    ){
+
+      product.original_image_path =
+        migrationResult.original_image_path;
+
+    }
+
+
+    /* =========================================
+       STEP 3 — GENERATE AI IMAGE
+    ========================================= */
+
+    showNotice(
+      "🤖 Original image सुरक्षित है। अब AI product image generate हो रही है...",
+      "loading"
+    );
+
+
+    const aiResponse =
+      await fetch(
+        `${SUPABASE_URL}/functions/v1/generate-product-image`,
+        {
+          method:"POST",
+
+          headers:{
+            "Content-Type":
+              "application/json",
+
+            "Authorization":
+              `Bearer ${accessToken}`,
+
+            "apikey":
+              SUPABASE_ANON_KEY
+          },
+
+          body:JSON.stringify({
+            product_id:
+              product.id
+          })
+        }
+      );
+
+
+    const aiResult =
+      await aiResponse
+        .json()
+        .catch(
+          () => ({
+            success:false,
+            error:
+              "AI function ने valid JSON response नहीं दिया।"
+          })
+        );
+
+
+    console.log(
+      "AI response:",
+      aiResult
+    );
+
+
+    if(
+      !aiResponse.ok ||
+      !aiResult.success ||
+      !aiResult.ai_image_url
+    ){
+
+      throw new Error(
+        aiResult.error ||
+        "AI image generation failed."
+      );
+
+    }
+
+
+    /* =========================================
+       STEP 4 — APPROVE PRODUCT
+    ========================================= */
+
+    showNotice(
+      "🤖 AI image तैयार हो गई। अब product approve किया जा रहा है...",
+      "loading"
+    );
+
+
+    const {
+      error:updateError
+    } =
+      await supabaseClient
+        .from("products")
+        .update({
+
+          ai_image_url:
+            aiResult.ai_image_url,
+
+          status:
+            "approved"
+
+        })
+        .eq(
+          "id",
+          product.id
+        );
+
+
+    if(updateError){
+
+      throw new Error(
+        "AI image बन गई लेकिन product approval save नहीं हुआ: " +
+        updateError.message
+      );
+
+    }
+
+
+    /* =========================================
+       STEP 5 — LOCAL DATA UPDATE
+    ========================================= */
+
+    product.ai_image_url =
+      aiResult.ai_image_url;
+
+
+    product.status =
+      "approved";
+
+
+    /* =========================================
+       SUCCESS
+    ========================================= */
+
+    showNotice(
+      "🎉 Product successfully approved! Original image private है और Marketplace में AI image दिखाई जाएगी।",
+      "success"
+    );
+
+
+    await loadProducts();
+
+
+    await openProductVerification(
+      product.id
+    );
+
+
+  }catch(error){
+
+    console.error(
+      "verifyProduct error:",
+      error
+    );
+
+
+    showNotice(
+      "❌ Product approve नहीं हुआ: " +
+      (
+        error?.message ||
+        "Unknown error"
+      ),
+      "error"
+    );
+
+  }
+
+}
 
     /* =================================================
        UPDATE LOCAL DATA
