@@ -2948,28 +2948,27 @@ async function verifyProduct(productId){
        MIGRATE ORIGINAL IMAGE
     ================================================= */
 
-    const migrationResponse =
-      await fetch(
-        `${SUPABASE_URL}/functions/v1/migrate-product-original-`,
-        {
-          method:"POST",
+    const response =
+  await fetch(
+    `${SUPABASE_URL}/functions/v1/generate-product-image`,
+    {
+      method:"POST",
 
-          headers:{
-            "Content-Type":
-              "application/json",
+      headers:{
+        "Content-Type":"application/json",
 
-            "Authorization":
-              `Bearer ${session.access_token}`,
+        "Authorization":
+          `Bearer ${session.access_token}`,
 
-            "apikey":
-              SUPABASE_ANON_KEY
-          },
+        "apikey":
+          SUPABASE_ANON_KEY
+      },
 
-          body:JSON.stringify({
-            product_id:product.id
-          })
-        }
-      );
+      body:JSON.stringify({
+        product_id:product.id
+      })
+    }
+  );
 
 
     const migrationResult =
