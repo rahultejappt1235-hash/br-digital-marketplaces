@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Details - BR Digital Marketplace</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  background:#f5f7fa;
+  color:#172033;
+  overflow-x:hidden;
+}
+button{font-family:inherit}
+a{text-decoration:none;color:inherit}
+
+.header{
+  position:sticky;
+  top:0;
+  z-index:50;
+  background:#fff;
+  border-bottom:1px solid #e5e7eb;
+  padding:12px 18px;
+}
+.header-inner{
+  max-width:1250px;
+  margin:auto;
+  display:flex;
+  align-items:center;
+  gap:16px;
+}
+.menu-btn,.cart-btn,.back-btn{
+  border:0;
+  background:#f3f4f6;
+  border-radius:12px;
+  min-width:52px;
+  height:52px;
+  font-size:25px;
+  cursor:pointer;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex:1;
+}
+.logo{
+  width:52px;height:52px;
+  border:4px solid #087443;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:900;
+  font-size:22px;
+}
+.brand-title{
+  font-size:24px;
+  font-weight:900;
+}
+.brand-title span:first-child{color:#f15b2a}
+.brand-title span:last-child{color:#087443}
+.tagline{
+  color:#6b7280;
+  font-size:13px;
+  margin-top:3px;
+}
+.cart-btn{position:relative}
+.cart-count{
+  position:absolute;
+  right:-4px;
+  top:-5px;
+  min-width:22px;
+  height:22px;
+  padding:2px 6px;
+  border-radius:20px;
+  background:#df1f2d;
+  color:#fff;
+  font-size:12px;
+  font-weight:900;
+}
+
+.search-wrap{
+  max-width:1250px;
+  margin:18px auto 0;
+}
+.search{
+  width:100%;
+  height:52px;
+  border:1px solid #d8dde5;
+  border-radius:12px;
+  padding:0 18px;
+  font-size:16px;
+  outline:none;
+  background:#fff;
+}
+.search:focus{border-color:#087443}
+
+.page{
+  max-width:1250px;
+  margin:18px auto 80px;
+  padding:0 16px;
+}
+.top-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:15px;
+}
+.back{
+  color:#087443;
+  font-weight:800;
+}
+.share{
+  border:0;
+  background:#fff;
+  color:#1557a6;
+  font-size:16px;
+  font-weight:800;
+  padding:10px 14px;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+.product-card{
+  background:#fff;
+  border:1px solid #e1e5ea;
+  border-radius:18px;
+  padding:22px;
+  display:grid;
+  grid-template-columns:minmax(0,1.05fr) minmax(360px,.95fr);
+  gap:30px;
+}
+.gallery{
+  min-width:0;
+}
+.image-box{
+  position:relative;
+  width:100%;
+  min-height:430px;
+  background:#fff;
+  border:1px solid #e5e7eb;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+.product-image{
+  width:100%;
+  height:100%;
+  min-height:430px;
+  object-fit:contain;
+  display:block;
+}
+.wishlist{
+  position:absolute;
+  right:16px;
+  top:16px;
+  width:48px;height:48px;
+  border:0;
+  border-radius:50%;
+  background:#fff;
+  box-shadow:0 3px 14px #0002;
+  font-size:27px;
+  cursor:pointer;
+}
+.image-note{
+  text-align:center;
+  color:#6b7280;
+  font-size:12px;
+  margin-top:9px;
+}
+
+.details{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+.category{
+  color:#087443;
+  font-weight:800;
+  font-size:14px;
+}
+h1{
+  font-size:30px;
+  line-height:1.2;
+}
+.brand-line{
+  color:#1557a6;
+  font-size:17px;
+  font-weight:700;
+}
+.badge-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:7px 11px;
+  border-radius:8px;
+  background:#e9f8ef;
+  color:#087443;
+  font-weight:800;
+}
+.price{
+  font-size:38px;
+  font-weight:900;
+  color:#d92d20;
+}
+.price-sub{
+  color:#667085;
+  font-size:14px;
+}
+.stock{
+  color:#087443;
+  font-weight:900;
+  font-size:17px;
+}
+.quantity-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  margin-top:5px;
+}
+.quantity{
+  display:flex;
+  align-items:center;
+  border:1px solid #d7dce3;
+  border-radius:12px;
+  overflow:hidden;
+}
+.quantity button{
+  width:48px;height:45px;
+  border:0;
+  background:#f3f4f6;
+  font-size:23px;
+  cursor:pointer;
+}
+.quantity span{
+  width:50px;
+  text-align:center;
+  font-weight:900;
+  font-size:18px;
+}
+.actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:8px;
+}
+.action{
+  min-height:58px;
+  border-radius:12px;
+  font-size:17px;
+  font-weight:900;
+  cursor:pointer;
+}
+.add{
+  border:2px solid #087443;
+  background:#fff;
+  color:#087443;
+}
+.buy{
+  border:0;
+  background:#f56622;
+  color:#fff;
+}
+.action:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+}
+
+.info-grid{
+  margin-top:18px;
+  background:#fff;
+  border:1px solid #e1e5ea;
+  border-radius:18px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+}
+.info{
+  padding:20px 12px;
+  text-align:center;
+  border-right:1px solid #e5e7eb;
+}
+.info:last-child{border-right:0}
+.info-icon{font-size:28px}
+.info strong{display:block;margin-top:8px}
+.info small{color:#667085}
+
+.description-card{
+  margin-top:18px;
+  background:#fff;
+  border:1px solid #e1e5ea;
+  border-radius:18px;
+  padding:22px;
+}
+.section-title{
+  font-size:23px;
+  margin-bottom:12px;
+}
+.description{
+  color:#4b5563;
+  line-height:1.65;
+  white-space:pre-line;
+}
+.meta{
+  margin-top:18px;
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+.meta-item{
+  padding:14px;
+  background:#f7f8fa;
+  border-radius:10px;
+}
+.meta-label{
+  color:#6b7280;
+  font-size:13px;
+}
+.meta-value{
+  margin-top:4px;
+  font-weight:800;
+}
+
+.notice{
+  display:none;
+  position:fixed;
+  left:50%;
+  bottom:82px;
+  transform:translateX(-50%);
+  z-index:100;
+  max-width:90%;
+  padding:13px 18px;
+  border-radius:10px;
+  background:#172033;
+  color:#fff;
+  font-weight:700;
+  box-shadow:0 8px 25px #0003;
+}
+.notice.show{display:block}
+
+.loading{
+  min-height:50vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#667085;
+  font-size:18px;
+  font-weight:700;
+}
+.error{
+  min-height:50vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:15px;
+  text-align:center;
+}
+.error button{
+  padding:12px 18px;
+  border:0;
+  border-radius:10px;
+  background:#087443;
+  color:#fff;
+  font-weight:800;
+}
+
+/* MOBILE: force a clean single-column marketplace layout.
+   This intentionally uses 1000px so Android browsers with unusual
+   viewport/zoom settings cannot push the service cards to the side. */
+@media(max-width:1000px){
+  html,body{
+    width:100%;
+    max-width:100%;
+    overflow-x:hidden;
+  }
+
+  .header{
+    padding:10px 12px;
+  }
+
+  .header-inner{
+    width:100%;
+    max-width:100%;
+    gap:10px;
+  }
+
+  .menu-btn,.cart-btn,.back-btn{
+    flex:0 0 48px;
+    min-width:48px;
+    width:48px;
+    height:48px;
+  }
+
+  .brand{
+    min-width:0;
+  }
+
+  .brand-title{
+    font-size:18px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .tagline{
+    font-size:10px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .logo{
+    flex:0 0 46px;
+    width:46px;
+    height:46px;
+    font-size:19px;
+    border-width:3px;
+  }
+
+  .search-wrap{
+    width:100%;
+    margin:12px 0 0;
+    padding:0 12px;
+  }
+
+  .page{
+    width:100%;
+    max-width:100%;
+    padding:0 10px 80px;
+    margin-top:12px;
+    overflow:hidden;
+  }
+
+  .top-row{
+    width:100%;
+  }
+
+  /* Product area MUST become one column on mobile. */
+  .product-card{
+    width:100%;
+    max-width:100%;
+    display:flex;
+    flex-direction:column;
+    padding:8px;
+    gap:18px;
+    overflow:hidden;
+  }
+
+  .gallery,
+  .details{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+  }
+
+  .image-box{
+    width:100%;
+    min-height:0;
+    aspect-ratio:1 / 1;
+  }
+
+  .product-image{
+    width:100%;
+    height:100%;
+    min-height:0;
+    object-fit:contain;
+  }
+
+  .image-note{
+    font-size:12px;
+    padding:0 4px;
+  }
+
+  h1{
+    font-size:25px;
+    overflow-wrap:anywhere;
+  }
+
+  .price{
+    font-size:34px;
+  }
+
+  /* Service cards stay BELOW the product information. */
+  .info-grid{
+    width:100%;
+    max-width:100%;
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    margin-top:14px;
+    overflow:hidden;
+  }
+
+  .info{
+    min-width:0;
+    padding:18px 8px;
+    border-right:1px solid #e5e7eb;
+    border-bottom:1px solid #e5e7eb;
+  }
+
+  .info:nth-child(2n){
+    border-right:0;
+  }
+
+  .info:nth-child(3),
+  .info:nth-child(4){
+    border-bottom:0;
+  }
+
+  .actions{
+    position:sticky;
+    bottom:0;
+    z-index:40;
+    width:100%;
+    background:#fff;
+    padding:10px 0;
+  }
+
+  .description-card{
+    width:100%;
+    max-width:100%;
+  }
+}
+
+@media(max-width:420px){
+  .brand-title{font-size:16px}
+  .tagline{font-size:9px}
+
+  .page{
+    padding-left:8px;
+    padding-right:8px;
+  }
+
+  .image-box{
+    aspect-ratio:1 / 1;
+  }
+
+  .meta{
+    grid-template-columns:1fr;
+  }
+
+  .action{
+    font-size:15px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <button class="menu-btn" type="button" onclick="goBack()" aria-label="Back">☰</button>
+
+    <div class="brand">
+      <div class="logo">BR</div>
+      <div>
+        <div class="brand-title">
+          <span>BR</span> <span>Digital Marketplace</span>
+        </div>
+        <div class="tagline">Shop Local • Support Bihar • Grow Together ❤️</div>
+      </div>
+    </div>
+
+    <button class="cart-btn" type="button" onclick="location.href='cart.html'" aria-label="Cart">
+      🛒
+      <span class="cart-count" id="cartCount">0</span>
+    </button>
+  </div>
+</header>
+
+<div class="search-wrap">
+  <input
+    class="search"
+    type="search"
+    placeholder="🔍 Search for products, brands and more..."
+    onkeydown="if(event.key==='Enter'){location.href='market.html?search='+encodeURIComponent(this.value)}">
+</div>
+
+<main class="page">
+  <div id="app" class="loading">⏳ Product load हो रहा है...</div>
+</main>
+
+<div id="notice" class="notice"></div>
+
+<script>
+const SUPABASE_URL = "https://uryjmibcdfjfxoljrigt.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_uYbJw0ARCCkCpQ9QB6FxaQ_JrIxtOOp";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+let product = null;
+let quantity = 1;
+
+const $ = id => document.getElementById(id);
+
+function escapeHtml(value){
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+
+function showNotice(message){
+  const el = $("notice");
+  el.textContent = message;
+  el.classList.add("show");
+  clearTimeout(window.noticeTimer);
+  window.noticeTimer = setTimeout(
+    () => el.classList.remove("show"),
+    2800
+  );
+}
+
+function getProductId(){
+  const params = new URLSearchParams(location.search);
+  return params.get("id") || params.get("product_id");
+}
+
+function money(value){
+  const n = Number(value);
+  if(!Number.isFinite(n)) return "₹0";
+  return "₹" + n.toLocaleString("en-IN");
+}
+
+function updateCartCount(){
+  try{
+    const cart = JSON.parse(localStorage.getItem("br_cart") || "[]");
+    const count = cart.reduce(
+      (sum,item) => sum + Number(item.quantity || 0),
+      0
+    );
+    $("cartCount").textContent = count;
+  }catch{
+    $("cartCount").textContent = "0";
+  }
+}
+
+function addToCart(goCheckout=false){
+  if(!product) return;
+
+  const image = product.ai_image_url;
+
+  if(!image){
+    showNotice("Product की AI image उपलब्ध नहीं है।");
+    return;
+  }
+
+  let cart = [];
+  try{
+    cart = JSON.parse(localStorage.getItem("br_cart") || "[]");
+    if(!Array.isArray(cart)) cart=[];
+  }catch{
+    cart=[];
+  }
+
+  const index = cart.findIndex(
+    item => String(item.product_id) === String(product.id)
+  );
+
+  const item = {
+    product_id: product.id,
+    product_name: product.product_name,
+    price: Number(product.price || 0),
+    image_url: image,
+    ai_image_url: image,
+    seller_id: product.seller_id || null,
+    seller_name: product.seller_name || "",
+    quantity: quantity
+  };
+
+  if(index >= 0){
+    cart[index].quantity =
+      Number(cart[index].quantity || 0) + quantity;
+  }else{
+    cart.push(item);
+  }
+
+  localStorage.setItem("br_cart", JSON.stringify(cart));
+  updateCartCount();
+
+  if(goCheckout){
+    location.href = "checkout.html";
+  }else{
+    showNotice("🛒 Product cart में add हो गया।");
+  }
+}
+
+function changeQuantity(delta){
+  if(!product) return;
+
+  const stock = Number(product.stock || 0);
+  quantity += delta;
+
+  if(quantity < 1) quantity=1;
+  if(stock > 0 && quantity > stock) quantity=stock;
+
+  $("quantity").textContent = quantity;
+}
+
+function shareProduct(){
+  const url = location.href;
+  if(navigator.share){
+    navigator.share({
+      title: product?.product_name || "BR Digital Marketplace",
+      url
+    }).catch(()=>{});
+  }else{
+    navigator.clipboard?.writeText(url);
+    showNotice("🔗 Product link copy हो गया।");
+  }
+}
+
+function goBack(){
+  if(history.length > 1) history.back();
+  else location.href="index.html";
+}
+
+function renderProduct(){
+  if(!product){
+    $("app").innerHTML = `
+      <div class="error">
+        <h2>Product नहीं मिला</h2>
+        <p>यह product उपलब्ध नहीं है या उसका AI image data मौजूद नहीं है।</p>
+        <button onclick="location.href='market.html'">← Market पर जाएँ</button>
+      </div>`;
+    return;
+  }
+
+  // IMPORTANT:
+  // Public product page uses ONLY ai_image_url.
+  // Seller original image_url is never rendered here.
+  if(!product.ai_image_url){
+    $("app").innerHTML = `
+      <div class="error">
+        <h2>Product Image उपलब्ध नहीं</h2>
+        <p>इस product की AI-generated image अभी उपलब्ध नहीं है।</p>
+        <button onclick="location.href='market.html'">← Market पर जाएँ</button>
+      </div>`;
+    return;
+  }
+
+  const stock = Number(product.stock || 0);
+  const inStock = stock > 0;
+
+  $("app").innerHTML = `
+    <div class="top-row">
+      <button class="share" type="button" onclick="goBack()">← Back</button>
+      <button class="share" type="button" onclick="shareProduct()">↗ Share</button>
+    </div>
+
+    <section class="product-card">
+
+      <div class="gallery">
+        <div class="image-box">
+          <img
+            class="product-image"
+            src="${escapeHtml(product.ai_image_url)}"
+            alt="${escapeHtml(product.product_name)}"
+            loading="eager"
+            onerror="this.style.display='none'">
+          <button
+            class="wishlist"
+            type="button"
+            onclick="showNotice('❤️ Wishlist feature जल्द उपलब्ध होगा।')"
+            aria-label="Wishlist">♡</button>
+        </div>
+
+        <div class="image-note">AI-generated marketplace product image</div>
+      </div>
+
+      <div class="details">
+        <div class="category">${escapeHtml(product.category || "Product")}</div>
+
+        <div class="brand-line">
+          ${escapeHtml(product.brand || "")}
+        </div>
+
+        <h1>${escapeHtml(product.product_name)}</h1>
+
+        <div class="badge-row">
+          <span class="badge">✓ Verified Product</span>
+          <span class="badge">🛡️ Secure Shopping</span>
+        </div>
+
+        <div>
+          <div class="price">${money(product.price)}</div>
+          <div class="price-sub">Inclusive of listed product price</div>
+        </div>
+
+        <div class="stock">
+          ${inStock
+            ? `✓ In Stock (${stock} available)`
+            : "✕ Out of Stock"}
+        </div>
+
+        <div class="quantity-row">
+          <strong>Quantity</strong>
+          <div class="quantity">
+            <button type="button" onclick="changeQuantity(-1)">−</button>
+            <span id="quantity">1</span>
+            <button type="button" onclick="changeQuantity(1)" ${inStock ? "" : "disabled"}>+</button>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button
+            class="action add"
+            type="button"
+            onclick="addToCart(false)"
+            ${inStock ? "" : "disabled"}>
+            🛒 Add to Cart
+          </button>
+
+          <button
+            class="action buy"
+            type="button"
+            onclick="addToCart(true)"
+            ${inStock ? "" : "disabled"}>
+            ⚡ Buy Now →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="info-grid">
+      <div class="info">
+        <div class="info-icon">🛡️</div>
+        <strong>Secure</strong>
+        <small>Payments</small>
+      </div>
+      <div class="info">
+        <div class="info-icon">🚚</div>
+        <strong>Fast & Safe</strong>
+        <small>Delivery</small>
+      </div>
+      <div class="info">
+        <div class="info-icon">📦</div>
+        <strong>Easy</strong>
+        <small>Returns</small>
+      </div>
+      <div class="info">
+        <div class="info-icon">🎧</div>
+        <strong>24×7</strong>
+        <small>Support</small>
+      </div>
+    </section>
+
+    <section class="description-card">
+      <h2 class="section-title">Product Details</h2>
+
+      <div class="description">
+        ${escapeHtml(product.description || "Product description उपलब्ध नहीं है।")}
+      </div>
+
+      <div class="meta">
+        <div class="meta-item">
+          <div class="meta-label">Brand</div>
+          <div class="meta-value">${escapeHtml(product.brand || "Not Provided")}</div>
+        </div>
+
+        <div class="meta-item">
+          <div class="meta-label">Category</div>
+          <div class="meta-value">${escapeHtml(product.category || "Not Provided")}</div>
+        </div>
+
+        <div class="meta-item">
+          <div class="meta-label">Product Type</div>
+          <div class="meta-value">${escapeHtml(product.product_type || "Not Provided")}</div>
+        </div>
+
+        <div class="meta-item">
+          <div class="meta-label">Serial / IMEI</div>
+          <div class="meta-value">${escapeHtml(product.serial_number || "Not Provided")}</div>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+async function loadProduct(){
+  const id = getProductId();
+
+  if(!id){
+    renderProduct();
+    return;
+  }
+
+  try{
+    const {data,error} = await supabaseClient
+      .from("products")
+      .select(`
+        id,
+        product_name,
+        brand,
+        category,
+        product_type,
+        description,
+        price,
+        stock,
+        seller_name,
+        seller_id,
+        status,
+        ai_image_url,
+        serial_number
+      `)
+      .eq("id",id)
+      .eq("status","approved")
+      .not("ai_image_url","is",null)
+      .maybeSingle();
+
+    if(error) throw error;
+
+    product = data;
+    renderProduct();
+
+  }catch(error){
+    console.error("Product load error:",error);
+
+    $("app").innerHTML = `
+      <div class="error">
+        <h2>Product load नहीं हुआ</h2>
+        <p>${escapeHtml(error.message || "Unknown error")}</p>
+        <button onclick="location.href='market.html'">← Market पर जाएँ</button>
+      </div>`;
+  }
+}
+
+updateCartCount();
+loadProduct();
+</script>
+
+</body>
+</html>
