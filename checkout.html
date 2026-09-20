@@ -1,0 +1,3424 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0">
+
+<title>Checkout | BR Digital Marketplace</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  font-family:Arial,sans-serif;
+  background:#f5f6f7;
+  color:#202124;
+  padding-bottom:30px;
+}
+
+button,
+input,
+select,
+textarea{
+  font-family:inherit;
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.header{
+  position:sticky;
+  top:0;
+  z-index:1000;
+  background:#fff;
+  padding:14px 15px;
+  box-shadow:0 2px 10px rgba(0,0,0,.08);
+}
+
+.top{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.back{
+  width:42px;
+  height:42px;
+  border:0;
+  border-radius:12px;
+  background:#f1f3f4;
+  font-size:22px;
+  cursor:pointer;
+}
+
+.brand{
+  flex:1;
+}
+
+.brand h1{
+  font-size:18px;
+  color:#087f45;
+  font-weight:900;
+}
+
+.brand p{
+  font-size:11px;
+  color:#777;
+  margin-top:3px;
+}
+
+
+/* =====================================================
+   CONTAINER
+===================================================== */
+
+.container{
+  max-width:750px;
+  margin:auto;
+  padding:15px;
+}
+
+.section{
+  background:#fff;
+  border-radius:17px;
+  padding:17px;
+  margin-bottom:13px;
+  box-shadow:0 2px 9px rgba(0,0,0,.06);
+}
+
+.section h2{
+  font-size:18px;
+  margin-bottom:14px;
+}
+
+
+/* =====================================================
+   ERROR
+===================================================== */
+
+.error{
+  background:#fff0f0;
+  color:#d93025;
+  padding:13px;
+  border-radius:10px;
+  font-size:13px;
+  margin-bottom:12px;
+  display:none;
+  line-height:1.5;
+  word-break:break-word;
+}
+
+
+/* =====================================================
+   LOADING
+===================================================== */
+
+.loading{
+  text-align:center;
+  padding:35px;
+  color:#777;
+}
+
+
+/* =====================================================
+   ADDRESS
+===================================================== */
+
+.address-card{
+  border:2px solid #087f45;
+  border-radius:13px;
+  padding:14px;
+  background:#f8fffb;
+}
+
+.address-name{
+  font-weight:900;
+  font-size:15px;
+}
+
+.address-phone{
+  font-size:12px;
+  color:#555;
+  margin-top:4px;
+}
+
+.address-text{
+  font-size:13px;
+  line-height:1.5;
+  margin-top:8px;
+}
+
+.change-btn{
+  border:0;
+  background:transparent;
+  color:#087f45;
+  font-weight:900;
+  margin-top:9px;
+  cursor:pointer;
+  font-size:14px;
+}
+
+.no-address{
+  text-align:center;
+  padding:15px;
+  background:#fff7e8;
+  border-radius:12px;
+  color:#666;
+  font-size:13px;
+  line-height:1.5;
+}
+
+.address-form{
+  display:none;
+  margin-top:14px;
+}
+
+.field{
+  margin-bottom:11px;
+}
+
+.field label{
+  display:block;
+  font-size:12px;
+  font-weight:800;
+  margin-bottom:5px;
+}
+
+.field input,
+.field textarea{
+  width:100%;
+  border:1px solid #ddd;
+  border-radius:10px;
+  padding:11px;
+  outline:none;
+  font-size:14px;
+}
+
+.field input:focus,
+.field textarea:focus{
+  border-color:#087f45;
+}
+
+.field textarea{
+  min-height:75px;
+  resize:vertical;
+}
+
+.location-btn{
+  width:100%;
+  height:43px;
+  border:0;
+  border-radius:10px;
+  background:#1769aa;
+  color:#fff;
+  font-weight:900;
+  margin-bottom:12px;
+  cursor:pointer;
+}
+
+.save-address-btn{
+  width:100%;
+  height:50px;
+  border:0;
+  border-radius:13px;
+  background:#087f45;
+  color:#fff;
+  font-size:16px;
+  font-weight:900;
+  cursor:pointer;
+  margin-top:4px;
+}
+
+
+/* =====================================================
+   PRODUCTS
+===================================================== */
+
+.item{
+  display:flex;
+  gap:12px;
+  padding:11px 0;
+  border-bottom:1px solid #eee;
+}
+
+.item:last-child{
+  border-bottom:0;
+}
+
+.item-image{
+  width:72px;
+  height:72px;
+  border-radius:10px;
+  object-fit:cover;
+  background:#f1f3f4;
+  flex-shrink:0;
+}
+
+.item-info{
+  flex:1;
+  min-width:0;
+}
+
+.item-name{
+  font-size:13px;
+  font-weight:800;
+  line-height:1.35;
+}
+
+.item-qty{
+  font-size:11px;
+  color:#777;
+  margin-top:5px;
+}
+
+.item-price-row{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:5px;
+}
+
+.item-price{
+  font-weight:900;
+  font-size:15px;
+}
+
+.discount-badge{
+  background:#ffe5e5;
+  color:#d93025;
+  padding:4px 7px;
+  border-radius:6px;
+  font-size:10px;
+  font-weight:900;
+}
+
+.item-mrp{
+  color:#777;
+  font-size:11px;
+  margin-top:2px;
+}
+
+.ai-note{
+  color:#087f45;
+  font-size:10px;
+  margin-top:4px;
+}
+
+
+/* =====================================================
+   PAYMENT OPTIONS - PHASE 1
+===================================================== */
+
+.payment-methods{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.payment-card{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  border:2px solid #e1e1e1;
+  border-radius:13px;
+  padding:14px;
+  background:#fff;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.payment-card.active{
+  border-color:#087f45;
+  background:#f8fffb;
+}
+
+.payment-card.disabled{
+  opacity:.58;
+  cursor:not-allowed;
+}
+
+.payment-radio{
+  width:19px;
+  height:19px;
+  flex-shrink:0;
+}
+
+.payment-icon{
+  width:40px;
+  height:40px;
+  border-radius:10px;
+  background:#f1f3f4;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+  font-weight:900;
+  flex-shrink:0;
+}
+
+.payment-info{
+  flex:1;
+  min-width:0;
+}
+
+.payment-title{
+  font-size:14px;
+  font-weight:900;
+  line-height:1.3;
+}
+
+.payment-subtitle{
+  font-size:11px;
+  color:#777;
+  margin-top:4px;
+  line-height:1.4;
+}
+
+.payment-status{
+  font-size:10px;
+  color:#087f45;
+  font-weight:800;
+  margin-top:4px;
+}
+
+.payment-soon{
+  font-size:10px;
+  color:#777;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+
+/* =====================================================
+   SUMMARY
+===================================================== */
+
+.summary-row{
+  display:flex;
+  justify-content:space-between;
+  margin:10px 0;
+  font-size:13px;
+}
+
+.saving{
+  color:#087f45;
+}
+
+.summary-row.total{
+  border-top:1px solid #eee;
+  padding-top:13px;
+  font-size:18px;
+  font-weight:900;
+}
+
+.place-order{
+  width:100%;
+  height:50px;
+  border:0;
+  border-radius:13px;
+  background:#087f45;
+  color:#fff;
+  font-size:16px;
+  font-weight:900;
+  cursor:pointer;
+  margin-top:12px;
+}
+
+.place-order:disabled{
+  background:#999;
+  cursor:not-allowed;
+}
+
+
+/* =====================================================
+   SUCCESS
+===================================================== */
+
+.success{
+  text-align:center;
+  padding:35px 15px;
+  background:#fff;
+  border-radius:17px;
+}
+
+.success-icon{
+  font-size:55px;
+}
+
+.success h2{
+  margin:12px 0 7px;
+  color:#087f45;
+}
+
+.success p{
+  color:#666;
+  font-size:13px;
+  line-height:1.5;
+}
+
+.success button{
+  margin-top:18px;
+  width:100%;
+  height:45px;
+  border:0;
+  border-radius:11px;
+  background:#087f45;
+  color:#fff;
+  font-weight:900;
+  cursor:pointer;
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media(max-width:500px){
+
+  .container{
+    padding:10px;
+  }
+
+  .section{
+    padding:14px;
+  }
+
+  .item-image{
+    width:65px;
+    height:65px;
+  }
+
+  .payment-card{
+    padding:12px;
+    gap:9px;
+  }
+
+  .payment-title{
+    font-size:13px;
+  }
+
+  .payment-soon{
+    font-size:9px;
+  }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<header class="header">
+
+  <div class="top">
+
+    <button
+      class="back"
+      type="button"
+      onclick="goCart()">
+
+      ←
+
+    </button>
+
+
+    <div class="brand">
+
+      <h1>
+        BR Digital Marketplace
+      </h1>
+
+      <p>
+        Secure Checkout
+      </p>
+
+    </div>
+
+  </div>
+
+</header>
+
+
+
+<main
+  class="container"
+  id="checkoutContainer">
+
+
+  <div
+    id="errorBox"
+    class="error">
+  </div>
+
+
+  <!-- =================================================
+       DELIVERY ADDRESS
+  ================================================== -->
+
+  <section class="section">
+
+    <h2>
+      📍 Delivery Address
+    </h2>
+
+
+    <div id="addressArea">
+
+      <div class="loading">
+
+        ⏳ Address loading...
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- =================================================
+       ORDER ITEMS
+  ================================================== -->
+
+  <section class="section">
+
+    <h2>
+      🛒 Your Order
+    </h2>
+
+
+    <div id="cartItems">
+
+      <div class="loading">
+
+        ⏳ Cart loading...
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- =================================================
+       PAYMENT OPTIONS
+  ================================================== -->
+
+  <section class="section">
+
+    <h2>
+      💳 Payment Method
+    </h2>
+
+
+    <div class="payment-methods">
+
+
+      <!-- =============================================
+           UPI
+      ============================================== -->
+
+      <label
+        class="payment-card disabled">
+
+        <input
+          class="payment-radio"
+          type="radio"
+          name="payment"
+          value="upi"
+          disabled>
+
+
+        <div class="payment-icon">
+
+          UPI
+
+        </div>
+
+
+        <div class="payment-info">
+
+          <div class="payment-title">
+
+            UPI
+
+          </div>
+
+
+          <div class="payment-subtitle">
+
+            Pay by any UPI app
+
+          </div>
+
+        </div>
+
+
+        <div class="payment-soon">
+
+          Coming Soon
+
+        </div>
+
+      </label>
+
+
+
+      <!-- =============================================
+           CARD
+      ============================================== -->
+
+      <label
+        class="payment-card disabled">
+
+        <input
+          class="payment-radio"
+          type="radio"
+          name="payment"
+          value="card"
+          disabled>
+
+
+        <div class="payment-icon">
+
+          💳
+
+        </div>
+
+
+        <div class="payment-info">
+
+          <div class="payment-title">
+
+            Credit / Debit / ATM Card
+
+          </div>
+
+
+          <div class="payment-subtitle">
+
+            Secure online payment
+
+          </div>
+
+        </div>
+
+
+        <div class="payment-soon">
+
+          Coming Soon
+
+        </div>
+
+      </label>
+
+
+
+      <!-- =============================================
+           COD
+      ============================================== -->
+
+      <label
+        class="payment-card active"
+        id="codPaymentCard">
+
+
+        <input
+          class="payment-radio"
+          type="radio"
+          name="payment"
+          value="cod"
+          checked
+          onchange="selectPayment('cod')">
+
+
+        <div class="payment-icon">
+
+          💵
+
+        </div>
+
+
+        <div class="payment-info">
+
+          <div class="payment-title">
+
+            Cash on Delivery
+
+          </div>
+
+
+          <div class="payment-subtitle">
+
+            Pay when your order is delivered
+
+          </div>
+
+
+          <div class="payment-status">
+
+            ✓ Available
+
+          </div>
+
+        </div>
+
+      </label>
+
+
+    </div>
+
+  </section>
+
+
+
+  <!-- =================================================
+       ORDER SUMMARY
+  ================================================== -->
+
+  <section class="section">
+
+    <h2>
+      🧾 Order Summary
+    </h2>
+
+
+    <div class="summary-row">
+
+      <span>
+        MRP Total
+      </span>
+
+      <strong id="mrpTotal">
+
+        ₹0
+
+      </strong>
+
+    </div>
+
+
+    <div class="summary-row saving">
+
+      <span>
+        You Save
+      </span>
+
+      <strong id="totalSaving">
+
+        ₹0
+
+      </strong>
+
+    </div>
+
+
+    <div class="summary-row">
+
+      <span>
+        Selling Price
+      </span>
+
+      <strong id="subtotal">
+
+        ₹0
+
+      </strong>
+
+    </div>
+
+
+    <div class="summary-row">
+
+      <span>
+        Delivery Fee
+      </span>
+
+      <strong id="deliveryFee">
+
+        ₹0
+
+      </strong>
+
+    </div>
+
+
+    <div class="summary-row total">
+
+      <span>
+        Total
+      </span>
+
+      <strong id="total">
+
+        ₹0
+
+      </strong>
+
+    </div>
+
+
+    <button
+      id="placeOrderBtn"
+      class="place-order"
+      type="button"
+      onclick="placeOrder()"
+      disabled>
+
+      📍 पहले Delivery Address जोड़ें
+
+    </button>
+
+  </section>
+
+
+</main>
+
+
+
+<script>
+
+
+/* =====================================================
+   SUPABASE
+===================================================== */
+
+const SUPABASE_URL =
+  "https://uryjmibcdfjfxoljrigt.supabase.co";
+
+
+const SUPABASE_KEY =
+  "sb_publishable_uYbJw0ARCCkCpQ9QB6FxaQ_JrIxtOOp";
+
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+/* =====================================================
+   GLOBAL
+===================================================== */
+
+let currentUser = null;
+
+let cart = [];
+
+let selectedAddress = null;
+
+
+/*
+  Phase 1:
+  फिलहाल COD ही वास्तविक payment method है.
+*/
+
+let selectedPayment =
+  "cod";
+
+
+/* =====================================================
+   PAYMENT SELECTION
+===================================================== */
+
+function selectPayment(method){
+
+  /*
+    Phase 1 में केवल COD working है.
+  */
+
+  if(
+    method !== "cod"
+  ){
+
+    alert(
+      "💳 फिलहाल केवल Cash on Delivery उपलब्ध है। Online Payment जल्द उपलब्ध होगा।"
+    );
+
+
+    selectedPayment =
+      "cod";
+
+
+    const codRadio =
+      document.querySelector(
+        'input[name="payment"][value="cod"]'
+      );
+
+
+    if(codRadio){
+
+      codRadio.checked =
+        true;
+
+    }
+
+
+    updatePaymentCards();
+
+    return;
+
+  }
+
+
+  selectedPayment =
+    "cod";
+
+
+  updatePaymentCards();
+
+}
+
+
+/* =====================================================
+   UPDATE PAYMENT CARDS
+===================================================== */
+
+function updatePaymentCards(){
+
+  const cards =
+    document.querySelectorAll(
+      ".payment-card"
+    );
+
+
+  cards.forEach(
+    card => {
+
+      card.classList.remove(
+        "active"
+      );
+
+    }
+  );
+
+
+  if(
+    selectedPayment ===
+    "cod"
+  ){
+
+    const codCard =
+      document.getElementById(
+        "codPaymentCard"
+      );
+
+
+    if(codCard){
+
+      codCard.classList.add(
+        "active"
+      );
+
+    }
+
+  }
+
+}
+
+
+/* =====================================================
+   START CHECKOUT
+===================================================== */
+
+async function startCheckout(){
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+    await supabaseClient.auth.getUser();
+
+
+    if(error){
+
+      throw error;
+
+    }
+
+
+    if(!data?.user){
+
+      showError(
+        "कृपया पहले Customer Login करें।"
+      );
+
+      return;
+
+    }
+
+
+    currentUser =
+      data.user;
+
+
+    loadCart();
+
+    await loadAddress();
+
+
+  }catch(error){
+
+    console.error(
+      "Checkout start error:",
+      error
+    );
+
+
+    showError(
+      "❌ Checkout load नहीं हो पाया: " +
+      (
+        error.message ||
+        "Unknown error"
+      )
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   LOAD CART
+===================================================== */
+
+function loadCart(){
+
+  try{
+
+    cart =
+      JSON.parse(
+        localStorage.getItem(
+          "br_cart"
+        ) || "[]"
+      );
+
+  }catch(error){
+
+    console.error(
+      "Cart parse error:",
+      error
+    );
+
+    cart = [];
+
+  }
+
+
+  if(
+    !Array.isArray(cart)
+  ){
+
+    cart = [];
+
+  }
+
+
+  renderCart();
+
+}
+
+
+/* =====================================================
+   RENDER CART
+===================================================== */
+
+function renderCart(){
+
+  const box =
+    document.getElementById(
+      "cartItems"
+    );
+
+
+  if(!box)
+    return;
+
+
+  if(!cart.length){
+
+    box.innerHTML = `
+
+      <div class="no-address">
+
+        🛒 आपका Cart खाली है।
+
+      </div>
+
+    `;
+
+
+    updateSummary(
+      0,
+      0
+    );
+
+
+    disablePlaceOrder(
+      "🛒 Cart खाली है"
+    );
+
+
+    return;
+
+  }
+
+
+  let subtotal =
+    0;
+
+
+  let mrpTotal =
+    0;
+
+
+  box.innerHTML =
+    cart.map(
+      item => {
+
+        const quantity =
+          Math.max(
+            1,
+            Number(
+              item.quantity || 1
+            )
+          );
+
+
+        const price =
+          Number(
+            item.price || 0
+          );
+
+
+        const mrp =
+          Number(
+            item.mrp || 0
+          );
+
+
+        const lineTotal =
+          price *
+          quantity;
+
+
+        const lineMrp =
+          mrp > price
+          ? mrp * quantity
+          : lineTotal;
+
+
+        subtotal +=
+          lineTotal;
+
+
+        mrpTotal +=
+          lineMrp;
+
+
+        let discountPercent =
+          0;
+
+
+        if(
+          mrp > 0 &&
+          mrp > price
+        ){
+
+          discountPercent =
+            Math.round(
+              (
+                (mrp - price) /
+                mrp
+              ) * 100
+            );
+
+        }
+
+
+        return `
+
+          <div class="item">
+
+
+            ${
+              item.ai_image_url
+
+              ?
+
+              `
+
+                <img
+                  src="${escapeHtml(item.ai_image_url)}"
+                  class="item-image"
+                  alt="${escapeHtml(
+                    item.product_name ||
+                    "Product"
+                  )}">
+
+              `
+
+              :
+
+              `
+
+                <div class="item-image"></div>
+
+              `
+
+            }
+
+
+            <div class="item-info">
+
+
+              <div class="item-name">
+
+                ${escapeHtml(
+                  item.product_name ||
+                  "Product"
+                )}
+
+              </div>
+
+
+              <div class="item-qty">
+
+                Quantity:
+                ${quantity}
+
+              </div>
+
+
+              <div class="item-price-row">
+
+
+                <span class="item-price">
+
+                  ₹${formatPrice(
+                    price
+                  )}
+
+                </span>
+
+
+                ${
+                  discountPercent > 0
+
+                  ?
+
+                  `
+
+                    <span class="discount-badge">
+
+                      ${discountPercent}% OFF
+
+                    </span>
+
+                  `
+
+                  :
+
+                  ""
+
+                }
+
+              </div>
+
+
+              ${
+                mrp > price
+
+                ?
+
+                `
+
+                  <div class="item-mrp">
+
+                    MRP:
+                    <s>
+                      ₹${formatPrice(mrp)}
+                    </s>
+
+                  </div>
+
+                `
+
+                :
+
+                ""
+
+              }
+
+
+              <div class="ai-note">
+
+                ✓ AI product image
+
+              </div>
+
+
+            </div>
+
+
+          </div>
+
+        `;
+
+      }
+    ).join("");
+
+
+  updateSummary(
+    subtotal,
+    mrpTotal
+  );
+
+
+  if(
+    selectedAddress
+  ){
+
+    enablePlaceOrder();
+
+  }
+
+}
+
+
+/* =====================================================
+   UPDATE SUMMARY
+===================================================== */
+
+function updateSummary(
+  subtotal,
+  mrpTotal
+){
+
+  const deliveryFee =
+    0;
+
+
+  const total =
+    subtotal +
+    deliveryFee;
+
+
+  const saving =
+    Math.max(
+      0,
+      mrpTotal -
+      subtotal
+    );
+
+
+  document.getElementById(
+    "mrpTotal"
+  ).innerText =
+    "₹" +
+    formatPrice(
+      mrpTotal
+    );
+
+
+  document.getElementById(
+    "totalSaving"
+  ).innerText =
+    "₹" +
+    formatPrice(
+      saving
+    );
+
+
+  document.getElementById(
+    "subtotal"
+  ).innerText =
+    "₹" +
+    formatPrice(
+      subtotal
+    );
+
+
+  document.getElementById(
+    "deliveryFee"
+  ).innerText =
+    "₹" +
+    formatPrice(
+      deliveryFee
+    );
+
+
+  document.getElementById(
+    "total"
+  ).innerText =
+    "₹" +
+    formatPrice(
+      total
+    );
+
+}
+
+
+/* =====================================================
+   LOAD ADDRESS
+===================================================== */
+
+async function loadAddress(){
+
+  const box =
+    document.getElementById(
+      "addressArea"
+    );
+
+
+  if(!currentUser)
+    return;
+
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+    await supabaseClient
+      .from("customer_addresses")
+      .select(`
+        id,
+        full_name,
+        phone,
+        address,
+        city,
+        state,
+        pincode,
+        latitude,
+        longitude,
+        is_default,
+        created_at
+      `)
+      .eq(
+        "customer_id",
+        currentUser.id
+      )
+      .order(
+        "is_default",
+        {
+          ascending:false
+        }
+      )
+      .order(
+        "created_at",
+        {
+          ascending:false
+        }
+      );
+
+
+    if(error){
+
+      throw error;
+
+    }
+
+
+    if(
+      !data ||
+      !data.length
+    ){
+
+      selectedAddress =
+        null;
+
+
+      box.innerHTML = `
+
+        <div class="no-address">
+
+          📍 अभी कोई delivery address
+          saved नहीं है。
+
+          <br><br>
+
+          <button
+            class="change-btn"
+            type="button"
+            onclick="showAddressForm()">
+
+            + Add Delivery Address
+
+          </button>
+
+        </div>
+
+
+        <div
+          id="addressForm"
+          class="address-form">
+
+          ${addressFormHtml()}
+
+        </div>
+
+      `;
+
+
+      disablePlaceOrder();
+
+      return;
+
+    }
+
+
+    selectedAddress =
+      data[0];
+
+
+    renderSelectedAddress();
+
+    enablePlaceOrder();
+
+
+  }catch(error){
+
+    console.error(
+      "Address error:",
+      error
+    );
+
+
+    box.innerHTML = `
+
+      <div class="no-address">
+
+        ❌ Address load नहीं हो पाया।
+
+      </div>
+
+    `;
+
+
+    disablePlaceOrder();
+
+  }
+
+}
+
+
+/* =====================================================
+   RENDER ADDRESS
+===================================================== */
+
+function renderSelectedAddress(){
+
+  const box =
+    document.getElementById(
+      "addressArea"
+    );
+
+
+  if(
+    !box ||
+    !selectedAddress
+  ){
+
+    return;
+
+  }
+
+
+  box.innerHTML = `
+
+    <div class="address-card">
+
+      <div class="address-name">
+
+        ${escapeHtml(
+          selectedAddress.full_name
+        )}
+
+      </div>
+
+
+      <div class="address-phone">
+
+        📱
+        ${escapeHtml(
+          selectedAddress.phone
+        )}
+
+      </div>
+
+
+      <div class="address-text">
+
+        ${escapeHtml(
+          selectedAddress.address
+        )}
+
+        <br>
+
+        ${escapeHtml(
+          selectedAddress.city
+        )},
+
+        ${escapeHtml(
+          selectedAddress.state
+        )}
+
+        -
+
+        ${escapeHtml(
+          selectedAddress.pincode
+        )}
+
+      </div>
+
+
+      ${
+        selectedAddress.latitude &&
+        selectedAddress.longitude
+
+        ?
+
+        `
+
+          <div
+            style="
+              font-size:10px;
+              color:#777;
+              margin-top:7px;
+            ">
+
+            📍 GPS Location saved
+
+          </div>
+
+        `
+
+        :
+
+        ""
+
+      }
+
+
+      <button
+        class="change-btn"
+        type="button"
+        onclick="showAddressForm()">
+
+        Change / Add Address
+
+      </button>
+
+    </div>
+
+
+    <div
+      id="addressForm"
+      class="address-form">
+
+      ${addressFormHtml()}
+
+    </div>
+
+  `;
+
+}
+
+
+/* =====================================================
+   ADDRESS FORM
+===================================================== */
+
+function addressFormHtml(){
+
+  return `
+
+    <button
+      type="button"
+      class="location-btn"
+      onclick="getCurrentLocation()">
+
+      📍 Use Current Location
+
+    </button>
+
+
+    <div class="field">
+
+      <label>
+        Full Name *
+      </label>
+
+      <input
+        id="addressName"
+        value="${escapeHtml(
+          selectedAddress?.full_name ||
+          ""
+        )}"
+        placeholder="Customer name">
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        Mobile Number *
+      </label>
+
+      <input
+        id="addressPhone"
+        type="tel"
+        inputmode="numeric"
+        maxlength="10"
+        value="${escapeHtml(
+          selectedAddress?.phone ||
+          ""
+        )}"
+        placeholder="Mobile number">
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        House / Street / Village *
+      </label>
+
+      <textarea
+        id="addressText"
+        placeholder="Complete delivery address">${escapeHtml(
+          selectedAddress?.address ||
+          ""
+        )}</textarea>
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        City *
+      </label>
+
+      <input
+        id="addressCity"
+        value="${escapeHtml(
+          selectedAddress?.city ||
+          ""
+        )}"
+        placeholder="City">
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        State *
+      </label>
+
+      <input
+        id="addressState"
+        value="${escapeHtml(
+          selectedAddress?.state ||
+          ""
+        )}"
+        placeholder="State">
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        PIN Code *
+      </label>
+
+      <input
+        id="addressPincode"
+        type="text"
+        inputmode="numeric"
+        maxlength="6"
+        value="${escapeHtml(
+          selectedAddress?.pincode ||
+          ""
+        )}"
+        placeholder="PIN Code">
+
+    </div>
+
+
+    <input
+      type="hidden"
+      id="latitude"
+      value="${selectedAddress?.latitude || ""}">
+
+
+    <input
+      type="hidden"
+      id="longitude"
+      value="${selectedAddress?.longitude || ""}">
+
+
+    <button
+      type="button"
+      class="save-address-btn"
+      onclick="saveAddress()">
+
+      💾 Save Delivery Address
+
+    </button>
+
+  `;
+
+}
+
+
+/* =====================================================
+   SHOW ADDRESS FORM
+===================================================== */
+
+function showAddressForm(){
+
+  const form =
+    document.getElementById(
+      "addressForm"
+    );
+
+
+  if(form){
+
+    form.style.display =
+      "block";
+
+
+    form.scrollIntoView({
+      behavior:"smooth",
+      block:"center"
+    });
+
+  }
+
+}
+
+
+/* =====================================================
+   GPS
+===================================================== */
+
+function getCurrentLocation(){
+
+  if(!navigator.geolocation){
+
+    alert(
+      "इस device में GPS उपलब्ध नहीं है।"
+    );
+
+    return;
+
+  }
+
+
+  navigator.geolocation.getCurrentPosition(
+
+    async position => {
+
+      const lat =
+        position.coords.latitude;
+
+
+      const lng =
+        position.coords.longitude;
+
+
+      const latitudeField =
+        document.getElementById(
+          "latitude"
+        );
+
+
+      const longitudeField =
+        document.getElementById(
+          "longitude"
+        );
+
+
+      if(latitudeField){
+
+        latitudeField.value =
+          lat;
+
+      }
+
+
+      if(longitudeField){
+
+        longitudeField.value =
+          lng;
+
+      }
+
+
+      try{
+
+        const response =
+          await fetch(
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`
+          );
+
+
+        const data =
+          await response.json();
+
+
+        const city =
+          data.city ||
+          data.locality ||
+          "";
+
+
+        const state =
+          data.principalSubdivision ||
+          "";
+
+
+        const pincode =
+          data.postcode ||
+          "";
+
+
+        const cityField =
+          document.getElementById(
+            "addressCity"
+          );
+
+
+        const stateField =
+          document.getElementById(
+            "addressState"
+          );
+
+
+        const pincodeField =
+          document.getElementById(
+            "addressPincode"
+          );
+
+
+        if(
+          cityField &&
+          city
+        ){
+
+          cityField.value =
+            city;
+
+        }
+
+
+        if(
+          stateField &&
+          state
+        ){
+
+          stateField.value =
+            state;
+
+        }
+
+
+        if(
+          pincodeField &&
+          pincode
+        ){
+
+          pincodeField.value =
+            pincode;
+
+        }
+
+
+        alert(
+          "✅ Current location प्राप्त हो गई।"
+        );
+
+
+      }catch(error){
+
+        console.error(
+          "Reverse geocode error:",
+          error
+        );
+
+
+        alert(
+          "GPS मिल गया है। Address fields manually भरें।"
+        );
+
+      }
+
+    },
+
+
+    error => {
+
+      console.error(
+        "GPS error:",
+        error
+      );
+
+
+      alert(
+        "📍 Location permission Allow करें और फिर दोबारा कोशिश करें।"
+      );
+
+    },
+
+
+    {
+      enableHighAccuracy:true,
+      timeout:15000,
+      maximumAge:0
+    }
+
+  );
+
+}
+
+
+/* =====================================================
+   SAVE ADDRESS
+===================================================== */
+
+async function saveAddress(){
+
+  if(!currentUser){
+
+    alert(
+      "Customer login required."
+    );
+
+    return;
+
+  }
+
+
+  const full_name =
+    document.getElementById(
+      "addressName"
+    )?.value.trim();
+
+
+  const phone =
+    document.getElementById(
+      "addressPhone"
+    )?.value.trim();
+
+
+  const address =
+    document.getElementById(
+      "addressText"
+    )?.value.trim();
+
+
+  const city =
+    document.getElementById(
+      "addressCity"
+    )?.value.trim();
+
+
+  const state =
+    document.getElementById(
+      "addressState"
+    )?.value.trim();
+
+
+  const pincode =
+    document.getElementById(
+      "addressPincode"
+    )?.value.trim();
+
+
+  const latitude =
+    document.getElementById(
+      "latitude"
+    )?.value ||
+    null;
+
+
+  const longitude =
+    document.getElementById(
+      "longitude"
+    )?.value ||
+    null;
+
+
+  if(
+    !full_name ||
+    !phone ||
+    !address ||
+    !city ||
+    !state ||
+    !pincode
+  ){
+
+    alert(
+      "कृपया सभी required address details भरें।"
+    );
+
+    return;
+
+  }
+
+
+  if(
+    !/^[0-9]{10}$/.test(
+      phone
+    )
+  ){
+
+    alert(
+      "कृपया सही 10 digit mobile number डालें।"
+    );
+
+    return;
+
+  }
+
+
+  if(
+    !/^[0-9]{6}$/.test(
+      pincode
+    )
+  ){
+
+    alert(
+      "कृपया सही 6 digit PIN Code डालें।"
+    );
+
+    return;
+
+  }
+
+
+  const saveButton =
+    document.querySelector(
+      ".save-address-btn"
+    );
+
+
+  if(saveButton){
+
+    saveButton.disabled =
+      true;
+
+    saveButton.innerText =
+      "⏳ Saving Address...";
+
+  }
+
+
+  try{
+
+    /*
+      Existing default addresses
+      को false करेंगे.
+    */
+
+    await supabaseClient
+      .from("customer_addresses")
+      .update({
+        is_default:false
+      })
+      .eq(
+        "customer_id",
+        currentUser.id
+      );
+
+
+    const {
+      data,
+      error
+    } =
+    await supabaseClient
+      .from("customer_addresses")
+      .insert({
+
+        customer_id:
+          currentUser.id,
+
+        full_name:
+
+          full_name,
+
+        phone:
+
+          phone,
+
+        address:
+
+          address,
+
+        city:
+
+          city,
+
+        state:
+
+          state,
+
+        pincode:
+
+          pincode,
+
+        latitude:
+
+          latitude
+          ? Number(latitude)
+          : null,
+
+        longitude:
+
+          longitude
+          ? Number(longitude)
+          : null,
+
+        is_default:
+
+          true
+
+      })
+      .select()
+      .single();
+
+
+    if(error){
+
+      throw error;
+
+    }
+
+
+    selectedAddress =
+      data;
+
+
+    await loadAddress();
+
+
+  }catch(error){
+
+    console.error(
+      "Save address error:",
+      error
+    );
+
+
+    alert(
+      "❌ Address save नहीं हो पाया: " +
+      (
+        error.message ||
+        "Unknown error"
+      )
+    );
+
+
+    if(saveButton){
+
+      saveButton.disabled =
+        false;
+
+      saveButton.innerText =
+        "💾 Save Delivery Address";
+
+    }
+
+  }
+
+}
+
+
+/* =====================================================
+   VERIFY PRODUCTS FROM DATABASE
+===================================================== */
+
+async function validateCartProducts(){
+
+  const verifiedItems =
+    [];
+
+
+  for(
+    const item of cart
+  ){
+
+    const productId =
+      item?.id;
+
+
+    if(
+      productId === undefined ||
+      productId === null ||
+      productId === ""
+    ){
+
+      throw new Error(
+        "Cart में Product ID नहीं मिली।"
+      );
+
+    }
+
+
+    /*
+      products.id = BIGINT
+    */
+
+    const numericId =
+      Number(
+        productId
+      );
+
+
+    if(
+      !Number.isInteger(
+        numericId
+      )
+    ){
+
+      throw new Error(
+        "Invalid Product ID: " +
+        productId
+      );
+
+    }
+
+
+    const {
+      data:product,
+      error
+    } =
+    await supabaseClient
+      .from("products")
+      .select(`
+        id,
+        product_name,
+        seller_id,
+        status,
+        price,
+        mrp,
+        stock,
+        ai_image_url
+      `)
+      .eq(
+        "id",
+        numericId
+      )
+      .maybeSingle();
+
+
+    if(error){
+
+      console.error(
+        "Product verification error:",
+        error
+      );
+
+
+      throw new Error(
+        "Product database से verify नहीं हो पाया।"
+      );
+
+    }
+
+
+    if(!product){
+
+      throw new Error(
+        "Product database में नहीं मिला: " +
+        (
+          item.product_name ||
+          "Product"
+        )
+      );
+
+    }
+
+
+    if(
+      product.status !==
+      "approved"
+    ){
+
+      throw new Error(
+        `"${product.product_name}" अभी approved नहीं है।`
+      );
+
+    }
+
+
+    if(
+      !product.ai_image_url
+    ){
+
+      throw new Error(
+        `"${product.product_name}" की AI image उपलब्ध नहीं है।`
+      );
+
+    }
+
+
+    if(
+      !product.seller_id
+    ){
+
+      throw new Error(
+        `"${product.product_name}" का Seller नहीं मिला।`
+      );
+
+    }
+
+
+    const quantity =
+      Math.max(
+        1,
+        Number(
+          item.quantity || 1
+        )
+      );
+
+
+    const stock =
+      Number(
+        product.stock || 0
+      );
+
+
+    if(
+      stock < quantity
+    ){
+
+      throw new Error(
+        `"${product.product_name}" का केवल ${stock} stock available है।`
+      );
+
+    }
+
+
+    /*
+      Latest database selling price
+    */
+
+    const sellingPrice =
+      Number(
+        product.price || 0
+      );
+
+
+    /*
+      Real database MRP
+    */
+
+    const realMrp =
+      Number(
+        product.mrp || 0
+      );
+
+
+    if(
+      sellingPrice < 0
+    ){
+
+      throw new Error(
+        `"${product.product_name}" की selling price invalid है।`
+      );
+
+    }
+
+
+    if(
+      realMrp > 0 &&
+      sellingPrice > realMrp
+    ){
+
+      throw new Error(
+        `"${product.product_name}" की selling price MRP से ज्यादा है।`
+      );
+
+    }
+
+
+    verifiedItems.push({
+
+      id:
+        product.id,
+
+      product_id:
+        product.id,
+
+      product_name:
+        product.product_name,
+
+      seller_id:
+        product.seller_id,
+
+      price:
+        sellingPrice,
+
+      mrp:
+        realMrp,
+
+      stock:
+        stock,
+
+      ai_image_url:
+        product.ai_image_url,
+
+      quantity:
+        quantity
+
+    });
+
+  }
+
+
+  return verifiedItems;
+
+}
+
+
+/* =====================================================
+   PLACE ORDER
+===================================================== */
+
+async function placeOrder(){
+
+  if(!currentUser){
+
+    alert(
+      "कृपया Customer Login करें।"
+    );
+
+    return;
+
+  }
+
+
+  /*
+    Phase 1 में केवल COD allowed है.
+  */
+
+  if(
+    selectedPayment !==
+    "cod"
+  ){
+
+    alert(
+      "💳 फिलहाल केवल Cash on Delivery उपलब्ध है।"
+    );
+
+    return;
+
+  }
+
+
+  if(!selectedAddress){
+
+    alert(
+      "📍 पहले Delivery Address जोड़ें।"
+    );
+
+    showAddressForm();
+
+    return;
+
+  }
+
+
+  if(!cart.length){
+
+    alert(
+      "🛒 Cart खाली है।"
+    );
+
+    return;
+
+  }
+
+
+  const button =
+    document.getElementById(
+      "placeOrderBtn"
+    );
+
+
+  try{
+
+    if(button){
+
+      button.disabled =
+        true;
+
+      button.innerText =
+        "⏳ Products verify हो रहे हैं...";
+
+    }
+
+
+    /* =================================================
+       STEP 1
+       VERIFY PRODUCTS
+    ================================================= */
+
+    const verifiedCart =
+      await validateCartProducts();
+
+
+    if(
+      !verifiedCart.length
+    ){
+
+      throw new Error(
+        "कोई valid product नहीं मिला।"
+      );
+
+    }
+
+
+    cart =
+      verifiedCart;
+
+
+    localStorage.setItem(
+      "br_cart",
+      JSON.stringify(
+        cart
+      )
+    );
+
+
+    /* =================================================
+       STEP 2
+       SELLER WISE GROUP
+    ================================================= */
+
+    const sellerGroups =
+      new Map();
+
+
+    for(
+      const item of cart
+    ){
+
+      const sellerId =
+        String(
+          item.seller_id
+        );
+
+
+      if(
+        !sellerGroups.has(
+          sellerId
+        )
+      ){
+
+        sellerGroups.set(
+          sellerId,
+          []
+        );
+
+      }
+
+
+      sellerGroups
+        .get(
+          sellerId
+        )
+        .push(
+          item
+        );
+
+    }
+
+
+    /* =================================================
+       STEP 3
+       CREATE ORDER
+    ================================================= */
+
+    const createdOrders =
+      [];
+
+
+    for(
+      const [
+        sellerId,
+        sellerItems
+      ]
+      of sellerGroups
+    ){
+
+      let subtotal =
+        0;
+
+
+      let mrpTotal =
+        0;
+
+
+      for(
+        const item
+        of sellerItems
+      ){
+
+        const quantity =
+          Number(
+            item.quantity || 1
+          );
+
+
+        const price =
+          Number(
+            item.price || 0
+          );
+
+
+        const mrp =
+          Number(
+            item.mrp || 0
+          );
+
+
+        subtotal +=
+          price *
+          quantity;
+
+
+        mrpTotal +=
+          (
+            mrp > price
+            ? mrp
+            : price
+          ) *
+          quantity;
+
+      }
+
+
+      const discount =
+        Math.max(
+          0,
+          mrpTotal -
+          subtotal
+        );
+
+
+      const deliveryFee =
+        0;
+
+
+      const totalAmount =
+        subtotal +
+        deliveryFee;
+
+
+      if(button){
+
+        button.innerText =
+          "⏳ Order create हो रहा है...";
+
+      }
+
+
+      /* =================================================
+         CREATE ORDER
+      ================================================= */
+
+      const {
+        data:order,
+        error:orderError
+      } =
+      await supabaseClient
+        .from("orders")
+        .insert({
+
+          customer_id:
+            currentUser.id,
+
+          seller_id:
+            sellerItems[0].seller_id,
+
+          business_id:
+            null,
+
+          status:
+            "pending",
+
+          payment_method:
+            "cod",
+
+          payment_status:
+            "pending",
+
+          subtotal:
+            subtotal,
+
+          delivery_fee:
+            deliveryFee,
+
+          discount:
+            discount,
+
+          total_amount:
+            totalAmount,
+
+          shipping_name:
+            selectedAddress.full_name,
+
+          shipping_phone:
+            selectedAddress.phone,
+
+          shipping_address:
+            selectedAddress.address,
+
+          shipping_city:
+            selectedAddress.city,
+
+          shipping_state:
+            selectedAddress.state,
+
+          shipping_pincode:
+            selectedAddress.pincode
+
+        })
+        .select()
+        .single();
+
+
+      if(orderError){
+
+        throw orderError;
+
+      }
+
+
+      /* =================================================
+         CREATE ORDER ITEMS
+      ================================================= */
+
+      for(
+        const item
+        of sellerItems
+      ){
+
+        if(button){
+
+          button.innerText =
+            "⏳ Order items save हो रहे हैं...";
+
+        }
+
+
+        const productId =
+          Number(
+            item.product_id
+          );
+
+
+        /* =============================================
+           FINAL PRODUCT CHECK
+        ============================================== */
+
+        const {
+          data:productCheck,
+          error:productCheckError
+        } =
+        await supabaseClient
+          .from("products")
+          .select(`
+            id,
+            product_name,
+            seller_id,
+            status,
+            stock,
+            price,
+            mrp,
+            ai_image_url
+          `)
+          .eq(
+            "id",
+            productId
+          )
+          .eq(
+            "status",
+            "approved"
+          )
+          .maybeSingle();
+
+
+        if(productCheckError){
+
+          throw productCheckError;
+
+        }
+
+
+        if(!productCheck){
+
+          throw new Error(
+            `"${item.product_name}" अब उपलब्ध नहीं है।`
+          );
+
+        }
+
+
+        if(
+          !productCheck.ai_image_url
+        ){
+
+          throw new Error(
+            `"${item.product_name}" की AI image अब उपलब्ध नहीं है।`
+          );
+
+        }
+
+
+        const quantity =
+          Number(
+            item.quantity || 1
+          );
+
+
+        const currentStock =
+          Number(
+            productCheck.stock || 0
+          );
+
+
+        if(
+          currentStock <
+          quantity
+        ){
+
+          throw new Error(
+            `"${productCheck.product_name}" का stock अभी बदल गया है।`
+          );
+
+        }
+
+
+        /* =============================================
+           ORDER ITEM
+        ============================================== */
+
+        const {
+          error:itemError
+        } =
+        await supabaseClient
+          .from("order_items")
+          .insert({
+
+            order_id:
+              order.id,
+
+            product_id:
+              productCheck.id,
+
+            seller_id:
+              productCheck.seller_id,
+
+            product_name:
+              productCheck.product_name,
+
+            product_image_url:
+              productCheck.ai_image_url,
+
+            quantity:
+              quantity,
+
+            price:
+              Number(
+                productCheck.price || 0
+              )
+
+          });
+
+
+        if(itemError){
+
+          throw itemError;
+
+        }
+
+      }
+
+
+      createdOrders.push(
+        order
+      );
+
+    }
+
+
+    /* =================================================
+       SUCCESS
+    ================================================= */
+
+    localStorage.removeItem(
+      "br_cart"
+    );
+
+
+    cart = [];
+
+
+    showSuccess(
+      createdOrders
+    );
+
+
+  }catch(error){
+
+    console.error(
+      "Place order error:",
+      error
+    );
+
+
+    if(button){
+
+      button.disabled =
+        false;
+
+      button.innerText =
+        "🛍️ Place Order";
+
+    }
+
+
+    showError(
+      "❌ Order place नहीं हुआ: " +
+      (
+        error?.message ||
+        "Unknown error"
+      )
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   ENABLE ORDER BUTTON
+===================================================== */
+
+function enablePlaceOrder(){
+
+  const button =
+    document.getElementById(
+      "placeOrderBtn"
+    );
+
+
+  if(
+    button &&
+    selectedAddress &&
+    cart.length &&
+    selectedPayment ===
+    "cod"
+  ){
+
+    button.disabled =
+      false;
+
+    button.innerText =
+      "🛍️ Place Order";
+
+  }
+
+}
+
+
+/* =====================================================
+   DISABLE ORDER BUTTON
+===================================================== */
+
+function disablePlaceOrder(
+  text =
+  "📍 पहले Delivery Address जोड़ें"
+){
+
+  const button =
+    document.getElementById(
+      "placeOrderBtn"
+    );
+
+
+  if(!button)
+    return;
+
+
+  button.disabled =
+    true;
+
+
+  button.innerText =
+    text;
+
+}
+
+
+/* =====================================================
+   SUCCESS
+===================================================== */
+
+function showSuccess(
+  orders
+){
+
+  const orderNumbers =
+    orders
+      .map(
+        order =>
+          order.id
+      )
+      .join(", ");
+
+
+  document.getElementById(
+    "checkoutContainer"
+  ).innerHTML = `
+
+    <div class="success">
+
+      <div class="success-icon">
+
+        ✅
+
+      </div>
+
+
+      <h2>
+
+        Order Placed Successfully!
+
+      </h2>
+
+
+      <p>
+
+        आपका order successfully
+        place हो गया है।
+
+      </p>
+
+
+      <p style="margin-top:10px;">
+
+        📦 Order ID:
+        ${escapeHtml(
+          orderNumbers
+        )}
+
+      </p>
+
+
+      <p style="margin-top:8px;">
+
+        💵 Payment:
+        Cash on Delivery
+
+      </p>
+
+
+      <p style="margin-top:8px;">
+
+        ⏳ Order अभी Pending है।
+        Seller बाद में confirm करेगा।
+
+      </p>
+
+
+      <button
+        type="button"
+        onclick="openOrders()">
+
+        📦 My Orders देखें
+
+      </button>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =====================================================
+   FORMAT PRICE
+===================================================== */
+
+function formatPrice(
+  value
+){
+
+  return Number(
+    value || 0
+  ).toLocaleString(
+    "en-IN",
+    {
+      maximumFractionDigits:2
+    }
+  );
+
+}
+
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHtml(
+  value
+){
+
+  return String(
+    value ?? ""
+  )
+  .replace(
+    /&/g,
+    "&amp;"
+  )
+  .replace(
+    /</g,
+    "&lt;"
+  )
+  .replace(
+    />/g,
+    "&gt;"
+  )
+  .replace(
+    /"/g,
+    "&quot;"
+  )
+  .replace(
+    /'/g,
+    "&#039;"
+  );
+
+}
+
+
+/* =====================================================
+   SHOW ERROR
+===================================================== */
+
+function showError(
+  message
+){
+
+  const box =
+    document.getElementById(
+      "errorBox"
+    );
+
+
+  if(!box)
+    return;
+
+
+  box.innerText =
+    message;
+
+
+  box.style.display =
+    "block";
+
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
+}
+
+
+/* =====================================================
+   GO CART
+===================================================== */
+
+function goCart(){
+
+  window.location.href =
+    "cart.html";
+
+}
+
+
+/* =====================================================
+   OPEN ORDERS
+===================================================== */
+
+function openOrders(){
+
+  window.location.href =
+    "orders.html";
+
+}
+
+
+/* =====================================================
+   START
+===================================================== */
+
+window.addEventListener(
+  "DOMContentLoaded",
+  function(){
+
+    /*
+      COD default selected
+    */
+
+    selectedPayment =
+      "cod";
+
+
+    startCheckout();
+
+  }
+);
+
+</script>
+
+
+</body>
+  </html>
