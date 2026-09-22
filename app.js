@@ -129,67 +129,74 @@ function render(){
 
 async function loadProducts(){
 
- let s=document.getElementById("connectionState");
-
- if(s){
-  s.textContent="Products load ho rahe hain...";
-  s.classList.add("show");
- }
-
- try{
-
-  let r=await fetch(
-   SUPABASE_URL+
-   "/rest/v1/products?select=id,product_name,description,image_url,category,price,stock,status&status=eq.approved&order=id.desc",
-
-  let r=await fetch(
-   url,
-   {
-    headers:{
-     apikey:KEY,
-     Authorization:"Bearer "+KEY,
-     Accept:"application/json"
-    }
-   }
-  );
-
-  if(!r.ok){
-
-   const errorText =
-    await r.text();
-
-   throw Error(
-    "HTTP " +
-    r.status +
-    ": " +
-    errorText
-   );
-
-  }
-
-  products =
-   await r.json();
-
-  render();
-
- }catch(e){
-
-  console.error(
-   "Products load error:",
-   e
-  );
+  let s=document.getElementById("connectionState");
 
   if(s){
-
-   s.textContent =
-    "❌ Products load nahi ho pa rahe: " +
-    e.message;
-
-   s.classList.add("show");
-
+    s.textContent="Products load ho rahe hain...";
+    s.classList.add("show");
   }
 
- }
+  try{
+
+    const url =
+      SUPABASE_URL +
+      "/rest/v1/products" +
+      "?select=id,product_name,description,image_url,category,price,stock,status" +
+      "&status=eq.approved" +
+      "&order=id.desc";
+
+    const r = await fetch(
+      url,
+      {
+        method:"GET",
+        headers:{
+          "apikey":KEY,
+          "Authorization":"Bearer "+KEY,
+          "Accept":"application/json"
+        }
+      }
+    );
+
+    if(!r.ok){
+
+      const errorText = await r.text();
+
+      throw new Error(
+        "HTTP " +
+        r.status +
+        ": " +
+        errorText
+      );
+
+    }
+
+    products = await r.json();
+
+    console.log(
+      "Products loaded:",
+      products
+    );
+
+    render();
+
+  }catch(e){
+
+    console.error(
+      "Products load error:",
+      e
+    );
+
+    if(s){
+
+      s.textContent =
+        "❌ Products load nahi ho pa rahe: " +
+        e.message;
+
+      s.classList.add("show");
+
+    }
+
+  }
 }
 
 function filterCategory(c){
